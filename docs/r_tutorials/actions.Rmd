@@ -1,0 +1,268 @@
+---
+title: 'IntroR: Actions'
+author: "Dan C. Mann"
+date: "10/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## II. Actions
+
+### A. Assignment
+
+The most basic action that you will perform in R is "assignment". The assignment operator is `<-` or `=`. Assignment takes what is on the right side of the assignment operator and "stores" it into the a "variable" that is on the right side of the operator. `x <- 1` means that `x` will function as `1` until you change it.
+
+```{r}
+x <- 1
+x #You can print the information stored in any variable by simply entering that variable into the command prompt
+x + 1
+x + 2
+x - 1
+x <- 3
+x + 1
+x * 2
+x / 2
+y <- 2
+y + x
+z <- y + x
+z + 2
+```
+
+You can also store categorical data into a variable:
+
+```{r}
+x <- "Hello world"
+x
+```
+
+It is also possible to store multiple numbers into a variable.
+
+```{r}
+x <- 1:3
+x
+x + 2
+```
+
+#### Variable names
+
+We'll spend more time on what types of elements can be stored in variables, but for now, let's discuss the variable name itself. So far, we've been using `x` and `y` a lot, but those are definitely not the only variable names you can use. A variable name can include any letter in any arrangement.
+
+```{r}
+variable <- 1
+elbairav <- 2
+v <- 3
+variablevariable <- 4
+```
+
+But, be careful, R is case sensitive.
+
+```{r}
+variable <- 1
+VARIABLE <- 2
+variable
+```
+
+```{r}
+casematters <- "hello"
+CaseMatters <- "world"
+CaseMatters == casematters
+```
+
+You can also use numbers and the special characters `.` and `_`.
+
+```{r}
+variable1 <- 1
+variable2 <- 2
+variable.name <- "Howdy Earth"
+variable_name <- "Hallo Welt"
+```
+
+Variable names can start with uppercase or lowercase letters but cannot start with numbers or the underscore `_`.
+
+```{r, error = T}
+1x <- 1
+```
+
+```{r, error = T}
+_variable <- 1
+```
+
+<div>
+
+Note: R does allow variable names to start with `.` as long as it's not followed by a number.
+
+```{r}
+.x <- 1
+._x <- 2
+```
+
+```{r, error = T}
+.2x <- 1
+```
+However, variables starting with `.` are hidden. 
+
+```{r}
+## this function prints all of the variables you have in your environment. 
+ls()
+```
+
+At this stage, just stick to letters for variable names. 
+</div>
+
+So, how do you choose what to name a variable? This is actually a bit trickier than you would think. R doesn't care. R is happy with whatever you use (as long as it follows the previously mentioned rules). But remember that R is picky and doesn't understand things the way humans do. For example, R is perfectly happy to let you do something insane like:
+
+```{r}
+why_is_hello_world_the_phrase_that_is_always_in_intro_to_programming_lessons <- "Hello world"
+why_is_hello_world_the_phrase_that_is_always_in_intro_to_programming_lessons
+```
+Or:
+```{r}
+numeric_variable <- "character_string"
+is.numeric(numeric_variable)
+``` 
+Or: 
+```{r}
+character_variable <- 2
+wordVariable <- 3
+
+integer.variable <- character_variable/wordVariable
+integer.variable
+is.integer(integer.variable)
+```
+
+R just doesn't care. But humans do. And humans will read your code (at least one human, you). So variables names like those above work perfectly fine in R, but are hell if you are trying to figure out what is going on. Your code will break, it will produce unexpected results, and you will forget what certain things are doing. 
+#### Reserved keywords
+R has a list of names that have special purposes, these are off-limits to use as a variable name. You can access the full list with `?reserved`
+
+```{r}
+?reserved
+```
+
+
+
+### B. Functions
+
+What if we need to perform some function like finding the mean or standard deviation or even converting Fahrenheit to Celsius?
+
+```{r}
+### 3 temperature converting functions!
+ # Note: R doesn't care that Celsius is misspelled. As long as your variable names are consistent, R is happy. This is good news for people who are bad spellers. Well, as long as you are consistent in how you misspell words. 
+
+# F to C
+fahrenheit_to_celcius <- function(fahrenheit){
+  (fahrenheit - 32) * 5/9 # R follows the conventional order of operations: Parentheses, Exponents, Multiplication/Division, Addition/Subtraction
+}
+
+# C to F
+celcius_to_fahrenheit <- function(celcius){
+  celcius * (9/5) + 32
+}
+
+# Both
+temp_converter <- function(input_temperature = 32, output_scale = "Fahrenheit"){ # 
+  if (output_scale == "Fahrenheit") {
+      input_temperature * (9/5) + 32  
+  } else if (output_scale == "Celcius") {
+      (input_temperature - 32) * 5/9
+  } else {
+    errorCondition("Did you mispell Celcius or Fahrenheit? Please use 'Celcius' or 'Fahrenheit' with first letter capitalized")
+  }
+}
+
+```
+
+A "function" is code that is written to perform some function. Isn't it great when terminology is straight-forward?!
+
+In this class, we won't spend a lot of time creating our own functions - as with the temperature converter - But, we will be using a lot of functions so it's important to know the basics.
+
+Every function has the following elements:
+
+-   Name
+-   Argument(s)
+-   Function Body
+-   Return/Output
+
+```{r eval=FALSE}
+function_name <- function(argument_1, argument_2, ...) {
+   Function body 
+}
+```
+
+#### i. Function name
+
+The function name exists so that you can easily call the function whenever you need it.
+
+#### ii. Function arguments
+
+Functions take "arguments" as input. These are the elements that you put inside the paretheses.
+
+```{r}
+x <- 1:5
+mean(x) #the variable x is the argument
+
+```
+
+Functions can take multiple arguments, in fact, some require multiple arguments. The order of the arguments matters.
+
+```{r}
+seq(5, 85, 20) # Seq() creates a sequence of numbers. In this case, from 5 to 85 by 20
+
+seq(20, 85, 5) # From 20 to 85 by 5
+```
+
+You can also specify each argument. For most functions, if you specify each argument explicitly the order no longer matters.
+
+```{r}
+seq(from = 5, to = 85, by = 20)
+
+seq(by = 20, to = 85, from = 5)
+
+```
+
+Some arguments require an input value and some are set by default. It's always best to use `?` and read the documentation before using a function.
+
+#### iii. Function Body
+
+The action that the function performs is found inside the curly brackets `{}`. Unless you want to write your own function or you want to look inside of a pre-existing function, you don't need to worry about this right now.
+
+#### iv. Function return
+
+The purpose of a function is to produce some result. In the functions we've seen so far, the result is a value. These values can be stored in a variable.
+
+```{r}
+x <- seq(from = 1, to = 10, by = 0.5)
+mean_of_x <- mean(x)
+mean_of_x
+```
+
+```{r}
+# A more realistic (but complicated) example
+
+control_group_scores <- rnorm(n = 100, mean = 75, sd = 10)
+treatment_group_scores <- rnorm(n = 100, mean = 86, sd = 7)
+group <- gl(n = 2, k = 100, length = 200, labels = c("control", "treatment"))
+
+scores <- c(control_group_scores, treatment_group_scores)
+
+linear_model <- lm(scores ~ group)
+anova(linear_model)
+summary(linear_model)
+
+```
+
+Other functions perform actions that are essential to working in R, but won't (necessarily) produce an object that you can use. For example, you can get your working directory by using the function `getwd()`. You can change your working directory by using `setwd()`. `list.files()` will produce a list of all of the files in your working directory.
+
+Two of the most useful functions that you will use are `install.packages()` and `library()`. Packages are like "add-ons" to R. A package contains R functions, example data, and helpful documentation. If you find yourself thinking "I wonder if there is a way to do this" the answer is most likely "yes and there is a package that does it". You can find all of the R approved packages at <https://cran.r-project.org>. Packages that are on this website are very easy to download and start using. Simply use the `install.packages()` function and put the name of the package as an argument: `install.packages("package Name")`
+
+The packages you download are stored in your R library. The function `library()` produces a list of all the packages currently installed. To use a package you have to load it first. To load a package put the package name as an argument into the `library()` function: `library("package Name")`. If you don't know the path to your library, you can use `.libPaths()`
+
+In this class, we will learn to use two packages: "dplyr" and "ggplot2"
+
+```{r, eval=FALSE}
+install.packages("dplyr") # must have quotes around the package name
+library(dplyr) # quotes are optional
+
+```

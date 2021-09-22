@@ -1,0 +1,362 @@
+---
+title: 'Data visualization and ggplot2'
+author: "Dan C. Mann"
+date: "2020/11/12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Data visualization
+
+In this class, we'll learn how to use the package `ggplot2` to visualize your data.  
+
+```{r message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+
+Descriptive and inferential statistics are incredibly useful for understanding your data. However, as we have discussed, they are models and models always have error. We have to live with a certain amount of error, but we should make sure that our model is at least useful. For example, is a statement like "the vast majority of humans have more than the mean number of eyes" all that useful? One way that we can assess the usefulness of our numeric models is to visualize the data.  
+
+Let's look at the "anscombe" data set that comes with the base R package `datasets`. 
+
+
+```{r message=FALSE, warning=FALSE}
+data("anscombe")
+str(anscombe)
+head(anscombe)
+```
+The anscombe data set has eight variables, each with 11 observations. We'll use `dplyr` to get summary statistics. But before, let's convert the data into a "long" format so that it's a bit easier to work with. We'll use the `tidyr` function `pivot_longer`. The argument `cols` selects the columns that you want to pivot. Since we only have numeric variables, we can pivot everything to a long format. To do that, we'll use `cols = everything()`.  The anscombe data contains 4 sets of $x$ and $y$ data. The argument `names_to` and `names_pattern` work in tandem to restructure the data. 
+
+```{r message=F, warning=F}
+anscombe <- anscombe %>% 
+  pivot_longer(cols = everything(), 
+                          names_to = c(".value", "set"), 
+                          names_pattern = "(.)(.)")
+str(anscombe)
+head(anscombe)
+```
+
+
+```{r message=F, warning=F}
+anscombe %>% 
+  group_by(set) %>% 
+  summarise(mean_x = mean(x),
+            sd_x = sd(x),
+            mean_y = mean(y),
+            sd_y = sd(y
+                      )
+            )
+```
+
+What do you notice about the four sets?  
+
+For all four sets, the mean of x, mean of y, standard deviation of x, and standard deviation of y are the same. So, the models that we have used most in this class, tell us that these sets are pretty much the same! So, we're all done, right?  
+Let's just double-check by visualizing the data.   
+
+```{r}
+ans_plot <- ggplot(data = anscombe, aes(x = x, y = y)) +
+  geom_point() +
+  facet_wrap(~set)
+ans_plot
+```
+
+Uh... woah. These data now look pretty distinct. If we add a regression line (slope and intercept), we see that the lines are the same.  
+```{r}
+ans_plot +
+   geom_smooth(formula = y ~ x, method = "lm", se = FALSE, data = anscombe)
+```
+
+The quantitative stats that we have tell us that these are the same, yet a visual inspection reveals stark differences. ALWAYS PLOT YOUR DATA!!! (When/if we get into linear models, we'll see that there are some model diagnostics that you can run that reveal differences.) 
+
+# `ggplot2`
+
+Let's learn ggplot by playing around with the `starwars` data set. 
+
+```{r message=F, warning=F}
+data("starwars")
+## we'll clean it up like we did before
+starwars <- 
+    starwars %>% 
+    select(-(films:starships))
+head(starwars)
+str(starwars)
+```
+
+The basic syntax of `ggplot2` typically requires an argument for your data, `data =` and an aesthetic argument `aes()`. Within the `aes()` argument, you will specify the data that will be used on the x-axis and y-axis. 
+```{r}
+ggplot(data = starwars, aes(x = height, y = mass))
+```
+
+You'll notice that there are axis labels and the ranges match with our data but the data doesn't appear in the plot. If you subset the data, you'll notice that the ranges change (the data still doesn't show).  
+
+```{r}
+sw_human_data <- 
+  starwars %>% 
+  filter(species == "Human")
+
+ggplot(data = sw_human_data, aes(x = height, y = mass))
+
+```
+
+The data does not appear because `ggplot2` does not assume the type of plot you want, so you must specify this information. YOu can do this by using the operator `+` and functions which usually start with `geom_`. For example, for scatter plots use `geom_point()`, for boxplots use `geom_boxplot()`, for a histogram `geom_histogram()`.  
+
+```{r}
+ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
+  geom_point()
+
+ggplot(data = sw_human_data, aes(x = gender, y = height)) +
+  geom_boxplot()
+
+ggplot(data = sw_human_data, aes(x = height)) + 
+  geom_histogram()
+```
+
+(Note: There are NAs in this data set. `ggplot2` will remove them by default but produces a warning message - "removed n rows containing non-finite values"; "removed n rows containing missing values". Be careful, though, `ggplot2` will use the same warning message if it removes data because of NAs or if it removes them because the axes are mis-specified. If you get this message make sure you know why it is being produced.)
+
+These plots are pretty basic and do not have titles or useful axis labels, but ggplot2 gives you tons of flexibility in adjusting your plots. Let's start with some scatter plots. 
+
+## Scatter plots
+
+First, let's modify the axis and title labels:
+
+```{r}
+ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
+  geom_point() +
+  labs(title = "Human height and mass", subtitle = "In the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
+  
+```
+
+
+We can also modify how the points appear by adjusting the parameters in `geom_point()`
+```{r}
+ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
+  geom_point(size = 5, shape = 17, color = "red") +
+  labs(title = "Human height and mass", subtitle = "In the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
+
+```
+
+
+What if we want to look at how height and mass break down by group? 
+```{r}
+ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
+  geom_point(size = 5) +
+  labs(title = "Human height and mass", subtitle = "In the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
+
+
+```
+
+
+This is somewhat confusing, though. The colors in the plot don't match the eye color. While this probably won't be a problem you encounter often, specifying colors manually can be quite useful. Functions which give you more control over the colors or shapes of points typically start with `scale_` (e.g., `scale_fill_manual()`, `scale_color_discrete()`, `scale_shape_manual()`). R uses hexadecimal to represent colors. You can look up the hex values, but R also has hundreds of built-in color names. You can find those color names here: "http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf"
+
+Note: No need to worry too much about 'hexadecimal'. If you are interested, it is a base-16 numerical system. Each color is represented by a hashtag followed 6 characters; 2 for red, 2 for green, and 2 for blue. ...
+
+  
+```{r}
+ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
+  geom_point(size = 5) +
+  scale_color_manual(values = c("blue", "lightblue", "tan", "tan4", "forestgreen", "yellow")) +
+  labs(title = "Human height and mass", subtitle = "In the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
+
+
+```
+
+You can also change the colors withouth specifying colors manually. This is useful if you don't need to specify exactly which colors go with with group, but you need a different color palette than the default. By using a palette you can improve the look of your graphs relatively easily. Some journals have color preferred color palettes. You can also make your graphs color-blind friendly. The package `RColorBrewer` has created palettes that are compatible with `ggplot2` and contain metadata which let you know if the palette is color-blind friendly or not. 
+```{r}
+library(RColorBrewer)
+head(brewer.pal.info, 10)
+
+```
+
+```{r}
+
+ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
+  geom_point(size = 5) +
+  scale_colour_brewer(palette = "RdYlBu") +
+  labs(title = "Human height and mass", subtitle = "In the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
+```
+
+
+What happens if you have an outlier?
+```{r}
+
+ggplot(data = starwars, aes(x = height, y = mass)) + 
+  geom_point(size = 2) +
+  scale_colour_brewer(palette = "RdYlBu") +
+  labs(title = "Height and mass", subtitle = "In the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
+```
+
+You can change the axes on your plot. However, be careful, some methods could have unintended consequences. Let's look at an example:   
+```{r}
+ggplot(data = starwars, aes(x = height, y = mass)) + 
+  geom_point(size = 2) +
+  scale_colour_brewer(palette = "RdYlBu") +
+  labs(title = "Height and mass", subtitle = "In the Star Wars universe", x = "Height (cm)", y = "Mass (kg)") +
+  ylim(c(0,200)) +
+  xlim(c(0,250))
+```
+
+If we remove the really heavy individual, we can see the height-mass relationship a bit better. We can apply a data smoothing function that will give you a linear regression line with confidence intervals.  
+
+```{r}
+ggplot(data = starwars, aes(x = height, y = mass)) + 
+  geom_point(size = 2) +
+  scale_colour_brewer(palette = "RdYlBu") +
+  labs(title = "Height and mass", subtitle = "In the Star Wars universe", x = "Height (cm)", y = "Mass (kg)") +
+  ylim(c(0,200)) +
+  xlim(c(50,250)) +
+  geom_smooth(method = 'lm')
+
+```
+
+However, the model only applies the linear model calculation to the data points that actually appear. If we use `coord_cartesian()` around `xlim()` and `ylim()`, we'll see a big difference. 
+
+```{r}
+ggplot(data = starwars, aes(x = height, y = mass)) + 
+  geom_point(size = 2) +
+  scale_colour_brewer(palette = "RdYlBu") +
+  labs(title = "Height and mass", subtitle = "In the Star Wars universe", x = "Height (cm)", y = "Mass (kg)") +
+  coord_cartesian(xlim = c(50, 250), 
+                  ylim = c(0, 200)) + 
+  stat_smooth(method = 'lm')
+```
+
+Notice how the slope and intercept are different in the two plots and the grey area (the confidence interval) is much larger in the second plot. The function `coord_cartesian()` calculates based on the data in the data frame, not the data that is plotted. `coord_cartesian()` basically zooms into the data, while `xlim()` and `ylim()` by themselves subset the data area. You might not use the `geom_smooth()` function much, but you will likely use `geom_boxplot()`. 
+
+```{r}
+ggplot(data = sw_human_data, aes(x = gender, y = height)) +
+  geom_boxplot() +
+  ylim(c(150, 190))
+```
+
+```{r}
+ggplot(data = sw_human_data, aes(x = gender, y = height)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(150, 190))
+
+```
+
+When we manually set the y axis limits without using `coord_cartesian`, the median height of masculine characters differs by about 3 cm. 
+
+## Box plots and violin plots
+
+```{r}
+ggplot(data = sw_human_data, aes(x = gender, y = height)) +
+  geom_boxplot() +
+  labs(title = "Height by gender", subtitle = "In the Star Wars universe",x = "Gender", y = "Height (cm)")
+```
+
+One of the benefits of ggplot2 is that you can easily (once you get used to the ggplot2 syntax) combine different types of visualizations. You can overlay a violin plot with box plots while plotting the individual data points all in one plot
+```{r}
+ggplot(data = sw_human_data, aes(x = gender, y = height)) +
+  geom_violin() +
+  geom_boxplot(width = 0.25) +
+  geom_jitter(size = 3, width = 0.25) + # geom_jitter in geom_point() but with the points "jittered" 
+  labs(title = "Height by gender", subtitle = "In the Star Wars universe",x = "Gender", y = "Height (cm)")
+  
+```
+
+
+You can continue to add more groups or variables for more complex plots. 
+```{r}
+ggplot(data = sw_human_data, aes(x = gender, y = height)) +
+  geom_violin() +
+  geom_boxplot(width = 0.25) +
+  geom_jitter(size = 3, width = 0.25, aes(color = homeworld)) + # geom_jitter in geom_point() but with the points "jittered" 
+  labs(title = "Height by gender", subtitle = "In the Star Wars universe",x = "Gender", y = "Height (cm)")
+
+
+ggplot(data = sw_human_data, aes(x = gender, y = height)) +
+  geom_violin() +
+  geom_boxplot(width = 0.25) +
+  geom_jitter(size = 3, width = 0.25, aes(color = mass)) + # geom_jitter in geom_point() but with the points "jittered" 
+  labs(title = "Height by gender", subtitle = "In the Star Wars universe",x = "Gender", y = "Height (cm)")
+
+
+```
+
+
+## Histograms
+
+
+```{r}
+ggplot(data = sw_human_data, aes(x = height)) + 
+  geom_histogram(binwidth = 10) +
+  labs(title = "Height histogram", subtitle = "In the Star Wars universe",x =  "Height (cm)")
+```
+
+Different binwidths have an effect on the shape of the histogram. 
+```{r}
+ggplot(data = sw_human_data, aes(x = height)) + 
+  geom_histogram(binwidth = 10) +
+  geom_histogram(binwidth = 3, fill = "red") +
+  labs(title = "Height histogram", subtitle = "In the Star Wars universe",x =  "Height (cm)")
+
+```
+
+
+```{r}
+sw_nonhuman_data <-
+starwars %>%
+  mutate(human = ifelse(species == "Human", "Human", "Non-Human"))
+  
+
+ggplot(data = sw_nonhuman_data, aes(x = height, fill = human)) +
+  geom_histogram(binwidth = 10) +
+  labs(title = "Height histogram", subtitle = "In the Star Wars universe",x =  "Height (cm)")
+
+```
+
+
+
+
+
+In this final plot we'll connect points and we'll deal with object type problems. 
+
+We'll simulate data so that we have multiple measurements for an individual. 
+
+```{r}
+data <-
+data.frame(ID = rep(c("a", "b", "c", "d"), times = 2),
+           week = rep(c(1, 2), each = 4),
+           measure = c(rnorm(4, 5, 2), 
+                       rnorm(4, 10, 2)))
+str(data)
+```
+
+First, let's plot the data to see if there is a difference between weeks.  
+```{r}
+ggplot(data = data, aes(x = week, y = measure)) +
+  geom_boxplot() +
+  geom_point()
+
+```
+
+That seems wrong. What happened?  
+
+R interprets "week" as a continuous variable. We want to treat it as a factor.  
+
+```{r}
+ggplot(data = data, aes(x = as.factor(week), y = measure)) +
+  geom_boxplot() +
+  geom_point()
+```
+
+That's better!
+
+Now, let's connect the points by subject ID.  
+```{r}
+ggplot(data = data, aes(x = as.factor(week), y = measure)) +
+  geom_boxplot() +
+  geom_point() +
+  geom_path(aes(group = ID))
+
+```
+
+
+## Summary
+
+`ggplot2` gives you a lot of power and flexibility to make really nice visualizations. It can't do everything though. There are packages, however, that build on `ggplot2`. You can even create interactive 3D plots and animations. It does take a bit of time to get used to the syntax and you will spend a lot of time on Google (even for things you've done multiple times). But once you get familiar with it, you'll have a lot of fun creating beautiful plots! 

@@ -2,4 +2,22 @@
 title: "Methods in Cognitive Biology"
 ---
 
-course info
+# R Tutorials
+
+- [How to download and install R and R Studio](docs/r_tutorials/download_and_install.html)
+- [The R prompt](docs/r_tutorials/prompt.html)
+- [R actions](docs/r_tutorials/actions.html)
+- [R objects](docs/r_tutorials/objects.html)
+- [Reading data into R](docs/r_tutorials/reading_data_into_R.html)
+- [Data wrangling](docs/r_tutorials/data_wrangling_dplyr.html)
+- [Data visualization](docs/r_tutorials/data_viz_ggplot.html)
+
+# Stats Tutorials
+- [Introduction to statistics](stats_tutorials/stats_intro.html)
+- [Probability and distributions](stats_tutorials/prob_distribution.html)
+- [Models and hypothesis testing](stats_tutorials/hypoth_test_mod_error.html)
+- [T-tests](stats_tutorials/t_tests.html)
+- [Correlation](stats_tutorials/correlation.html)
+- Chi-square: in prep
+- Normality, sample size, power analysis, and non-parametric tests: in prep
+- ANOVA: tbd

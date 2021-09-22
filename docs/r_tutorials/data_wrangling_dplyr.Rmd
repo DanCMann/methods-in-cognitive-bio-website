@@ -1,0 +1,299 @@
+---
+title: "Data wrangling and dplyr"
+author: "Dan C. Mann"
+date: "2020/11/05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Tidy data
+
+In the last lesson, we covered how to use `read.table()` and `read.csv()` to import your data into R. Even if you can get your data into R, you are likely to encounter problems. A lot of these problems can be solved by making sure that your variables are in the correct format. But, there are tons of other issues that can arise and may not even be obvious a first glance. You can save yourself a ton of headaches by formatting your data properly from the onset. Follow these rules to make your life easier:    
+
+1. Each variable has its own column
+    
+    + The first row contains variable names
+    
+    + Every variable has a name
+2. Each observation has its own row
+
+3. Each value has its own cell
+
+    + Don't leave blank cells
+    
+    + In R, `NA` is the default value for missing data
+4. Be consistent
+
+    + Values that are the same, should be entered the same (e.g., Don't use `Y` and `Yes`, or `Austria` and  `austria`)
+    
+    + Be consistent with variable names (e.g., don't do `pedal.width`, `pedal length`, `sepal_length`, `Sepal_Width`)
+
+
+## Data sets in R
+
+When you install R, you also install a package that contains multiple data sets. These data sets can be used for practice and you will often see tutorials use one or more of these. In R Studio, if you use the function `data()` (with no specified argument) a new tab will open up in your Source pane.  
+
+```{r}
+data()
+```
+If you look at the tab, at the top you'll see "Data sets in package ‘datasets’:" This is a "base" R package. Base R packages come with the installation of R and often are essential to the basic functioning of R as a language. Take a look at the available data sets and their descriptions. We'll load one now.  
+
+### Loading a prexisting data set
+There are a couple of data sets that you will see very often in tutorials. Among the most popular are *mtcars*, *iris*, *ToothGrowth*, and *USArrests*. To find out more information on a data set, use the `?` function with the name of the data set in the console (e.g., `?mtcars`). This will bring up the documentation which includes a description of the data. 
+
+To load one of these data sets, use the same `data()` function and put the name of the data set as the first argument. (The name of the data set can be in quotes or without `data('iris')` or `data(iris)`). 
+```{r}
+data('iris')
+## You may see <promise> in your R environment window. This is normal, once you run a line of code using the data R will load it. 
+```
+
+When you load data, R's pre-installed or your own, you should always check it to verify that what is in your library is what you expected. The functions `str()` and `head()` are useful for checking. 
+
+`str()` prints the structure of the data. Here you can see the number and names of columns (aka variables), the number of observations, and the data type of each column.  
+```{r}
+str(iris)
+```
+In this data set, we have 150 observations taken from three species of flowers. For each individual flower there are four measurements.
+
+`head()` prints the first 6 rows (observations) of the data frame (by default, you can change the number of rows to show by specifying the `n = ` argument). 
+```{r}
+head(iris)
+```
+
+The `rm()` function can help you clean up your environment pane. `rm(variable_name)` will remove the variable from your global environment. It functions similarly for Data, Values, or Functions. To remove everything from your environment use `rm(list = ls())`. The `ls()` function prints all of your current variables, so you're giving the `rm()` function a full list of your variable names. Let's remove the iris data set from our (current) environment. 
+
+```{r}
+rm(iris)
+```
+You shouldn't see iris under "Data" in your global environment pane anymore. If you accidentally removed the data set you can still reload *iris* using `data()`, but any changes you made to the data set will be lost. Similarly, if you create a variable and them remove it with `rm()`, the variable is gone which is why it is important to work in scripts and save often. 
+
+
+# `dplyr`
+Now that we have our data in R, let's see what we can find out! For this, we'll use the package `dplyr`
+
+```{r}
+library(dplyr)
+## dplyr uses objects called "tibbles". These are essentially dataframes. 
+#?tibble()
+```
+
+Many, if not most, R packages include data sets that can be used for practicing. Run the `data()` function again. 
+
+```{r}
+data()
+```
+
+You'll see the same information as before, but if you scroll down, you'll see "Data sets in package 'dplyr'". When you load a package, you also load the package's data sets. Let's load the *starwars* data set. 
+
+```{r}
+data("starwars")
+```
+
+```{r message=FALSE, warning=FALSE}
+head(starwars)
+```
+
+```{r}
+str(starwars[1:11]) #we'll print only the first 11 rows. The last three columns are lists. 
+```
+
+
+At first `dplyr` may seem a little strange, however, as you get familiar with it you will notice it's pretty intuitive and makes data organization a lot easier. `dplyr` allows you to filter, rearrange, modify, and summarize your data quickly and (relatively) painlessly. We will learn the following verbs: 
+
+
++ `select()`
+    - allows you to subset columns (variables)
++ `filter()`
+     - allows you subset rows (observations)
++ `group_by()`
+    - allows you to group observations
++ `summarise()`
+    - allows you summarize your data
++ `mutate()`
+    - allows you to modify your data
+
+The great thing about these verbs is that they can be combined with the operator `%>%` so that you can perform multiple operations at once. 
+
+
+
+## `select()`
+`select()` allows you to choose a column or multiple columns. The first argument (if you don't use `%>%`) should be the dataframe, the second should be the column name. You don't need to put quotes ("") around the column name in `dplyr`.
+```{r message=FALSE, warning=FALSE}
+select(starwars, name)
+```
+You can include as many column names as arguments to select multiple columns (and you don't need to use `c()`). 
+```{r message=FALSE, warning=FALSE}
+select(starwars, name, species)
+```
+
+We can also write the code using the pipe operator `%>%`. For simple examples you don't need to use them but as your code gets more complex the pipe operators will make your code easier to understand. If you use `%>%`, then the first argument that you explicitly write is the first column name you want to select. 
+
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    select(name, species)
+```
+The order the function outputs will be the same as what you put into `select()`, not the original order of the data frame. 
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    select(species, name)
+```
+
+You can get fancy by using other functions within `select()` like `starts_with()` or `contains()`. 
+
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    select(contains("color"))
+```
+Or by using `select_if()`
+
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    select_if(is.numeric)
+```
+
+To drop a column use `-` and to select a range of columns use `:`. 
+
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    select(-(hair_color:starships))
+```
+To store the results of the filtering, assign the output to a new variable or the same variable if you want to override it. We'll drop the three final columns and store it with the same variable name. 
+```{r message=FALSE, warning=FALSE}
+starwars <- 
+    starwars %>% 
+    select(-(films:starships))
+```
+
+```{r message=FALSE, warning=FALSE}
+str(starwars)
+```
+
+
+## `filter()`
+To subset observations based on a condition use `filter()`. As with `select()` you can put the data frame inside the function or use `%>%`. 
+```{r message=FALSE, warning=FALSE}
+filter(starwars, species == "Human")
+```
+
+```{r message=FALSE, warning=FALSE}
+starwars %>%
+        filter(species == "Human")
+```
+
+### Conditional expressions and Relational operators
+`filter()` uses conditional expressions to subset the data frame. A conditional expression tests a value against a condition and returns either `TRUE` or `FALSE`. For example, the conditional expression `1 == 2` can be read as "is the value 1 equal to the value 2?". The result of that test is `FALSE`. `1 <= 2` can be read "is 1 less than or equal to 2", which should return `TRUE`.  
+```{r}
+1==2
+```
+
+```{r}
+1 <= 2
+```
+
+As we saw in an earlier lesson, R can apply this evaluation for an entire vector. 
+```{r}
+x <- c(1, 2, 4, 8, 16)
+x < 8
+```
+R evaluates each member of the vector and returns `TRUE` or `FALSE`. 
+
+`filter()` applies a conditional expression to a data frame column and keeps those rows that evaluate to `TRUE`.  
+
+```{r message=FALSE, warning=FALSE}
+starwars %>%
+        filter(mass > 100)
+```
+
+`filter()` uses the following relational operators: 
+
+- `==` : equal to
+- `!=` : not equal to
+- `<` : less than
+- `>` : greater than
+- `<=` : less than or equal to
+- `>=` : greater than or equal to
+
+You can also use `!`, `&`, and `|` to combine conditions. Respectively, these mean NOT, AND, OR. `filter(eye_color == 'yellow' & species == "Human")` returns all those individuals with yellow eyes **and** who are human
+
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    filter(eye_color == 'yellow' & species == "Human")
+```
+
+`filter(eye_color == 'yellow' & !species == "Human")` means "individuals where eye_color is equal to 'yellow' AND species is NOT equal to 'human'. 
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    filter(eye_color == 'yellow' & !species == "Human")
+```
+
+`filter(eye_color == 'yellow' | species == "Human")` returns those individuals for which eye color is equal to yellow, independent of species, OR those who are humans, independent of eye color. 
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    filter(eye_color == 'yellow' | species == "Human")
+```
+
+
+## `summarise()`
+Combing this verb with some of R's base functions allows you to easily get descriptive statistics on your data. 
+
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    filter(birth_year > 20) %>% 
+    summarise(mean_height = mean(height))
+```
+
+
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    select(species) %>% 
+    filter(species != "Human") %>% 
+    summarise(count_nonhuman = n())
+```
+
+```{r message=FALSE, warning=FALSE}
+starwars %>%
+    summarise(mn_height = mean(height, na.rm = T),
+              sd_height = sd(height, na.rm = T),
+              min_height = min(height, na.rm = T),
+              max_height = max(height, na.rm = T))
+```
+
+
+## `group_by()`
+You may have noticed that `summarise()` produces a data frame as its output. If you only need one value this may not be all that useful to you. However, your data is often more complex and you would like to know if there are differences between groups. 
+
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    group_by(species) %>% 
+    summarise(
+        count = n(),
+        mn_mass = mean(mass, na.rm = T))
+```
+The output of `dplyr` functions are data frame, so you can actually create a date frame and filter all within the same chain. Here we'll summarize by species then filter the summary output by the count data. 
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    group_by(species) %>% 
+    summarise(
+        count = n(),
+        mn_mass = mean(mass, na.rm = T)) %>% 
+    filter(count > 5)
+```
+
+
+## mutate()
+
+Often you will need to modify a variable for some reason. Maybe you need to scale the data or log transform it. `dplyr` makes this pretty easy. `mutate()` will add a new column to the end of the data frame and won't override the original data. 
+
+
+```{r message=FALSE, warning=FALSE}
+starwars %>% 
+    select(name:mass) %>% 
+    mutate(height_meter = height/100)
+```
+As with all of these, remember that if you don't assign the output to a variable whatever you do won't be stored. 
+
+There is a lot more you can do with `dplyr`, so I would recommend checking out the documentation. The book [*R for Data Science* by Garrett Grolemund and Hadley Wickham](https://r4ds.had.co.nz/transform.html) has a chapter with a lot of useful information. 

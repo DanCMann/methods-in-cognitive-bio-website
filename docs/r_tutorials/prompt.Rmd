@@ -1,0 +1,89 @@
+---
+title: 'IntroR: The Prompt'
+author: "Dan C. Mann"
+date: "10/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Running R code
+
+## I. The Prompt
+
+### A. `>`
+
+Now that you have R Studio set up, let's head to the console (the "stove top"). You should notice the `>` symbol. This is called the "prompt" and it means that R is ready to run some code!
+
+```{r eval=FALSE, error=TRUE}
+> x <- 1
+```
+
+You'll notice that in many tutorials or help guides the `>` will not be present:
+
+```{r}
+x <- 1
+```
+
+This makes it easier to copy directly from the tutorial and run the code in your console. Otherwise you may copy `>` into the prompt, resulting in an error:
+
+```{r error=TRUE}
+> x <- 1
+```
+
+If `>` is not present you will not be able to run your code. There are a few reasons `>` may be absent. The two most common reasons are:
+
+1.  Previous code is still running\
+    For instance, if we run a line of code that will take up a lot of computational resources, you will see no symbol in the console. If you enter anything during this time, nothing happens until the previous code has been run.
+
+```{r}
+## Create very large dataset. 
+weight <- data.frame(group = gl(2, 100000000, 200000000, labels = c("Ctl","Trt")),
+                    weight = c(rnorm(100000000, mean = 5, sd = 2.5),
+                                rnorm(100000000, mean = 8, sd = 5))
+)
+## Remove dataset. 
+#rm(weight)
+```
+
+2.  R is waiting for unfinished code to be finished\
+
+```{r error = T}
+x <- c(1, 3, 5, 4, 9)
+mean(x
+```
+
+If this is the case you should see `+`. Where a line of code needs to be finished, you can either complete the syntax or hit `esc` on your keyboard.
+
+### B. `#`
+
+The symbol `#` tells R to not run the code that follows. Humans can read it but the computer doesn't. It is very useful for leaving comments to anyone else who will use your code (especially future you).
+
+```{r}
+x <- 1
+# x <- 2
+x # because `x <- 2` is "hashed out" R does not evaluate it so `x` is still 1. 
+
+```
+
+### C. `?`
+
+You can use the `?` symbol to get help. Putting `?` in front of a function or a package (we'll discuss those in a second) will open the documentation for the function/package in the `Help` window.
+
+```{r eval=FALSE}
+?mean()
+
+```
+
+### D. `[]`
+
+You should see square brackets in the output. These give you the numerical position of the output.
+
+```{r}
+x <- seq(from = 1, to = 100, by = 0.5)
+x
+```
+
+We will come back to the square brackets when we discuss dataframes because they play a more important role there.

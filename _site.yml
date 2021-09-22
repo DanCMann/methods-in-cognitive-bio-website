@@ -1,9 +1,9 @@
-name: "personal-website"
+name: "methods-in-cog-bio"
 output_dir: "."
 navbar:
-  title: "Personal Website"
+  title: "Methods in Cognitive Biology"
   left:
     - text: "Home"
       href: index.html
-    - text: "About Me"
+    - text: "About"
       href: about.html

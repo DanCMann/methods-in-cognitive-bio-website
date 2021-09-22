@@ -1,0 +1,141 @@
+---
+title: 'IntroR: Objects'
+author: "Dan C. Mann"
+date: "10/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## III. Objects
+
+
+If you've worked in R you've probably received plenty of error messages that are super confusing. 
+Sometimes those error messages occur because your data are stored as the wrong object type. 
+
+Let's look at two ways to store a range of numbers. 
+In R, you can use the function `c()` to concatenate values.
+You can enter the numbers 1 through 10 by using two methods. A colon `:` is used for ranges with the first number being the smallest and the last the largest. You can also enter each value. 
+
+```{r}
+x <- c(1:10)
+y <- c(1,2,3,4,5,6,7,8,9,10)
+x
+y
+```
+
+
+On the surface the objects `x` and `y` look the same. 
+You can check if they are both numeric objects by using the function `is.numeric()`
+```{r}
+is.numeric(x)
+is.numeric(y)
+```
+
+Both are numeric, however when you check if the two are exactly identical, we find that they are not!
+```{r}
+identical(x^2, y^2)
+identical(x + 0.5, y + 0.5)
+identical(x, y)
+```
+
+So what's the deal? Well, the output of `:` is going to be an integer. Manually entering the numbers, however, gives you a floating point number (called a "double")
+```{r}
+typeof(x)
+typeof(y)
+``` 
+
+For the most part, R is actually pretty good at dealing data being in the wrong format. However, it's still not as good as a human and it will make mistakes. 
+
+
+So what are the different data types? 
+
+* 1 dimensional data structure: 
+  + Null
+  + Vectors
+    + List
+    + Atomic Vectors
+      + Logical
+      + Character
+      + Numeric
+        + Double
+        + Integer
+* 2 dimensional data structure
+  + Matrix
+  + Dataframe
+* N dimensional data structure
+  + Array
+
+### A. 1D structures
+The one-dimensional structures are the basic building blocks which can be used to build the derived objects like data frames and matricies. 
+
+####  i. Vectors
+
+This term can be a bit confusing, especially since R is used so much in statistics. The term does not have anything to do with the math term "vector". Rather, in this context it essentially means a sequence of values. Contrast this with an "Null" object which has a length of 0. 
+
+```{r}
+x <- 1
+length(x)
+is.vector(x) ## TMI: is.vector() technically checks if the object is a vector with no attributes other than names. To truly check if an object is a vector use: is.atomic(x) || is.list(x) . For our purposes now, is.vector() will work. 
+
+x <- c(1, 2, 3, 4)
+length(x)
+is.vector(x)
+
+x <- 1:1000
+length(x)
+is.vector(x)
+
+x <- 0 
+length(x) 
+is.vector(x)
+
+x <- NULL
+length(x)
+is.vector(x)
+```
+
+#### ii. Atomic vectors and lists
+
+There are two types of vectors: lists and atomic vectors. The main difference between these two object types is that atomic vectors are sequences of data which are all the same type. Lists can contain multiple types of data.  
+
+There are four types of atomic vectors: logical, integer, double, and character. 
+Logical are either `TRUE` or `FALSE` or `NA`. These are most often used in comparisons.
+Integer and double are both numeric, with the former containing integer data and the latter sequences of real numbers.
+
+```{r}
+logical_vector <- c(TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE)
+is.logical(logical_vector)
+
+character_vector <- c("true", "false", "true", "false", "true")
+is.logical(character_vector)
+is.character(character_vector)
+is.logical(as.logical(character_vector))
+
+```
+
+A list is a sequence of heterogenous data. 
+```{r}
+x <- c("one", 1.2, 1, TRUE, c(1,2,3,4,5), c("hello", "world"))
+x[1]
+
+```
+
+### B. 2D data structures
+
+If you think about an excel data sheet, vectors would be one column of values. The number of rows is variable but you only have one column. Dataframes and matrices, however, are more similar to the excel datasheet in that they have columns as well. Dataframes are like lists in that they can have multiple data types (though each column can only be of one type). Matricies must have homogeneous data. 
+
+```{r}
+
+df <- data.frame(
+  categorical = sample(c("a", "b", "c"), size = 300, replace = T),
+  double = rnorm(300, mean=200, sd=30),
+  integer = floor(rnorm(300, mean = 120, sd = 14)),
+  logical = sample(c(TRUE, FALSE), size = 300, replace = T)
+)
+
+head(df)
+```
+
+

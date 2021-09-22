@@ -1,0 +1,136 @@
+---
+title: "Reading your data into R"
+author: "Dan C. Mann"
+date: "11/04/2020"
+output: 
+        html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+Reading your data into any program seems like it should be simple and straight-forward, however, this is often not the case.  
+
+Luckily there are functions that can do the job for us!  
+
+
+There are numerous functions that you can use to read data into R. The function that you will use most will likely depend on what type of files you have your data stored in. For example, if you import from Excel, SPSS, Stata, etc files you will likely need to install a package which is built to hand the particular formats.   
+
+We will only cover importing from The most common, and straight-forward, are the functions `read.csv()`, `read.csv2()`, and `read.table()`. 
+
+::: {style="border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px"}
+*More information!* `read.table()` is often used for .txt files while `read.csv()` & `read.csv2()` are used with .csv files. Technically, this is not required. Both `read.csv()` and `read.csv2()` are "wrappers" around the `read.table()` function. That is, they use the `read.table()` function but they set defaults for some of the arguments differently. The most important argument setting is `sep`, which is short for "separator". This is the character that the function looks for to divide the values. The default in `read.table()` is white space. Spaces, tabs, and new lines are treated as dividing values. The default `sep` value in `read.csv()` is a comma, ",". This is why `read.csv()` is useful for reading in CSV files, CSV is short for "Comma separated values". `read.csv2()` has a default `sep` of ";" which is useful in countries where a comma "," is used as a decimal point and the semi-colon ";" separates values. 
+
+**For those of you with German language keyboards, pay attention to the `sep` argument and if you have trouble with reading your data into R, try `read.csv2()`.**
+:::
+
+# Reading in Data
+
+Let's start with some simple examples.  
+First, we're going to create some fake data and save the file so we don't have to worry about pathways and working directories. We'll create 100 observations of four variables. We'll make column one a numeric variable and name the column "numerisch". Column two will be integers and we'll title it "ganze_zahlen". The third will be categorical and we'll call it "kategorisch". The fourth will be binary and we'll call it "binaer".
+```{r}
+data1 <- data.frame(
+        numerisch = rnorm(100, mean = 4, sd = 2),
+        ganze_zahlen = 1:100,
+        kategorisch = rep(c("a", "b", "c", "d"), length.out = 100),
+        binaer =rep(c(TRUE, FALSE), length.out = 100)
+)
+                    
+write.csv(data1, file = "data1.csv", row.names = F)
+write.table(data1, file = "data1.txt", row.names = F)
+```
+
+Now lets read the csv file back into R
+```{r}
+data1_csv <- read.csv("data1.csv")
+```
+
+How can we tell if it worked?
+
+First, if you are using R Studio, you will see that there is a new object in your Environment pane. You can directly click on the data in the Environment window and the full data set will open in your Source pane. You can achieve the same result by using the function `View()` and putting the data set name (the variable name in R, not the file name) as the `x = ` argument (e.g., `View(x = data1_csv)`). 
+
+You'll usually have a lot of data and viewing the data in this format is a bit of a sensory overload. The functions `head()` and `str()` are super useful. 
+
+`head()` prints the first 6 rows (observations) of the data frame (by default, you can change the number of rows to show by specifying the `n = ` argument). 
+```{r}
+head(data1_csv)
+```
+
+The column names are above the columns and it looks like the data we were expecting. However, we are expecting four columns but we see five and the first column does have a column name. Why? The very first shows you the index. These are also called the row names. This information can be useful for subsetting your data.  
+
+`str()` prints the structure of the data. Here you can see the number and names of columns (aka variables), the number of observations, and the data type of each column.  
+```{r}
+str(data1_csv)
+```
+In this data set, we just have 100 observations (rows) of 4 variables with their column names. Our categorical variable is a "Factor". This is important and we'll come back to it. 
+
+Now, let's try the .txt file.
+```{r}
+data1_txt <- read.table("data1.txt")
+head(data1_txt)
+```
+
+```{r}
+str(data1_txt)
+```
+
+Why do we have 101 observations and why are all of our variables factors? 
+
+The `read.table()` and `read.csv()` functions have an argument, `header`, that tells R how to interpret the first line in a data file. If your data contains a header you want to make sure that `header = T`. A column can only contain data of a single type. It is easier to make a number into a string than a string into a number, so if R sees any strings in a column it interprets all of the values as strings (or factors). 
+
+We didn't get this problem in `read.csv()` because `header = T` is the default for this function. `header = F` is the default for `read.table()`. 
+
+```{r}
+data1_txt <- read.table("data1.txt", header = T)
+head(data1_txt)
+```
+```{r}
+str(data1_txt)
+```
+
+
+Let's try another tricky example. 
+```{r}
+data2 <- data.frame(good_dogs = c("Rex", "Lassie", "Petey", "Sergeant Stubby", "Laika"),
+                    age = c(2, 5, 3, 9, 3))
+                    
+write.csv(data2, file = "data2.csv", row.names = F)
+
+data2_csv <-read.csv("data2.csv", header = T)
+```
+
+What happens if you try to add an observation? 
+
+```{r}
+new_row <- c("Lady", 6)
+
+rbind(data2_csv, new_row)
+```
+
+The problem here is that, by default, R often treats strings as "factors". Factors store categorical values as integers which can be useful for efficient memory storage. When a data frame is created all of the possible factor values are assigned so you cannot easily add a new categorical value (like you can with numerical values).
+
+To overcome this, you can set the argument `stringsAsFactors` to `F` (or `FALSE`). In old versions of R, the default was `stringsAsFactors = TRUE`, but it seems as though the default has changed in newer versions.
+
+
+```{r}
+data2_csv <-read.csv("data2.csv", header = T, stringsAsFactors = F)
+new_row <- c("Lady", 6)
+
+rbind(data2_csv, new_row)
+```
+
+Be aware, however, when we start creating some statistical models, we may need categorical variables to be represented as factors. It's a good idea to make the argument explicit and set it as `TRUE` OR `FALSE` depending on how you are using the data. 
+
+You can also change the data type later, but it's easier if you know how you want it represented beforehand. 
+
+To change a factor to a string of characters, you can use the function `as.character()`.
+
+```{r}
+data2_csv$good_dogs <- as.character(data2_csv$good_dogs)
+```
+
+Changing data types in a data frame is also pretty straight-forward in the package `dplyr` which we'll cover in another lesson. 
+

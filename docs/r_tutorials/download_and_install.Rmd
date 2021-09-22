@@ -1,0 +1,28 @@
+---
+title: "Downloading and installing R"
+author: "Dan C. Mann"
+date: "10/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# R
+
+[R](https://cran.r-project.org) is a free software environment and a language. R is commonly used for statistics, data handling and analysis, and visualization. You can download R from The Comprehensive R Archive Network: <https://cran.r-project.org>
+
+# R Studio
+
+[R Studio](https://rstudio.com/products/rstudio/download/) is an "integrated development environment", or IDE, for R. This is a fancy way to say "software that has tools to help you use R". R Studio is not required for this course, but if you are unfamiliar with R it will likely make your life easier. As of October 13, 2020 , the version of R studio is 1.3.1093 and you can download it from here: <https://rstudio.com/products/rstudio/download/>
+
+# Step by step installation tutorials
+
+Here are some helpful tutorials if you have trouble
+
+For R and R studio: [TechVidan](https://techvidvan.com/tutorials/install-r/)
+
+For R Studio: [Hands-On Programming with R](https://rstudio-education.github.io/hopr/starting.html) by Garrett Grolemund.
+
+If you get stuck and aren't able to install R or R Studio, get help from your peers by posting your problems in this week's [Forum](https://moodle.univie.ac.at/mod/forum/view.php?id=6129181) or contact me (Dan) directly.
