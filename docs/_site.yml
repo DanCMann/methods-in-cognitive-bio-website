@@ -6,7 +6,7 @@ navbar:
     - text: "Home"
       href: index.html
     - text: "About"
-      href: docs/about.html
+      href: about.html
     - text: "R tutorials"
       icon: "fab fa-r-project"
       menu:

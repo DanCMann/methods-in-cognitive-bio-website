@@ -4,13 +4,13 @@ title: "Methods in Cognitive Biology"
 
 # R Tutorials
 
-- [How to download and install R and R Studio](docs/r_tutorials/download_and_install.html)
-- [The R prompt](docs/r_tutorials/prompt.html)
-- [R actions](docs/r_tutorials/actions.html)
-- [R objects](docs/r_tutorials/objects.html)
-- [Reading data into R](docs/r_tutorials/reading_data_into_R.html)
-- [Data wrangling](docs/r_tutorials/data_wrangling_dplyr.html)
-- [Data visualization](docs/r_tutorials/data_viz_ggplot.html)
+- [How to download and install R and R Studio](download_and_install.html)
+- [The R prompt](prompt.html)
+- [R actions](actions.html)
+- [R objects](objects.html)
+- [Reading data into R](reading_data_into_R.html)
+- [Data wrangling](data_wrangling_dplyr.html)
+- [Data visualization](data_viz_ggplot.html)
 
 # Stats Tutorials
 - [Introduction to statistics](stats_tutorials/stats_intro.html)

@@ -1,13 +1,6 @@
 ---
 title: "Data wrangling and dplyr"
-author: "Dan C. Mann"
-date: "2020/11/05"
-output: html_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 
 # Tidy data
@@ -297,3 +290,7 @@ starwars %>%
 As with all of these, remember that if you don't assign the output to a variable whatever you do won't be stored. 
 
 There is a lot more you can do with `dplyr`, so I would recommend checking out the documentation. The book [*R for Data Science* by Garrett Grolemund and Hadley Wickham](https://r4ds.had.co.nz/transform.html) has a chapter with a lot of useful information. 
+
+
+```{r, child="_session-info.Rmd"}
+```

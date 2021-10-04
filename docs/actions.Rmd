@@ -1,13 +1,7 @@
 ---
 title: 'IntroR: Actions'
-author: "Dan C. Mann"
-date: "10/14/2020"
-output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 ## II. Actions
 
@@ -265,4 +259,8 @@ In this class, we will learn to use two packages: "dplyr" and "ggplot2"
 install.packages("dplyr") # must have quotes around the package name
 library(dplyr) # quotes are optional
 
+```
+
+
+```{r, child="_session-info.Rmd"}
 ```

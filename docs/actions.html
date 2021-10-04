@@ -9,9 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Dan C. Mann" />
 
-<meta name="date" content="2020-10-14" />
 
 <title>IntroR: Actions</title>
 
@@ -311,8 +309,6 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">IntroR: Actions</h1>
-<h4 class="author">Dan C. Mann</h4>
-<h4 class="date">10/14/2020</h4>
 
 </div>
 
@@ -507,8 +503,8 @@ anova(linear_model)</code></pre>
 ## 
 ## Response: scores
 ##            Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
-## group       1  6480.1  6480.1  94.062 &lt; 2.2e-16 ***
-## Residuals 198 13640.6    68.9                      
+## group       1  6647.2  6647.2   104.4 &lt; 2.2e-16 ***
+## Residuals 198 12607.1    63.7                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>summary(linear_model)</code></pre>
@@ -518,24 +514,56 @@ anova(linear_model)</code></pre>
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
-## -20.8889  -4.6779   0.1496   5.1210  20.7466 
+## -25.0848  -4.4898  -0.0264   4.4022  22.5967 
 ## 
 ## Coefficients:
 ##                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)      74.651      0.830  89.940   &lt;2e-16 ***
-## grouptreatment   11.384      1.174   9.699   &lt;2e-16 ***
+## (Intercept)     73.6864     0.7979   92.34   &lt;2e-16 ***
+## grouptreatment  11.5302     1.1285   10.22   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 8.3 on 198 degrees of freedom
-## Multiple R-squared:  0.3221, Adjusted R-squared:  0.3186 
-## F-statistic: 94.06 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
+## Residual standard error: 7.979 on 198 degrees of freedom
+## Multiple R-squared:  0.3452, Adjusted R-squared:  0.3419 
+## F-statistic: 104.4 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Other functions perform actions that are essential to working in R, but won’t (necessarily) produce an object that you can use. For example, you can get your working directory by using the function <code>getwd()</code>. You can change your working directory by using <code>setwd()</code>. <code>list.files()</code> will produce a list of all of the files in your working directory.</p>
 <p>Two of the most useful functions that you will use are <code>install.packages()</code> and <code>library()</code>. Packages are like “add-ons” to R. A package contains R functions, example data, and helpful documentation. If you find yourself thinking “I wonder if there is a way to do this” the answer is most likely “yes and there is a package that does it”. You can find all of the R approved packages at <a href="https://cran.r-project.org" class="uri">https://cran.r-project.org</a>. Packages that are on this website are very easy to download and start using. Simply use the <code>install.packages()</code> function and put the name of the package as an argument: <code>install.packages("package Name")</code></p>
 <p>The packages you download are stored in your R library. The function <code>library()</code> produces a list of all the packages currently installed. To use a package you have to load it first. To load a package put the package name as an argument into the <code>library()</code> function: <code>library("package Name")</code>. If you don’t know the path to your library, you can use <code>.libPaths()</code></p>
 <p>In this class, we will learn to use two packages: “dplyr” and “ggplot2”</p>
 <pre class="r"><code>install.packages(&quot;dplyr&quot;) # must have quotes around the package name
 library(dplyr) # quotes are optional</code></pre>
+<p>================================================================================</p>
+</div>
+<div id="session-information" class="section level4">
+<h4>Session information:</h4>
+<p>Last update on 2021-10-04</p>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.1.1 (2021-08-10)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 20.04.3 LTS
+## 
+## Matrix products: default
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=de_AT.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=de_AT.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=de_AT.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=de_AT.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## loaded via a namespace (and not attached):
+##  [1] digest_0.6.27     R6_2.5.1          jsonlite_1.7.2    magrittr_2.0.1   
+##  [5] evaluate_0.14     rlang_0.4.11      stringi_1.7.3     jquerylib_0.1.4  
+##  [9] bslib_0.2.5.1     rmarkdown_2.9     tools_4.1.1       stringr_1.4.0    
+## [13] xfun_0.25         yaml_2.2.1        compiler_4.1.1    htmltools_0.5.1.1
+## [17] knitr_1.33        sass_0.4.0</code></pre>
+<p>================================================================================</p>
 </div>
 </div>
 </div>

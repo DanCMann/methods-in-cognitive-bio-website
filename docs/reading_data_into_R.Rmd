@@ -1,14 +1,7 @@
 ---
 title: "Reading your data into R"
-author: "Dan C. Mann"
-date: "11/04/2020"
-output: 
-        html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 # Introduction
 
@@ -134,3 +127,5 @@ data2_csv$good_dogs <- as.character(data2_csv$good_dogs)
 
 Changing data types in a data frame is also pretty straight-forward in the package `dplyr` which we'll cover in another lesson. 
 
+```{r, child="_session-info.Rmd"}
+```

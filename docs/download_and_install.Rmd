@@ -1,13 +1,6 @@
 ---
 title: "Downloading and installing R"
-author: "Dan C. Mann"
-date: "10/14/2020"
-output: html_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 # R
 
@@ -26,3 +19,7 @@ For R and R studio: [TechVidan](https://techvidvan.com/tutorials/install-r/)
 For R Studio: [Hands-On Programming with R](https://rstudio-education.github.io/hopr/starting.html) by Garrett Grolemund.
 
 If you get stuck and aren't able to install R or R Studio, get help from your peers by posting your problems in this week's [Forum](https://moodle.univie.ac.at/mod/forum/view.php?id=6129181) or contact me (Dan) directly.
+
+
+```{r, child="_session-info.Rmd"}
+```

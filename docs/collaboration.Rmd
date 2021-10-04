@@ -1,13 +1,7 @@
 ---
 title: "Sharing your work"
-author: "Dan C. Mann"
-date: "2021/01/09"
-output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 # Collaboration and reproducible reserach
 
@@ -225,6 +219,5 @@ Websites for Stats:
 - **Introduction to Statistics using R** by Tom Booth, Anastasia Ushakova, & Milan Valasek: [https://bookdown.org/animestina/intro_stats_rms/](https://bookdown.org/animestina/intro_stats_rms/)
 
 
-
-
------
+```{r, child="_session-info.Rmd"}
+```
