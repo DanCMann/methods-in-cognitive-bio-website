@@ -2,7 +2,9 @@
 title: 'IntroR: The Prompt'
 author: "Dan C. Mann"
 date: "10/14/2020"
-output: html_document
+output: 
+  html_document:
+    css: "style.css"
 ---
 
 ```{r setup, include=FALSE}
@@ -87,3 +89,6 @@ x
 ```
 
 We will come back to the square brackets when we discuss dataframes because they play a more important role there.
+
+```{r, child="../../_session-info.Rmd"}
+```

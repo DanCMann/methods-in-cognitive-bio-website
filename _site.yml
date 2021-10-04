@@ -7,3 +7,18 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
+    - text: "R tutorials"
+      icon: fa-r-project
+      menu:
+        - text: "How to download and install R and R Studio"
+          href: docs/r_tutorials/download_and_install.html
+    - text: "Stats tutorials"
+      menu: 
+        - text: "Introduction to statistics"
+          href: stats_tutorials/stats_intro.html
+
+output:
+  html_document:
+    include:
+      after_body: footer.html
+    css: styles.css
