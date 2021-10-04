@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Dan C. Mann" />
+
+
+<title>Sharing your work</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Methods in Cognitive Biology</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="docs/about.html">About</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fab fa-r-project"></span>
+     
+    R tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="download_and_install.html">How to download and install R and R Studio</a>
+    </li>
+    <li>
+      <a href="prompt.html">The R prompt</a>
+    </li>
+    <li>
+      <a href="actions.html">R actions</a>
+    </li>
+    <li>
+      <a href="objects.html">R objects</a>
+    </li>
+    <li>
+      <a href="reading_data_into_R.html">Reading data into R</a>
+    </li>
+    <li>
+      <a href="data_wrangling_dplyr.html">Data wrangling</a>
+    </li>
+    <li>
+      <a href="data_viz_ggplot.html">Data visualization</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fas fa-chart-area"></span>
+     
+    Stats tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="stats_tutorials/stats_intro.html">Introduction to statistics</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Sharing your work</h1>
+<h4 class="author">Dan C. Mann</h4>
+<h4 class="date">2021/01/09</h4>
+
+</div>
+
+
+<div id="collaboration-and-reproducible-reserach" class="section level1">
+<h1>Collaboration and reproducible reserach</h1>
+<p>In science, you will rarely work alone on a project (at least you shouldn’t). This is true whether you are an early career scientist or a senior researcher. Ideally, your collaborators will be present at every stage of project; this includes the data analysis stage. However, it’s often difficult to share what you are working on. A script is easy enough to share, but what good does it do without data? How can you get instructions that you wrote for your computer to work on someone else’s?</p>
+<div id="making-your-project-reproducible" class="section level2">
+<h2>Making your project reproducible</h2>
+<div id="r-projects" class="section level3">
+<h3>R projects</h3>
+<p>Since we’ve already covered this, I won’t discuss this topic so much.</p>
+<p>A few key reminders:</p>
+<ul>
+<li>The .Rproj file can serve as a shortcut to opening the project into R Studio</li>
+<li>R projects can help you organize the project structure (they’re not necessary to do this, though)</li>
+<li>R projects store settings - do you want to save your environment when closing? - do you want to start a session with a clean environment?</li>
+<li>Relative, not absolute, paths!!!</li>
+</ul>
+</div>
+<div id="set.seed" class="section level3">
+<h3><code>set.seed()</code></h3>
+<p>In short, the <code>set.seed()</code> function makes your code reproducible. So, if you include a seed in your code, any random process will produce the same output every time you run your script. And it should produce the same output on other computers, as well.</p>
+<p>You should include <code>set.seed()</code> if your script includes any random processes. What are some examples of random processes?</p>
+<ul>
+<li><code>rnorm()</code>, <code>runif()</code>, <code>rpois()</code>, etc.</li>
+<li><code>sample()</code></li>
+<li><code>subset()</code></li>
+</ul>
+<p>If you are unsure whether you should include <code>set.seed()</code> in your script, include it.</p>
+<div style="background: AliceBlue; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p><strong>TMI</strong>: Randomness is a tricky concept. True randomness is difficult to find. Most things that we think of as random are actually “pseudo-random”, i.e., fake random. In reality, these processes are “deterministic” - which means that they will produce the same result if given the same input. We think of them as random because we lack knowledge about the inputs.</p>
+<p>Computers are definitely deterministic. So, how do we get a deterministic machine to produce randomness? Well, we don’t. We get it to produce pseudo-randomness. They use complex algorithms to produce outputs that seem to be random. In reality, they are completely deterministic. The “seed” serves as the starting point.</p>
+</div>
+</div>
+<div id="commenting-your-code" class="section level3">
+<h3>Commenting your code</h3>
+<p>Comments are lines of code that are not evaluated by the computer but can be read by humans. You can use them to leave notes or explanations for anyone who reads your code (including future you). When you should write a comment is not an exact science (and some programmers don’t like them unless absolutely necessary). Essentially, you should leave a comment anytime you think something might be confusing or unclear. Ideally, they should be clear and concise - but this is a bit of a <a href="https://www.reddit.com/r/funny/comments/eccj2/how_to_draw_an_owl/">drawing the owl</a> recommendation. Commenting probably won’t be intuitive early on, but at this stage I would lean towards over-commenting rather than under-commenting (just don’t comment every line :) )</p>
+<p>In R, the computer doesn’t evaluate anything on a line that comes after the <code>#</code> symbol.</p>
+</div>
+</div>
+<div id="saving-your-workspace" class="section level2">
+<h2>Saving your workspace</h2>
+<p>It is possible to save the objects that you create in your environment by using the function <code>save.image()</code>. Use the extension .RData in your file name and then you can easily reload your objects. You can set up R Studio to always save your workspace when it closes and then load the workspace/environment when you open the project (or even just R Studio).</p>
+<pre class="r"><code>x &lt;- &#39;some_variable&#39;
+variable_in_workspace &lt;- 6
+
+ls()</code></pre>
+<pre><code>##  [1] &quot;casematters&quot;                                                                 
+##  [2] &quot;CaseMatters&quot;                                                                 
+##  [3] &quot;celcius_to_fahrenheit&quot;                                                       
+##  [4] &quot;character_variable&quot;                                                          
+##  [5] &quot;control_group_scores&quot;                                                        
+##  [6] &quot;elbairav&quot;                                                                    
+##  [7] &quot;fahrenheit_to_celcius&quot;                                                       
+##  [8] &quot;group&quot;                                                                       
+##  [9] &quot;integer.variable&quot;                                                            
+## [10] &quot;linear_model&quot;                                                                
+## [11] &quot;mean_of_x&quot;                                                                   
+## [12] &quot;numeric_variable&quot;                                                            
+## [13] &quot;scores&quot;                                                                      
+## [14] &quot;temp_converter&quot;                                                              
+## [15] &quot;treatment_group_scores&quot;                                                      
+## [16] &quot;v&quot;                                                                           
+## [17] &quot;variable&quot;                                                                    
+## [18] &quot;VARIABLE&quot;                                                                    
+## [19] &quot;variable_in_workspace&quot;                                                       
+## [20] &quot;variable_name&quot;                                                               
+## [21] &quot;variable.name&quot;                                                               
+## [22] &quot;variable1&quot;                                                                   
+## [23] &quot;variable2&quot;                                                                   
+## [24] &quot;variablevariable&quot;                                                            
+## [25] &quot;why_is_hello_world_the_phrase_that_is_always_in_intro_to_programming_lessons&quot;
+## [26] &quot;wordVariable&quot;                                                                
+## [27] &quot;x&quot;                                                                           
+## [28] &quot;y&quot;                                                                           
+## [29] &quot;z&quot;</code></pre>
+<pre class="r"><code>save.image(file = &#39;workspace.RData&#39;)
+rm(list=ls()) # remove all objects</code></pre>
+<pre class="r"><code>ls()</code></pre>
+<pre><code>## character(0)</code></pre>
+<pre class="r"><code>load(&quot;workspace.RData&quot;)
+ls()</code></pre>
+<pre><code>##  [1] &quot;casematters&quot;                                                                 
+##  [2] &quot;CaseMatters&quot;                                                                 
+##  [3] &quot;celcius_to_fahrenheit&quot;                                                       
+##  [4] &quot;character_variable&quot;                                                          
+##  [5] &quot;control_group_scores&quot;                                                        
+##  [6] &quot;elbairav&quot;                                                                    
+##  [7] &quot;fahrenheit_to_celcius&quot;                                                       
+##  [8] &quot;group&quot;                                                                       
+##  [9] &quot;integer.variable&quot;                                                            
+## [10] &quot;linear_model&quot;                                                                
+## [11] &quot;mean_of_x&quot;                                                                   
+## [12] &quot;numeric_variable&quot;                                                            
+## [13] &quot;scores&quot;                                                                      
+## [14] &quot;temp_converter&quot;                                                              
+## [15] &quot;treatment_group_scores&quot;                                                      
+## [16] &quot;v&quot;                                                                           
+## [17] &quot;variable&quot;                                                                    
+## [18] &quot;VARIABLE&quot;                                                                    
+## [19] &quot;variable_in_workspace&quot;                                                       
+## [20] &quot;variable_name&quot;                                                               
+## [21] &quot;variable.name&quot;                                                               
+## [22] &quot;variable1&quot;                                                                   
+## [23] &quot;variable2&quot;                                                                   
+## [24] &quot;variablevariable&quot;                                                            
+## [25] &quot;why_is_hello_world_the_phrase_that_is_always_in_intro_to_programming_lessons&quot;
+## [26] &quot;wordVariable&quot;                                                                
+## [27] &quot;x&quot;                                                                           
+## [28] &quot;y&quot;                                                                           
+## [29] &quot;z&quot;</code></pre>
+<p><em>NOTE</em>: I would recommend against saving your workspace unless you have a clear purpose for doing so. Early on in your R career you are likely to create a lot of objects that are not what you want or expect. People often don’t clean their environment and then save the workspace leading to messy environments that take up a ton of storage space. Also, a lot of early R users rely too much on previously created objects, oftentimes at the expense of scripts. If you don’t write everything in a script you can run into the problem of having an object where you have no idea how you created it. Maybe you can go back through your .Rhistory log, but this is tedious and time consuming.</p>
+<p>Even if you do write your code in a script, you will always make changes. Let’s say you decide to delete a line of code that creates an objects that you now realize is superfluous. If you save everything in a script and don’t save the workspace, then you don’t have to worry about that object ever again. If, however, you save and load the workspace every session, the object is still there. Maybe this isn’t a big deal and only has the effect of taking up a small amount of memory space. BUT you run the risk of getting weird errors that are hard to track down.</p>
+<p>For example, let’s say that you accidentally use that variable name somewhere in the script. Small typos happen like this all the time. If that object is still in your workspace, R will use it. If you are lucky, something weird will happen that makes you go back through your code. If you are not lucky, you may end up never catching the mistake and producing false results.</p>
+<pre class="r"><code>## line of code in previous version of script
+pop_usa &lt;- c(4, 3, 4, 2, 3, 1)</code></pre>
+<p>Workspace loaded on start up. Object <code>pop_usa</code> is still in environment. During your R career, you will make typos and you will use the wrong variable names.</p>
+<pre class="r"><code>pop_aus &lt;- c(8, 7, 9, 3, 5, 8)
+
+## typo using old variable name
+mean_aus &lt;- mean(pop_usa)
+mean_aus</code></pre>
+<pre><code>## [1] 2.833333</code></pre>
+<p>But, if the variable doesn’t exist, R will help you out and throw you an error message. That’s a pretty easy mistake to track down and correct.</p>
+<p>Clean workspace</p>
+<pre class="r"><code>rm(pop_usa, mean_aus, pop_aus)</code></pre>
+<pre class="r"><code>pop_aus &lt;- c(8, 7, 9, 3, 5, 8)
+
+## typo using old variable name
+mean_aus &lt;- mean(pop_usa)</code></pre>
+<pre><code>## Error in mean(pop_usa): object &#39;pop_usa&#39; not found</code></pre>
+<pre class="r"><code>mean_aus</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;mean_aus&#39; not found</code></pre>
+<p>You never like to see an error message, but it’s preferable to having an error and not seeing one.</p>
+<p>Furthermore, it’s entirely possible that you may reuse the variable name. If everything goes according to plan then, great! But what if your new line of code doesn’t work?</p>
+<pre class="r"><code>## line of code in previous version of script
+pop_usa &lt;- c(4, 3, 4, 2, 3, 1)</code></pre>
+<p>Workspace loaded on start up. Object <code>pop_usa</code> is still in environment.</p>
+<pre class="r"><code>## reusing variable name with typo
+pop_usa &lt;- c(4, 3, 4, 2, , 4)</code></pre>
+<pre><code>## Error in c(4, 3, 4, 2, , 4): argument 5 is empty</code></pre>
+<pre class="r"><code>mean(pop_usa)</code></pre>
+<pre><code>## [1] 2.833333</code></pre>
+<p>Because there was an error, the previous data was not overridden in the <code>pop_usa</code> object. Because we only have a few lines of code, it’s clear that there is an error. But most scripts will be much longer and complex. With multiple warnings and messages it’s easy to overlook the important error message. If the object doesn’t exist, however, the script will fail allowing you to more easily diagnose the problem.</p>
+<p>When should you save your workspace?</p>
+<p>The clearest case is when you have a process that takes a lot of time. For example, some complex models may take days to run. You definitely don’t want to re-run the model. So, there is a benefit to saving.</p>
+<p>It’s also useful once you’ve completed a project or completed an important stage of the project. So, maybe you have a script that processes raw data into a well-organized data frame or data frames. In next step you will analyze the data but re-running the data processing part every time you open the project is a bit annoying. Essentially, you want to save the output of code that you don’t plan on modifying again. Of course, this doesn’t mean that you can’t modify it at some point (and more than likely, you will still have modify the code at some point), but you should think of it as a clear and well-defined stage in the project process rather than something habitual. This means that you should include the <code>save.image()</code> and <code>load()</code> functions as part of the script.</p>
+<p>You can also save the workspace to make collaborating or getting feedback easier. If you have a question about a component of your project, it may be easier to include an .RData file that has your workspace and then the small bit of code that you are interested in.</p>
+</div>
+<div id="sharing-with-collaborators" class="section level2">
+<h2>Sharing with collaborators</h2>
+<p>So, that brings us to the crucial question. How do you share your R projects, R scripts, data, etc with collaborators?</p>
+<div id="email" class="section level3">
+<h3>Email</h3>
+<p>The easiest way is via email. If you are using an R project, find the folder where the .Rproj file is saved. Even if you aren’t using an R project, you should have a project folder with some organizational structure. Compress the main folder into a zip file. Both Windows and Macs allow you to compress folders by right clicking and selecting the compress option (for Windows 10 it’s Right click &gt; Send to &gt; Compressed (zipped) folder, on a Mac it’s Right click &gt; Compress).</p>
+<div class="figure">
+<img src="../../img/zipping_img.PNG" alt="" />
+<p class="caption"><em>Zipping a file in Windows 10.</em></p>
+</div>
+<p>Zipping will maintain the structure of your project folder. Your collaborator can then unzip the files and have access to your project code and data by opening the .Rproj file in R Studio. If they don’t use R Studio they will still have access to your scripts, data, and saved workspaces.</p>
+</div>
+<div id="file-storage" class="section level3">
+<h3>File storage</h3>
+<p>ucloud, Dropbox, Microsoft OneDrive, Google Drive, etc. allow you save and share your project documents.</p>
+</div>
+<div id="version-control" class="section level3">
+<h3>Version control</h3>
+<p>File hosting and sending links are helpful, but if multiple people are actively working on a project, you may run into file conflicts. You also often grow a large number of past version.</p>
+<div class="figure">
+<img src="../../img/phd101212s.gif" alt="" />
+<p class="caption"><em>notFinal.doc from the web comic phdcomics</em></p>
+</div>
+<p>Programs like Git and hosting platforms like Github can streamline collaborative work and help researchers document project changes. We don’t have enough time to go into great detail, but I’ll introduce you to the core concepts.</p>
+<div id="git" class="section level4">
+<h4>Git</h4>
+<p><a href="https://git-scm.com">Git</a> is a version control system. A version control system tracks changes of a project across time. With Git you can always return to a previous version of the project so if something goes wrong, you can always return to a stable version. For collaborative research this is extremely helpful because it allows researchers to log changes to a project while maintaining clear organizational structure. Git also helps researchers work independently and test their ideas without disturbing the main documents in the project. Git keeps a log of changes to a project, who made changes, and when the changes were made. So, researchers can work simultaneously while minimizing redundancy.</p>
+<div class="figure">
+<img src="../../img/git.jpg" alt="" />
+<p class="caption"><em>Git branching. Image from Puia Zahedi</em></p>
+</div>
+<p>Git allows you to log changes by using <strong>commits</strong>. You can test ideas and make changes to the project just like normal, but they won’t become part of the project until you commit the changes (new files, modified files, deletions, etc). You can also create a <strong>branch</strong>. A branch creates a copy of the project at that time (almost like a parallel universe branch off). You can then work on that side branch without disturbing the main branch. If you decide to keep what you were working on, then you can <strong>merge</strong> the side branch and the main branch together. You can do all of this, even on a project that doesn’t have collaborators. In fact, Git deal with a project locally (on your computer). In order to work collaboratively with Git, you need someway to share your files.</p>
+</div>
+<div id="github" class="section level4">
+<h4>Github</h4>
+<p><a href="https://github.com">Github</a> is file hosting site that is built to work with Git. You can download projects, modify them on your computer, and request that the repository (the project) owner accept your changes.</p>
+</div>
+</div>
+</div>
+<div id="r-markdown" class="section level2">
+<h2>R Markdown</h2>
+<p>R Markdown is a document format that allows you to combine code, the output of the code, and text. You can use R Markdown to create notebooks which allow you to run code. You can also compile the R Markdown document into a html, word, or pdf file so that you can show your code and code output, mathematical formulas, and text all in one place (without having to copy and paste).</p>
+<p>You can use R Markdown files to create a report for your collaborators, adviser, or lab that demonstrates each step in your analysis, the code you used, and your results.</p>
+<p>You can also use it as a notebook for yourself. An R script only has code and your comments. In the learning process you might want to try some functions and document what they do or how they behave under certain condition. You can put comments into an R script, but an R markdown file allows you to actually see the output of the code.</p>
+<p>If you are using R studio, you already have R Markdown installed. To create an R Markdown file go to: <code>File &gt; New File &gt; R Markdown...</code>. A dialog box will open where you can select your output format.</p>
+</div>
+<div id="asking-questions" class="section level2">
+<h2>Asking questions</h2>
+<p>You can always ask questions on forums like <a href="https://stackoverflow.com">Stack Overflow</a> and <a href="https://stats.stackexchange.com">Cross Validated</a>. Both are part of the <a href="https://stackexchange.com">Stack Exchange</a> network. These are open communities where users can ask and answer questions related to coding (Stack Overflow) or statistics (Cross Validated). Some members can be… um… a bit prickly, but if you adhere to the community guidelines you will be fine. For the most part, you will likely not even need to ask a question because it’s likely already been asked and answered. In fact, one reason that people get upset on these sites is if someone asks a question that has already been answered. If you do ask a question, make sure that you give the community enough information to be able to reproduce your problem. This is known as a <strong>minimal reproducible example (MRE)</strong>. An MRE includes:</p>
+<ul>
+<li>data, preferably a small subset, that can be used to reproduce the error</li>
+<li>script or bit of code that’s giving your problems</li>
+<li>information on the R version, any packages used, the operating system (mac, windows 10, etc.) + you can easily get this information by using the function <code>sessionInfo()</code></li>
+<li>value used in in set.seed() (if any)</li>
+</ul>
+<p>Websites for R:</p>
+<ul>
+<li>R-bloggers: <a href="https://www.r-bloggers.com">https://www.r-bloggers.com</a></li>
+<li>Cookbook for R: <a href="http://www.cookbook-r.com">http://www.cookbook-r.com</a></li>
+<li>Quick-R: <a href="https://www.statmethods.net">https://www.statmethods.net</a></li>
+<li><strong>R for Data Science</strong> by Hadley Wickham &amp; Garret Grolemund: <a href="https://r4ds.had.co.nz">https://r4ds.had.co.nz</a></li>
+<li><strong>Advanced R</strong> by Hadley Wickham: <a href="https://adv-r.hadley.nz">https://adv-r.hadley.nz</a></li>
+</ul>
+<p>Websites for Stats:</p>
+<ul>
+<li><strong>Applied Statistics with R</strong> by David Dalpiaz: <a href="https://daviddalpiaz.github.io/appliedstats/">https://daviddalpiaz.github.io/appliedstats/</a></li>
+<li>Visualizing Statistics, University of British Columbia: <a href="https://www.zoology.ubc.ca/~whitlock/Kingfisher/KFhomepage.htm">https://www.zoology.ubc.ca/~whitlock/Kingfisher/KFhomepage.htm</a></li>
+<li><strong>Introduction to Statistics using R</strong> by Tom Booth, Anastasia Ushakova, &amp; Milan Valasek: <a href="https://bookdown.org/animestina/intro_stats_rms/">https://bookdown.org/animestina/intro_stats_rms/</a></li>
+</ul>
+<hr />
+</div>
+</div>
+
+<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+  
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

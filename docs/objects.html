@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Dan C. Mann" />
+
+<meta name="date" content="2020-10-14" />
+
+<title>IntroR: Objects</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Methods in Cognitive Biology</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="docs/about.html">About</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fab fa-r-project"></span>
+     
+    R tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="download_and_install.html">How to download and install R and R Studio</a>
+    </li>
+    <li>
+      <a href="prompt.html">The R prompt</a>
+    </li>
+    <li>
+      <a href="actions.html">R actions</a>
+    </li>
+    <li>
+      <a href="objects.html">R objects</a>
+    </li>
+    <li>
+      <a href="reading_data_into_R.html">Reading data into R</a>
+    </li>
+    <li>
+      <a href="data_wrangling_dplyr.html">Data wrangling</a>
+    </li>
+    <li>
+      <a href="data_viz_ggplot.html">Data visualization</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fas fa-chart-area"></span>
+     
+    Stats tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="stats_tutorials/stats_intro.html">Introduction to statistics</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">IntroR: Objects</h1>
+<h4 class="author">Dan C. Mann</h4>
+<h4 class="date">10/14/2020</h4>
+
+</div>
+
+
+<div id="iii.-objects" class="section level2">
+<h2>III. Objects</h2>
+<p>If you’ve worked in R you’ve probably received plenty of error messages that are super confusing. Sometimes those error messages occur because your data are stored as the wrong object type.</p>
+<p>Let’s look at two ways to store a range of numbers. In R, you can use the function <code>c()</code> to concatenate values. You can enter the numbers 1 through 10 by using two methods. A colon <code>:</code> is used for ranges with the first number being the smallest and the last the largest. You can also enter each value.</p>
+<pre class="r"><code>x &lt;- c(1:10)
+y &lt;- c(1,2,3,4,5,6,7,8,9,10)
+x</code></pre>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>y</code></pre>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<p>On the surface the objects <code>x</code> and <code>y</code> look the same. You can check if they are both numeric objects by using the function <code>is.numeric()</code></p>
+<pre class="r"><code>is.numeric(x)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>is.numeric(y)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>Both are numeric, however when you check if the two are exactly identical, we find that they are not!</p>
+<pre class="r"><code>identical(x^2, y^2)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>identical(x + 0.5, y + 0.5)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>identical(x, y)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>So what’s the deal? Well, the output of <code>:</code> is going to be an integer. Manually entering the numbers, however, gives you a floating point number (called a “double”)</p>
+<pre class="r"><code>typeof(x)</code></pre>
+<pre><code>## [1] &quot;integer&quot;</code></pre>
+<pre class="r"><code>typeof(y)</code></pre>
+<pre><code>## [1] &quot;double&quot;</code></pre>
+<p>For the most part, R is actually pretty good at dealing data being in the wrong format. However, it’s still not as good as a human and it will make mistakes.</p>
+<p>So what are the different data types?</p>
+<ul>
+<li>1 dimensional data structure:
+<ul>
+<li>Null</li>
+<li>Vectors
+<ul>
+<li>List</li>
+<li>Atomic Vectors
+<ul>
+<li>Logical</li>
+<li>Character</li>
+<li>Numeric
+<ul>
+<li>Double</li>
+<li>Integer</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>2 dimensional data structure
+<ul>
+<li>Matrix</li>
+<li>Dataframe</li>
+</ul></li>
+<li>N dimensional data structure
+<ul>
+<li>Array</li>
+</ul></li>
+</ul>
+<div id="a.-1d-structures" class="section level3">
+<h3>A. 1D structures</h3>
+<p>The one-dimensional structures are the basic building blocks which can be used to build the derived objects like data frames and matricies.</p>
+<div id="i.-vectors" class="section level4">
+<h4>i. Vectors</h4>
+<p>This term can be a bit confusing, especially since R is used so much in statistics. The term does not have anything to do with the math term “vector”. Rather, in this context it essentially means a sequence of values. Contrast this with an “Null” object which has a length of 0.</p>
+<pre class="r"><code>x &lt;- 1
+length(x)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>is.vector(x) ## TMI: is.vector() technically checks if the object is a vector with no attributes other than names. To truly check if an object is a vector use: is.atomic(x) || is.list(x) . For our purposes now, is.vector() will work. </code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>x &lt;- c(1, 2, 3, 4)
+length(x)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>is.vector(x)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>x &lt;- 1:1000
+length(x)</code></pre>
+<pre><code>## [1] 1000</code></pre>
+<pre class="r"><code>is.vector(x)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>x &lt;- 0 
+length(x) </code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>is.vector(x)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>x &lt;- NULL
+length(x)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>is.vector(x)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+</div>
+<div id="ii.-atomic-vectors-and-lists" class="section level4">
+<h4>ii. Atomic vectors and lists</h4>
+<p>There are two types of vectors: lists and atomic vectors. The main difference between these two object types is that atomic vectors are sequences of data which are all the same type. Lists can contain multiple types of data.</p>
+<p>There are four types of atomic vectors: logical, integer, double, and character. Logical are either <code>TRUE</code> or <code>FALSE</code> or <code>NA</code>. These are most often used in comparisons. Integer and double are both numeric, with the former containing integer data and the latter sequences of real numbers.</p>
+<pre class="r"><code>logical_vector &lt;- c(TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE)
+is.logical(logical_vector)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>character_vector &lt;- c(&quot;true&quot;, &quot;false&quot;, &quot;true&quot;, &quot;false&quot;, &quot;true&quot;)
+is.logical(character_vector)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>is.character(character_vector)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>is.logical(as.logical(character_vector))</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>A list is a sequence of heterogenous data.</p>
+<pre class="r"><code>x &lt;- c(&quot;one&quot;, 1.2, 1, TRUE, c(1,2,3,4,5), c(&quot;hello&quot;, &quot;world&quot;))
+x[1]</code></pre>
+<pre><code>## [1] &quot;one&quot;</code></pre>
+</div>
+</div>
+<div id="b.-2d-data-structures" class="section level3">
+<h3>B. 2D data structures</h3>
+<p>If you think about an excel data sheet, vectors would be one column of values. The number of rows is variable but you only have one column. Dataframes and matrices, however, are more similar to the excel datasheet in that they have columns as well. Dataframes are like lists in that they can have multiple data types (though each column can only be of one type). Matricies must have homogeneous data.</p>
+<pre class="r"><code>df &lt;- data.frame(
+  categorical = sample(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), size = 300, replace = T),
+  double = rnorm(300, mean=200, sd=30),
+  integer = floor(rnorm(300, mean = 120, sd = 14)),
+  logical = sample(c(TRUE, FALSE), size = 300, replace = T)
+)
+
+head(df)</code></pre>
+<pre><code>##   categorical   double integer logical
+## 1           a 180.1546     120   FALSE
+## 2           c 170.1454     116   FALSE
+## 3           c 202.8213     103    TRUE
+## 4           c 162.3195     124   FALSE
+## 5           b 203.7081     152    TRUE
+## 6           a 233.9702     119   FALSE</code></pre>
+</div>
+</div>
+
+<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+  
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

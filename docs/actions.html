@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Dan C. Mann" />
+
+<meta name="date" content="2020-10-14" />
+
+<title>IntroR: Actions</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Methods in Cognitive Biology</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="docs/about.html">About</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fab fa-r-project"></span>
+     
+    R tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="download_and_install.html">How to download and install R and R Studio</a>
+    </li>
+    <li>
+      <a href="prompt.html">The R prompt</a>
+    </li>
+    <li>
+      <a href="actions.html">R actions</a>
+    </li>
+    <li>
+      <a href="objects.html">R objects</a>
+    </li>
+    <li>
+      <a href="reading_data_into_R.html">Reading data into R</a>
+    </li>
+    <li>
+      <a href="data_wrangling_dplyr.html">Data wrangling</a>
+    </li>
+    <li>
+      <a href="data_viz_ggplot.html">Data visualization</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fas fa-chart-area"></span>
+     
+    Stats tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="stats_tutorials/stats_intro.html">Introduction to statistics</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">IntroR: Actions</h1>
+<h4 class="author">Dan C. Mann</h4>
+<h4 class="date">10/14/2020</h4>
+
+</div>
+
+
+<div id="ii.-actions" class="section level2">
+<h2>II. Actions</h2>
+<div id="a.-assignment" class="section level3">
+<h3>A. Assignment</h3>
+<p>The most basic action that you will perform in R is “assignment”. The assignment operator is <code>&lt;-</code> or <code>=</code>. Assignment takes what is on the right side of the assignment operator and “stores” it into the a “variable” that is on the right side of the operator. <code>x &lt;- 1</code> means that <code>x</code> will function as <code>1</code> until you change it.</p>
+<pre class="r"><code>x &lt;- 1
+x #You can print the information stored in any variable by simply entering that variable into the command prompt</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>x + 1</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>x + 2</code></pre>
+<pre><code>## [1] 3</code></pre>
+<pre class="r"><code>x - 1</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>x &lt;- 3
+x + 1</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>x * 2</code></pre>
+<pre><code>## [1] 6</code></pre>
+<pre class="r"><code>x / 2</code></pre>
+<pre><code>## [1] 1.5</code></pre>
+<pre class="r"><code>y &lt;- 2
+y + x</code></pre>
+<pre><code>## [1] 5</code></pre>
+<pre class="r"><code>z &lt;- y + x
+z + 2</code></pre>
+<pre><code>## [1] 7</code></pre>
+<p>You can also store categorical data into a variable:</p>
+<pre class="r"><code>x &lt;- &quot;Hello world&quot;
+x</code></pre>
+<pre><code>## [1] &quot;Hello world&quot;</code></pre>
+<p>It is also possible to store multiple numbers into a variable.</p>
+<pre class="r"><code>x &lt;- 1:3
+x</code></pre>
+<pre><code>## [1] 1 2 3</code></pre>
+<pre class="r"><code>x + 2</code></pre>
+<pre><code>## [1] 3 4 5</code></pre>
+<div id="variable-names" class="section level4">
+<h4>Variable names</h4>
+<p>We’ll spend more time on what types of elements can be stored in variables, but for now, let’s discuss the variable name itself. So far, we’ve been using <code>x</code> and <code>y</code> a lot, but those are definitely not the only variable names you can use. A variable name can include any letter in any arrangement.</p>
+<pre class="r"><code>variable &lt;- 1
+elbairav &lt;- 2
+v &lt;- 3
+variablevariable &lt;- 4</code></pre>
+<p>But, be careful, R is case sensitive.</p>
+<pre class="r"><code>variable &lt;- 1
+VARIABLE &lt;- 2
+variable</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>casematters &lt;- &quot;hello&quot;
+CaseMatters &lt;- &quot;world&quot;
+CaseMatters == casematters</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>You can also use numbers and the special characters <code>.</code> and <code>_</code>.</p>
+<pre class="r"><code>variable1 &lt;- 1
+variable2 &lt;- 2
+variable.name &lt;- &quot;Howdy Earth&quot;
+variable_name &lt;- &quot;Hallo Welt&quot;</code></pre>
+<p>Variable names can start with uppercase or lowercase letters but cannot start with numbers or the underscore <code>_</code>.</p>
+<pre class="r"><code>1x &lt;- 1</code></pre>
+<pre><code>## Error: &lt;text&gt;:1:2: unexpected symbol
+## 1: 1x
+##      ^</code></pre>
+<pre class="r"><code>_variable &lt;- 1</code></pre>
+<pre><code>## Error: &lt;text&gt;:1:1: unexpected input
+## 1: _
+##     ^</code></pre>
+<div>
+<p>Note: R does allow variable names to start with <code>.</code> as long as it’s not followed by a number.</p>
+<pre class="r"><code>.x &lt;- 1
+._x &lt;- 2</code></pre>
+<pre class="r"><code>.2x &lt;- 1</code></pre>
+<pre><code>## Error: &lt;text&gt;:1:3: unexpected symbol
+## 1: .2x
+##       ^</code></pre>
+<p>However, variables starting with <code>.</code> are hidden.</p>
+<pre class="r"><code>## this function prints all of the variables you have in your environment. 
+ls()</code></pre>
+<pre><code>##  [1] &quot;casematters&quot;      &quot;CaseMatters&quot;      &quot;elbairav&quot;         &quot;v&quot;               
+##  [5] &quot;variable&quot;         &quot;VARIABLE&quot;         &quot;variable_name&quot;    &quot;variable.name&quot;   
+##  [9] &quot;variable1&quot;        &quot;variable2&quot;        &quot;variablevariable&quot; &quot;x&quot;               
+## [13] &quot;y&quot;                &quot;z&quot;</code></pre>
+<p>At this stage, just stick to letters for variable names.</p>
+</div>
+<p>So, how do you choose what to name a variable? This is actually a bit trickier than you would think. R doesn’t care. R is happy with whatever you use (as long as it follows the previously mentioned rules). But remember that R is picky and doesn’t understand things the way humans do. For example, R is perfectly happy to let you do something insane like:</p>
+<pre class="r"><code>why_is_hello_world_the_phrase_that_is_always_in_intro_to_programming_lessons &lt;- &quot;Hello world&quot;
+why_is_hello_world_the_phrase_that_is_always_in_intro_to_programming_lessons</code></pre>
+<pre><code>## [1] &quot;Hello world&quot;</code></pre>
+<p>Or:</p>
+<pre class="r"><code>numeric_variable &lt;- &quot;character_string&quot;
+is.numeric(numeric_variable)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>Or:</p>
+<pre class="r"><code>character_variable &lt;- 2
+wordVariable &lt;- 3
+
+integer.variable &lt;- character_variable/wordVariable
+integer.variable</code></pre>
+<pre><code>## [1] 0.6666667</code></pre>
+<pre class="r"><code>is.integer(integer.variable)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>R just doesn’t care. But humans do. And humans will read your code (at least one human, you). So variables names like those above work perfectly fine in R, but are hell if you are trying to figure out what is going on. Your code will break, it will produce unexpected results, and you will forget what certain things are doing. #### Reserved keywords R has a list of names that have special purposes, these are off-limits to use as a variable name. You can access the full list with <code>?reserved</code></p>
+<pre class="r"><code>?reserved</code></pre>
+</div>
+</div>
+<div id="b.-functions" class="section level3">
+<h3>B. Functions</h3>
+<p>What if we need to perform some function like finding the mean or standard deviation or even converting Fahrenheit to Celsius?</p>
+<pre class="r"><code>### 3 temperature converting functions!
+ # Note: R doesn&#39;t care that Celsius is misspelled. As long as your variable names are consistent, R is happy. This is good news for people who are bad spellers. Well, as long as you are consistent in how you misspell words. 
+
+# F to C
+fahrenheit_to_celcius &lt;- function(fahrenheit){
+  (fahrenheit - 32) * 5/9 # R follows the conventional order of operations: Parentheses, Exponents, Multiplication/Division, Addition/Subtraction
+}
+
+# C to F
+celcius_to_fahrenheit &lt;- function(celcius){
+  celcius * (9/5) + 32
+}
+
+# Both
+temp_converter &lt;- function(input_temperature = 32, output_scale = &quot;Fahrenheit&quot;){ # 
+  if (output_scale == &quot;Fahrenheit&quot;) {
+      input_temperature * (9/5) + 32  
+  } else if (output_scale == &quot;Celcius&quot;) {
+      (input_temperature - 32) * 5/9
+  } else {
+    errorCondition(&quot;Did you mispell Celcius or Fahrenheit? Please use &#39;Celcius&#39; or &#39;Fahrenheit&#39; with first letter capitalized&quot;)
+  }
+}</code></pre>
+<p>A “function” is code that is written to perform some function. Isn’t it great when terminology is straight-forward?!</p>
+<p>In this class, we won’t spend a lot of time creating our own functions - as with the temperature converter - But, we will be using a lot of functions so it’s important to know the basics.</p>
+<p>Every function has the following elements:</p>
+<ul>
+<li>Name</li>
+<li>Argument(s)</li>
+<li>Function Body</li>
+<li>Return/Output</li>
+</ul>
+<pre class="r"><code>function_name &lt;- function(argument_1, argument_2, ...) {
+   Function body 
+}</code></pre>
+<div id="i.-function-name" class="section level4">
+<h4>i. Function name</h4>
+<p>The function name exists so that you can easily call the function whenever you need it.</p>
+</div>
+<div id="ii.-function-arguments" class="section level4">
+<h4>ii. Function arguments</h4>
+<p>Functions take “arguments” as input. These are the elements that you put inside the paretheses.</p>
+<pre class="r"><code>x &lt;- 1:5
+mean(x) #the variable x is the argument</code></pre>
+<pre><code>## [1] 3</code></pre>
+<p>Functions can take multiple arguments, in fact, some require multiple arguments. The order of the arguments matters.</p>
+<pre class="r"><code>seq(5, 85, 20) # Seq() creates a sequence of numbers. In this case, from 5 to 85 by 20</code></pre>
+<pre><code>## [1]  5 25 45 65 85</code></pre>
+<pre class="r"><code>seq(20, 85, 5) # From 20 to 85 by 5</code></pre>
+<pre><code>##  [1] 20 25 30 35 40 45 50 55 60 65 70 75 80 85</code></pre>
+<p>You can also specify each argument. For most functions, if you specify each argument explicitly the order no longer matters.</p>
+<pre class="r"><code>seq(from = 5, to = 85, by = 20)</code></pre>
+<pre><code>## [1]  5 25 45 65 85</code></pre>
+<pre class="r"><code>seq(by = 20, to = 85, from = 5)</code></pre>
+<pre><code>## [1]  5 25 45 65 85</code></pre>
+<p>Some arguments require an input value and some are set by default. It’s always best to use <code>?</code> and read the documentation before using a function.</p>
+</div>
+<div id="iii.-function-body" class="section level4">
+<h4>iii. Function Body</h4>
+<p>The action that the function performs is found inside the curly brackets <code>{}</code>. Unless you want to write your own function or you want to look inside of a pre-existing function, you don’t need to worry about this right now.</p>
+</div>
+<div id="iv.-function-return" class="section level4">
+<h4>iv. Function return</h4>
+<p>The purpose of a function is to produce some result. In the functions we’ve seen so far, the result is a value. These values can be stored in a variable.</p>
+<pre class="r"><code>x &lt;- seq(from = 1, to = 10, by = 0.5)
+mean_of_x &lt;- mean(x)
+mean_of_x</code></pre>
+<pre><code>## [1] 5.5</code></pre>
+<pre class="r"><code># A more realistic (but complicated) example
+
+control_group_scores &lt;- rnorm(n = 100, mean = 75, sd = 10)
+treatment_group_scores &lt;- rnorm(n = 100, mean = 86, sd = 7)
+group &lt;- gl(n = 2, k = 100, length = 200, labels = c(&quot;control&quot;, &quot;treatment&quot;))
+
+scores &lt;- c(control_group_scores, treatment_group_scores)
+
+linear_model &lt;- lm(scores ~ group)
+anova(linear_model)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: scores
+##            Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## group       1  6480.1  6480.1  94.062 &lt; 2.2e-16 ***
+## Residuals 198 13640.6    68.9                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(linear_model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = scores ~ group)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -20.8889  -4.6779   0.1496   5.1210  20.7466 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      74.651      0.830  89.940   &lt;2e-16 ***
+## grouptreatment   11.384      1.174   9.699   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 8.3 on 198 degrees of freedom
+## Multiple R-squared:  0.3221, Adjusted R-squared:  0.3186 
+## F-statistic: 94.06 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Other functions perform actions that are essential to working in R, but won’t (necessarily) produce an object that you can use. For example, you can get your working directory by using the function <code>getwd()</code>. You can change your working directory by using <code>setwd()</code>. <code>list.files()</code> will produce a list of all of the files in your working directory.</p>
+<p>Two of the most useful functions that you will use are <code>install.packages()</code> and <code>library()</code>. Packages are like “add-ons” to R. A package contains R functions, example data, and helpful documentation. If you find yourself thinking “I wonder if there is a way to do this” the answer is most likely “yes and there is a package that does it”. You can find all of the R approved packages at <a href="https://cran.r-project.org" class="uri">https://cran.r-project.org</a>. Packages that are on this website are very easy to download and start using. Simply use the <code>install.packages()</code> function and put the name of the package as an argument: <code>install.packages("package Name")</code></p>
+<p>The packages you download are stored in your R library. The function <code>library()</code> produces a list of all the packages currently installed. To use a package you have to load it first. To load a package put the package name as an argument into the <code>library()</code> function: <code>library("package Name")</code>. If you don’t know the path to your library, you can use <code>.libPaths()</code></p>
+<p>In this class, we will learn to use two packages: “dplyr” and “ggplot2”</p>
+<pre class="r"><code>install.packages(&quot;dplyr&quot;) # must have quotes around the package name
+library(dplyr) # quotes are optional</code></pre>
+</div>
+</div>
+</div>
+
+<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+  
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

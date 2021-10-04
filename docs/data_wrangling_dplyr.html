@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Dan C. Mann" />
+
+
+<title>Data wrangling and dplyr</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Methods in Cognitive Biology</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="docs/about.html">About</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fab fa-r-project"></span>
+     
+    R tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="download_and_install.html">How to download and install R and R Studio</a>
+    </li>
+    <li>
+      <a href="prompt.html">The R prompt</a>
+    </li>
+    <li>
+      <a href="actions.html">R actions</a>
+    </li>
+    <li>
+      <a href="objects.html">R objects</a>
+    </li>
+    <li>
+      <a href="reading_data_into_R.html">Reading data into R</a>
+    </li>
+    <li>
+      <a href="data_wrangling_dplyr.html">Data wrangling</a>
+    </li>
+    <li>
+      <a href="data_viz_ggplot.html">Data visualization</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fas fa-chart-area"></span>
+     
+    Stats tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="stats_tutorials/stats_intro.html">Introduction to statistics</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Data wrangling and dplyr</h1>
+<h4 class="author">Dan C. Mann</h4>
+<h4 class="date">2020/11/05</h4>
+
+</div>
+
+
+<div id="tidy-data" class="section level1">
+<h1>Tidy data</h1>
+<p>In the last lesson, we covered how to use <code>read.table()</code> and <code>read.csv()</code> to import your data into R. Even if you can get your data into R, you are likely to encounter problems. A lot of these problems can be solved by making sure that your variables are in the correct format. But, there are tons of other issues that can arise and may not even be obvious a first glance. You can save yourself a ton of headaches by formatting your data properly from the onset. Follow these rules to make your life easier:</p>
+<ol style="list-style-type: decimal">
+<li><p>Each variable has its own column</p>
+<ul>
+<li><p>The first row contains variable names</p></li>
+<li><p>Every variable has a name</p></li>
+</ul></li>
+<li><p>Each observation has its own row</p></li>
+<li><p>Each value has its own cell</p>
+<ul>
+<li><p>Don’t leave blank cells</p></li>
+<li><p>In R, <code>NA</code> is the default value for missing data</p></li>
+</ul></li>
+<li><p>Be consistent</p>
+<ul>
+<li><p>Values that are the same, should be entered the same (e.g., Don’t use <code>Y</code> and <code>Yes</code>, or <code>Austria</code> and <code>austria</code>)</p></li>
+<li><p>Be consistent with variable names (e.g., don’t do <code>pedal.width</code>, <code>pedal length</code>, <code>sepal_length</code>, <code>Sepal_Width</code>)</p></li>
+</ul></li>
+</ol>
+<div id="data-sets-in-r" class="section level2">
+<h2>Data sets in R</h2>
+<p>When you install R, you also install a package that contains multiple data sets. These data sets can be used for practice and you will often see tutorials use one or more of these. In R Studio, if you use the function <code>data()</code> (with no specified argument) a new tab will open up in your Source pane.</p>
+<pre class="r"><code>data()</code></pre>
+<p>If you look at the tab, at the top you’ll see “Data sets in package ‘datasets’:” This is a “base” R package. Base R packages come with the installation of R and often are essential to the basic functioning of R as a language. Take a look at the available data sets and their descriptions. We’ll load one now.</p>
+<div id="loading-a-prexisting-data-set" class="section level3">
+<h3>Loading a prexisting data set</h3>
+<p>There are a couple of data sets that you will see very often in tutorials. Among the most popular are <em>mtcars</em>, <em>iris</em>, <em>ToothGrowth</em>, and <em>USArrests</em>. To find out more information on a data set, use the <code>?</code> function with the name of the data set in the console (e.g., <code>?mtcars</code>). This will bring up the documentation which includes a description of the data.</p>
+<p>To load one of these data sets, use the same <code>data()</code> function and put the name of the data set as the first argument. (The name of the data set can be in quotes or without <code>data('iris')</code> or <code>data(iris)</code>).</p>
+<pre class="r"><code>data(&#39;iris&#39;)
+## You may see &lt;promise&gt; in your R environment window. This is normal, once you run a line of code using the data R will load it. </code></pre>
+<p>When you load data, R’s pre-installed or your own, you should always check it to verify that what is in your library is what you expected. The functions <code>str()</code> and <code>head()</code> are useful for checking.</p>
+<p><code>str()</code> prints the structure of the data. Here you can see the number and names of columns (aka variables), the number of observations, and the data type of each column.</p>
+<pre class="r"><code>str(iris)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    150 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<p>In this data set, we have 150 observations taken from three species of flowers. For each individual flower there are four measurements.</p>
+<p><code>head()</code> prints the first 6 rows (observations) of the data frame (by default, you can change the number of rows to show by specifying the <code>n =</code> argument).</p>
+<pre class="r"><code>head(iris)</code></pre>
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          5.1         3.5          1.4         0.2  setosa
+## 2          4.9         3.0          1.4         0.2  setosa
+## 3          4.7         3.2          1.3         0.2  setosa
+## 4          4.6         3.1          1.5         0.2  setosa
+## 5          5.0         3.6          1.4         0.2  setosa
+## 6          5.4         3.9          1.7         0.4  setosa</code></pre>
+<p>The <code>rm()</code> function can help you clean up your environment pane. <code>rm(variable_name)</code> will remove the variable from your global environment. It functions similarly for Data, Values, or Functions. To remove everything from your environment use <code>rm(list = ls())</code>. The <code>ls()</code> function prints all of your current variables, so you’re giving the <code>rm()</code> function a full list of your variable names. Let’s remove the iris data set from our (current) environment.</p>
+<pre class="r"><code>rm(iris)</code></pre>
+<p>You shouldn’t see iris under “Data” in your global environment pane anymore. If you accidentally removed the data set you can still reload <em>iris</em> using <code>data()</code>, but any changes you made to the data set will be lost. Similarly, if you create a variable and them remove it with <code>rm()</code>, the variable is gone which is why it is important to work in scripts and save often.</p>
+</div>
+</div>
+</div>
+<div id="dplyr" class="section level1">
+<h1><code>dplyr</code></h1>
+<p>Now that we have our data in R, let’s see what we can find out! For this, we’ll use the package <code>dplyr</code></p>
+<pre class="r"><code>library(dplyr)
+## dplyr uses objects called &quot;tibbles&quot;. These are essentially dataframes. 
+#?tibble()</code></pre>
+<p>Many, if not most, R packages include data sets that can be used for practicing. Run the <code>data()</code> function again.</p>
+<pre class="r"><code>data()</code></pre>
+<p>You’ll see the same information as before, but if you scroll down, you’ll see “Data sets in package ‘dplyr’”. When you load a package, you also load the package’s data sets. Let’s load the <em>starwars</em> data set.</p>
+<pre class="r"><code>data(&quot;starwars&quot;)</code></pre>
+<pre class="r"><code>head(starwars)</code></pre>
+<pre><code>## # A tibble: 6 × 14
+##   name     height  mass hair_color  skin_color eye_color birth_year sex   gender
+##   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+## 1 Luke Sk…    172    77 blond       fair       blue            19   male  mascu…
+## 2 C-3PO       167    75 &lt;NA&gt;        gold       yellow         112   none  mascu…
+## 3 R2-D2        96    32 &lt;NA&gt;        white, bl… red             33   none  mascu…
+## 4 Darth V…    202   136 none        white      yellow          41.9 male  mascu…
+## 5 Leia Or…    150    49 brown       light      brown           19   fema… femin…
+## 6 Owen La…    178   120 brown, grey light      blue            52   male  mascu…
+## # … with 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+<pre class="r"><code>str(starwars[1:11]) #we&#39;ll print only the first 11 rows. The last three columns are lists. </code></pre>
+<pre><code>## tibble [87 × 11] (S3: tbl_df/tbl/data.frame)
+##  $ name      : chr [1:87] &quot;Luke Skywalker&quot; &quot;C-3PO&quot; &quot;R2-D2&quot; &quot;Darth Vader&quot; ...
+##  $ height    : int [1:87] 172 167 96 202 150 178 165 97 183 182 ...
+##  $ mass      : num [1:87] 77 75 32 136 49 120 75 32 84 77 ...
+##  $ hair_color: chr [1:87] &quot;blond&quot; NA NA &quot;none&quot; ...
+##  $ skin_color: chr [1:87] &quot;fair&quot; &quot;gold&quot; &quot;white, blue&quot; &quot;white&quot; ...
+##  $ eye_color : chr [1:87] &quot;blue&quot; &quot;yellow&quot; &quot;red&quot; &quot;yellow&quot; ...
+##  $ birth_year: num [1:87] 19 112 33 41.9 19 52 47 NA 24 57 ...
+##  $ sex       : chr [1:87] &quot;male&quot; &quot;none&quot; &quot;none&quot; &quot;male&quot; ...
+##  $ gender    : chr [1:87] &quot;masculine&quot; &quot;masculine&quot; &quot;masculine&quot; &quot;masculine&quot; ...
+##  $ homeworld : chr [1:87] &quot;Tatooine&quot; &quot;Tatooine&quot; &quot;Naboo&quot; &quot;Tatooine&quot; ...
+##  $ species   : chr [1:87] &quot;Human&quot; &quot;Droid&quot; &quot;Droid&quot; &quot;Human&quot; ...</code></pre>
+<p>At first <code>dplyr</code> may seem a little strange, however, as you get familiar with it you will notice it’s pretty intuitive and makes data organization a lot easier. <code>dplyr</code> allows you to filter, rearrange, modify, and summarize your data quickly and (relatively) painlessly. We will learn the following verbs:</p>
+<ul>
+<li><code>select()</code>
+<ul>
+<li>allows you to subset columns (variables)</li>
+</ul></li>
+<li><code>filter()</code>
+<ul>
+<li>allows you subset rows (observations)</li>
+</ul></li>
+<li><code>group_by()</code>
+<ul>
+<li>allows you to group observations</li>
+</ul></li>
+<li><code>summarise()</code>
+<ul>
+<li>allows you summarize your data</li>
+</ul></li>
+<li><code>mutate()</code>
+<ul>
+<li>allows you to modify your data</li>
+</ul></li>
+</ul>
+<p>The great thing about these verbs is that they can be combined with the operator <code>%&gt;%</code> so that you can perform multiple operations at once.</p>
+<div id="select" class="section level2">
+<h2><code>select()</code></h2>
+<p><code>select()</code> allows you to choose a column or multiple columns. The first argument (if you don’t use <code>%&gt;%</code>) should be the dataframe, the second should be the column name. You don’t need to put quotes ("") around the column name in <code>dplyr</code>.</p>
+<pre class="r"><code>select(starwars, name)</code></pre>
+<pre><code>## # A tibble: 87 × 1
+##    name              
+##    &lt;chr&gt;             
+##  1 Luke Skywalker    
+##  2 C-3PO             
+##  3 R2-D2             
+##  4 Darth Vader       
+##  5 Leia Organa       
+##  6 Owen Lars         
+##  7 Beru Whitesun lars
+##  8 R5-D4             
+##  9 Biggs Darklighter 
+## 10 Obi-Wan Kenobi    
+## # … with 77 more rows</code></pre>
+<p>You can include as many column names as arguments to select multiple columns (and you don’t need to use <code>c()</code>).</p>
+<pre class="r"><code>select(starwars, name, species)</code></pre>
+<pre><code>## # A tibble: 87 × 2
+##    name               species
+##    &lt;chr&gt;              &lt;chr&gt;  
+##  1 Luke Skywalker     Human  
+##  2 C-3PO              Droid  
+##  3 R2-D2              Droid  
+##  4 Darth Vader        Human  
+##  5 Leia Organa        Human  
+##  6 Owen Lars          Human  
+##  7 Beru Whitesun lars Human  
+##  8 R5-D4              Droid  
+##  9 Biggs Darklighter  Human  
+## 10 Obi-Wan Kenobi     Human  
+## # … with 77 more rows</code></pre>
+<p>We can also write the code using the pipe operator <code>%&gt;%</code>. For simple examples you don’t need to use them but as your code gets more complex the pipe operators will make your code easier to understand. If you use <code>%&gt;%</code>, then the first argument that you explicitly write is the first column name you want to select.</p>
+<pre class="r"><code>starwars %&gt;% 
+    select(name, species)</code></pre>
+<pre><code>## # A tibble: 87 × 2
+##    name               species
+##    &lt;chr&gt;              &lt;chr&gt;  
+##  1 Luke Skywalker     Human  
+##  2 C-3PO              Droid  
+##  3 R2-D2              Droid  
+##  4 Darth Vader        Human  
+##  5 Leia Organa        Human  
+##  6 Owen Lars          Human  
+##  7 Beru Whitesun lars Human  
+##  8 R5-D4              Droid  
+##  9 Biggs Darklighter  Human  
+## 10 Obi-Wan Kenobi     Human  
+## # … with 77 more rows</code></pre>
+<p>The order the function outputs will be the same as what you put into <code>select()</code>, not the original order of the data frame.</p>
+<pre class="r"><code>starwars %&gt;% 
+    select(species, name)</code></pre>
+<pre><code>## # A tibble: 87 × 2
+##    species name              
+##    &lt;chr&gt;   &lt;chr&gt;             
+##  1 Human   Luke Skywalker    
+##  2 Droid   C-3PO             
+##  3 Droid   R2-D2             
+##  4 Human   Darth Vader       
+##  5 Human   Leia Organa       
+##  6 Human   Owen Lars         
+##  7 Human   Beru Whitesun lars
+##  8 Droid   R5-D4             
+##  9 Human   Biggs Darklighter 
+## 10 Human   Obi-Wan Kenobi    
+## # … with 77 more rows</code></pre>
+<p>You can get fancy by using other functions within <code>select()</code> like <code>starts_with()</code> or <code>contains()</code>.</p>
+<pre class="r"><code>starwars %&gt;% 
+    select(contains(&quot;color&quot;))</code></pre>
+<pre><code>## # A tibble: 87 × 3
+##    hair_color    skin_color  eye_color
+##    &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;    
+##  1 blond         fair        blue     
+##  2 &lt;NA&gt;          gold        yellow   
+##  3 &lt;NA&gt;          white, blue red      
+##  4 none          white       yellow   
+##  5 brown         light       brown    
+##  6 brown, grey   light       blue     
+##  7 brown         light       blue     
+##  8 &lt;NA&gt;          white, red  red      
+##  9 black         light       brown    
+## 10 auburn, white fair        blue-gray
+## # … with 77 more rows</code></pre>
+<p>Or by using <code>select_if()</code></p>
+<pre class="r"><code>starwars %&gt;% 
+    select_if(is.numeric)</code></pre>
+<pre><code>## # A tibble: 87 × 3
+##    height  mass birth_year
+##     &lt;int&gt; &lt;dbl&gt;      &lt;dbl&gt;
+##  1    172    77       19  
+##  2    167    75      112  
+##  3     96    32       33  
+##  4    202   136       41.9
+##  5    150    49       19  
+##  6    178   120       52  
+##  7    165    75       47  
+##  8     97    32       NA  
+##  9    183    84       24  
+## 10    182    77       57  
+## # … with 77 more rows</code></pre>
+<p>To drop a column use <code>-</code> and to select a range of columns use <code>:</code>.</p>
+<pre class="r"><code>starwars %&gt;% 
+    select(-(hair_color:starships))</code></pre>
+<pre><code>## # A tibble: 87 × 3
+##    name               height  mass
+##    &lt;chr&gt;               &lt;int&gt; &lt;dbl&gt;
+##  1 Luke Skywalker        172    77
+##  2 C-3PO                 167    75
+##  3 R2-D2                  96    32
+##  4 Darth Vader           202   136
+##  5 Leia Organa           150    49
+##  6 Owen Lars             178   120
+##  7 Beru Whitesun lars    165    75
+##  8 R5-D4                  97    32
+##  9 Biggs Darklighter     183    84
+## 10 Obi-Wan Kenobi        182    77
+## # … with 77 more rows</code></pre>
+<p>To store the results of the filtering, assign the output to a new variable or the same variable if you want to override it. We’ll drop the three final columns and store it with the same variable name.</p>
+<pre class="r"><code>starwars &lt;- 
+    starwars %&gt;% 
+    select(-(films:starships))</code></pre>
+<pre class="r"><code>str(starwars)</code></pre>
+<pre><code>## tibble [87 × 11] (S3: tbl_df/tbl/data.frame)
+##  $ name      : chr [1:87] &quot;Luke Skywalker&quot; &quot;C-3PO&quot; &quot;R2-D2&quot; &quot;Darth Vader&quot; ...
+##  $ height    : int [1:87] 172 167 96 202 150 178 165 97 183 182 ...
+##  $ mass      : num [1:87] 77 75 32 136 49 120 75 32 84 77 ...
+##  $ hair_color: chr [1:87] &quot;blond&quot; NA NA &quot;none&quot; ...
+##  $ skin_color: chr [1:87] &quot;fair&quot; &quot;gold&quot; &quot;white, blue&quot; &quot;white&quot; ...
+##  $ eye_color : chr [1:87] &quot;blue&quot; &quot;yellow&quot; &quot;red&quot; &quot;yellow&quot; ...
+##  $ birth_year: num [1:87] 19 112 33 41.9 19 52 47 NA 24 57 ...
+##  $ sex       : chr [1:87] &quot;male&quot; &quot;none&quot; &quot;none&quot; &quot;male&quot; ...
+##  $ gender    : chr [1:87] &quot;masculine&quot; &quot;masculine&quot; &quot;masculine&quot; &quot;masculine&quot; ...
+##  $ homeworld : chr [1:87] &quot;Tatooine&quot; &quot;Tatooine&quot; &quot;Naboo&quot; &quot;Tatooine&quot; ...
+##  $ species   : chr [1:87] &quot;Human&quot; &quot;Droid&quot; &quot;Droid&quot; &quot;Human&quot; ...</code></pre>
+</div>
+<div id="filter" class="section level2">
+<h2><code>filter()</code></h2>
+<p>To subset observations based on a condition use <code>filter()</code>. As with <code>select()</code> you can put the data frame inside the function or use <code>%&gt;%</code>.</p>
+<pre class="r"><code>filter(starwars, species == &quot;Human&quot;)</code></pre>
+<pre><code>## # A tibble: 35 × 11
+##    name    height  mass hair_color  skin_color eye_color birth_year sex   gender
+##    &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+##  1 Luke S…    172    77 blond       fair       blue            19   male  mascu…
+##  2 Darth …    202   136 none        white      yellow          41.9 male  mascu…
+##  3 Leia O…    150    49 brown       light      brown           19   fema… femin…
+##  4 Owen L…    178   120 brown, grey light      blue            52   male  mascu…
+##  5 Beru W…    165    75 brown       light      blue            47   fema… femin…
+##  6 Biggs …    183    84 black       light      brown           24   male  mascu…
+##  7 Obi-Wa…    182    77 auburn, wh… fair       blue-gray       57   male  mascu…
+##  8 Anakin…    188    84 blond       fair       blue            41.9 male  mascu…
+##  9 Wilhuf…    180    NA auburn, gr… fair       blue            64   male  mascu…
+## 10 Han So…    180    80 brown       fair       brown           29   male  mascu…
+## # … with 25 more rows, and 2 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;</code></pre>
+<pre class="r"><code>starwars %&gt;%
+        filter(species == &quot;Human&quot;)</code></pre>
+<pre><code>## # A tibble: 35 × 11
+##    name    height  mass hair_color  skin_color eye_color birth_year sex   gender
+##    &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+##  1 Luke S…    172    77 blond       fair       blue            19   male  mascu…
+##  2 Darth …    202   136 none        white      yellow          41.9 male  mascu…
+##  3 Leia O…    150    49 brown       light      brown           19   fema… femin…
+##  4 Owen L…    178   120 brown, grey light      blue            52   male  mascu…
+##  5 Beru W…    165    75 brown       light      blue            47   fema… femin…
+##  6 Biggs …    183    84 black       light      brown           24   male  mascu…
+##  7 Obi-Wa…    182    77 auburn, wh… fair       blue-gray       57   male  mascu…
+##  8 Anakin…    188    84 blond       fair       blue            41.9 male  mascu…
+##  9 Wilhuf…    180    NA auburn, gr… fair       blue            64   male  mascu…
+## 10 Han So…    180    80 brown       fair       brown           29   male  mascu…
+## # … with 25 more rows, and 2 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;</code></pre>
+<div id="conditional-expressions-and-relational-operators" class="section level3">
+<h3>Conditional expressions and Relational operators</h3>
+<p><code>filter()</code> uses conditional expressions to subset the data frame. A conditional expression tests a value against a condition and returns either <code>TRUE</code> or <code>FALSE</code>. For example, the conditional expression <code>1 == 2</code> can be read as “is the value 1 equal to the value 2?”. The result of that test is <code>FALSE</code>. <code>1 &lt;= 2</code> can be read “is 1 less than or equal to 2”, which should return <code>TRUE</code>.</p>
+<pre class="r"><code>1==2</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>1 &lt;= 2</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>As we saw in an earlier lesson, R can apply this evaluation for an entire vector.</p>
+<pre class="r"><code>x &lt;- c(1, 2, 4, 8, 16)
+x &lt; 8</code></pre>
+<pre><code>## [1]  TRUE  TRUE  TRUE FALSE FALSE</code></pre>
+<p>R evaluates each member of the vector and returns <code>TRUE</code> or <code>FALSE</code>.</p>
+<p><code>filter()</code> applies a conditional expression to a data frame column and keeps those rows that evaluate to <code>TRUE</code>.</p>
+<pre class="r"><code>starwars %&gt;%
+        filter(mass &gt; 100)</code></pre>
+<pre><code>## # A tibble: 10 × 11
+##    name    height  mass hair_color  skin_color eye_color birth_year sex   gender
+##    &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+##  1 Darth …    202   136 none        white      yellow          41.9 male  mascu…
+##  2 Owen L…    178   120 brown, grey light      blue            52   male  mascu…
+##  3 Chewba…    228   112 brown       unknown    blue           200   male  mascu…
+##  4 Jabba …    175  1358 &lt;NA&gt;        green-tan… orange         600   herm… mascu…
+##  5 Jek To…    180   110 brown       fair       blue            NA   male  mascu…
+##  6 IG-88      200   140 none        metal      red             15   none  mascu…
+##  7 Bossk      190   113 none        green      red             53   male  mascu…
+##  8 Dexter…    198   102 none        brown      yellow          NA   male  mascu…
+##  9 Grievo…    216   159 none        brown, wh… green, y…       NA   male  mascu…
+## 10 Tarfful    234   136 brown       brown      blue            NA   male  mascu…
+## # … with 2 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;</code></pre>
+<p><code>filter()</code> uses the following relational operators:</p>
+<ul>
+<li><code>==</code> : equal to</li>
+<li><code>!=</code> : not equal to</li>
+<li><code>&lt;</code> : less than</li>
+<li><code>&gt;</code> : greater than</li>
+<li><code>&lt;=</code> : less than or equal to</li>
+<li><code>&gt;=</code> : greater than or equal to</li>
+</ul>
+<p>You can also use <code>!</code>, <code>&amp;</code>, and <code>|</code> to combine conditions. Respectively, these mean NOT, AND, OR. <code>filter(eye_color == 'yellow' &amp; species == "Human")</code> returns all those individuals with yellow eyes <strong>and</strong> who are human</p>
+<pre class="r"><code>starwars %&gt;% 
+    filter(eye_color == &#39;yellow&#39; &amp; species == &quot;Human&quot;)</code></pre>
+<pre><code>## # A tibble: 2 × 11
+##   name     height  mass hair_color skin_color eye_color birth_year sex   gender 
+##   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+## 1 Darth V…    202   136 none       white      yellow          41.9 male  mascul…
+## 2 Palpati…    170    75 grey       pale       yellow          82   male  mascul…
+## # … with 2 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;</code></pre>
+<p><code>filter(eye_color == 'yellow' &amp; !species == "Human")</code> means "individuals where eye_color is equal to ‘yellow’ AND species is NOT equal to ‘human’.</p>
+<pre class="r"><code>starwars %&gt;% 
+    filter(eye_color == &#39;yellow&#39; &amp; !species == &quot;Human&quot;)</code></pre>
+<pre><code>## # A tibble: 9 × 11
+##   name    height  mass hair_color skin_color   eye_color birth_year sex   gender
+##   &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+## 1 C-3PO      167    75 &lt;NA&gt;       gold         yellow           112 none  mascu…
+## 2 Watto      137    NA black      blue, grey   yellow            NA male  mascu…
+## 3 Darth …    175    80 none       red          yellow            54 male  mascu…
+## 4 Dud Bo…     94    45 none       blue, grey   yellow            NA male  mascu…
+## 5 Ki-Adi…    198    82 white      pale         yellow            92 male  mascu…
+## 6 Yarael…    264    NA none       white        yellow            NA male  mascu…
+## 7 Poggle…    183    80 none       green        yellow            NA male  mascu…
+## 8 Zam We…    168    55 blonde     fair, green… yellow            NA fema… femin…
+## 9 Dexter…    198   102 none       brown        yellow            NA male  mascu…
+## # … with 2 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;</code></pre>
+<p><code>filter(eye_color == 'yellow' | species == "Human")</code> returns those individuals for which eye color is equal to yellow, independent of species, OR those who are humans, independent of eye color.</p>
+<pre class="r"><code>starwars %&gt;% 
+    filter(eye_color == &#39;yellow&#39; | species == &quot;Human&quot;)</code></pre>
+<pre><code>## # A tibble: 44 × 11
+##    name    height  mass hair_color  skin_color eye_color birth_year sex   gender
+##    &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+##  1 Luke S…    172    77 blond       fair       blue            19   male  mascu…
+##  2 C-3PO      167    75 &lt;NA&gt;        gold       yellow         112   none  mascu…
+##  3 Darth …    202   136 none        white      yellow          41.9 male  mascu…
+##  4 Leia O…    150    49 brown       light      brown           19   fema… femin…
+##  5 Owen L…    178   120 brown, grey light      blue            52   male  mascu…
+##  6 Beru W…    165    75 brown       light      blue            47   fema… femin…
+##  7 Biggs …    183    84 black       light      brown           24   male  mascu…
+##  8 Obi-Wa…    182    77 auburn, wh… fair       blue-gray       57   male  mascu…
+##  9 Anakin…    188    84 blond       fair       blue            41.9 male  mascu…
+## 10 Wilhuf…    180    NA auburn, gr… fair       blue            64   male  mascu…
+## # … with 34 more rows, and 2 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;</code></pre>
+</div>
+</div>
+<div id="summarise" class="section level2">
+<h2><code>summarise()</code></h2>
+<p>Combing this verb with some of R’s base functions allows you to easily get descriptive statistics on your data.</p>
+<pre class="r"><code>starwars %&gt;% 
+    filter(birth_year &gt; 20) %&gt;% 
+    summarise(mean_height = mean(height))</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   mean_height
+##         &lt;dbl&gt;
+## 1        175.</code></pre>
+<pre class="r"><code>starwars %&gt;% 
+    select(species) %&gt;% 
+    filter(species != &quot;Human&quot;) %&gt;% 
+    summarise(count_nonhuman = n())</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   count_nonhuman
+##            &lt;int&gt;
+## 1             48</code></pre>
+<pre class="r"><code>starwars %&gt;%
+    summarise(mn_height = mean(height, na.rm = T),
+              sd_height = sd(height, na.rm = T),
+              min_height = min(height, na.rm = T),
+              max_height = max(height, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 1 × 4
+##   mn_height sd_height min_height max_height
+##       &lt;dbl&gt;     &lt;dbl&gt;      &lt;int&gt;      &lt;int&gt;
+## 1      174.      34.8         66        264</code></pre>
+</div>
+<div id="group_by" class="section level2">
+<h2><code>group_by()</code></h2>
+<p>You may have noticed that <code>summarise()</code> produces a data frame as its output. If you only need one value this may not be all that useful to you. However, your data is often more complex and you would like to know if there are differences between groups.</p>
+<pre class="r"><code>starwars %&gt;% 
+    group_by(species) %&gt;% 
+    summarise(
+        count = n(),
+        mn_mass = mean(mass, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 38 × 3
+##    species   count mn_mass
+##    &lt;chr&gt;     &lt;int&gt;   &lt;dbl&gt;
+##  1 Aleena        1    15  
+##  2 Besalisk      1   102  
+##  3 Cerean        1    82  
+##  4 Chagrian      1   NaN  
+##  5 Clawdite      1    55  
+##  6 Droid         6    69.8
+##  7 Dug           1    40  
+##  8 Ewok          1    20  
+##  9 Geonosian     1    80  
+## 10 Gungan        3    74  
+## # … with 28 more rows</code></pre>
+<p>The output of <code>dplyr</code> functions are data frame, so you can actually create a date frame and filter all within the same chain. Here we’ll summarize by species then filter the summary output by the count data.</p>
+<pre class="r"><code>starwars %&gt;% 
+    group_by(species) %&gt;% 
+    summarise(
+        count = n(),
+        mn_mass = mean(mass, na.rm = T)) %&gt;% 
+    filter(count &gt; 5)</code></pre>
+<pre><code>## # A tibble: 2 × 3
+##   species count mn_mass
+##   &lt;chr&gt;   &lt;int&gt;   &lt;dbl&gt;
+## 1 Droid       6    69.8
+## 2 Human      35    82.8</code></pre>
+</div>
+<div id="mutate" class="section level2">
+<h2>mutate()</h2>
+<p>Often you will need to modify a variable for some reason. Maybe you need to scale the data or log transform it. <code>dplyr</code> makes this pretty easy. <code>mutate()</code> will add a new column to the end of the data frame and won’t override the original data.</p>
+<pre class="r"><code>starwars %&gt;% 
+    select(name:mass) %&gt;% 
+    mutate(height_meter = height/100)</code></pre>
+<pre><code>## # A tibble: 87 × 4
+##    name               height  mass height_meter
+##    &lt;chr&gt;               &lt;int&gt; &lt;dbl&gt;        &lt;dbl&gt;
+##  1 Luke Skywalker        172    77         1.72
+##  2 C-3PO                 167    75         1.67
+##  3 R2-D2                  96    32         0.96
+##  4 Darth Vader           202   136         2.02
+##  5 Leia Organa           150    49         1.5 
+##  6 Owen Lars             178   120         1.78
+##  7 Beru Whitesun lars    165    75         1.65
+##  8 R5-D4                  97    32         0.97
+##  9 Biggs Darklighter     183    84         1.83
+## 10 Obi-Wan Kenobi        182    77         1.82
+## # … with 77 more rows</code></pre>
+<p>As with all of these, remember that if you don’t assign the output to a variable whatever you do won’t be stored.</p>
+<p>There is a lot more you can do with <code>dplyr</code>, so I would recommend checking out the documentation. The book <a href="https://r4ds.had.co.nz/transform.html"><em>R for Data Science</em> by Garrett Grolemund and Hadley Wickham</a> has a chapter with a lot of useful information.</p>
+</div>
+</div>
+
+<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+  
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

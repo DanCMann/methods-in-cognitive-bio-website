@@ -1,7 +1,0 @@
-#### Session information:
-
-Last update on `r Sys.Date()`
-  
-```{r}
-sessionInfo()
-```

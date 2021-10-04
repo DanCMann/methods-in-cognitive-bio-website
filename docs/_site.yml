@@ -1,0 +1,37 @@
+name: "methods-in-cog-bio"
+output_dir: "."
+navbar:
+  title: "Methods in Cognitive Biology"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: docs/about.html
+    - text: "R tutorials"
+      icon: "fab fa-r-project"
+      menu:
+        - text: "How to download and install R and R Studio"
+          href: download_and_install.html
+        - text: "The R prompt"
+          href: prompt.html
+        - text: "R actions"
+          href: actions.html
+        - text: "R objects"
+          href: objects.html
+        - text: "Reading data into R"
+          href: reading_data_into_R.html
+        - text: "Data wrangling"
+          href: data_wrangling_dplyr.html
+        - text: "Data visualization"
+          href: data_viz_ggplot.html
+    - text: "Stats tutorials"
+      icon: "fas fa-chart-area"
+      menu: 
+        - text: "Introduction to statistics"
+          href: stats_tutorials/stats_intro.html
+
+output:
+  html_document:
+    include:
+      after_body: footer.html
+    css: styles.css
