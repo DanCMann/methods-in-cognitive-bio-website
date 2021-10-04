@@ -8,11 +8,24 @@ navbar:
     - text: "About"
       href: about.html
     - text: "R tutorials"
-      icon: fa-r-project
+      icon: "fab fa-r-project"
       menu:
         - text: "How to download and install R and R Studio"
           href: docs/r_tutorials/download_and_install.html
+        - text: "The R prompt"
+          href: docs/r_tutorials/prompt.html
+        - text: "R actions"
+          href: docs/r_tutorials/actions.html
+        - text: "R objects"
+          href: docs/r_tutorials/objects.html
+        - text: "Reading data into R"
+          href: docs/r_tutorials/reading_data_into_R.html
+        - text: "Data wrangling"
+          href: docs/r_tutorials/data_wrangling_dplyr.html
+        - text: "Data visualization"
+          href: docs/r_tutorials/data_viz_ggplot.html
     - text: "Stats tutorials"
+      icon: "fas fa-chart-area"
       menu: 
         - text: "Introduction to statistics"
           href: stats_tutorials/stats_intro.html
