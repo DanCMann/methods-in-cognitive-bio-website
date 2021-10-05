@@ -248,7 +248,7 @@ $(document).ready(function () {
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="docs/about.html">About</a>
+  <a href="about.html">About</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -357,70 +357,14 @@ $(document).ready(function () {
 variable_in_workspace &lt;- 6
 
 ls()</code></pre>
-<pre><code>##  [1] &quot;casematters&quot;                                                                 
-##  [2] &quot;CaseMatters&quot;                                                                 
-##  [3] &quot;celcius_to_fahrenheit&quot;                                                       
-##  [4] &quot;character_variable&quot;                                                          
-##  [5] &quot;control_group_scores&quot;                                                        
-##  [6] &quot;elbairav&quot;                                                                    
-##  [7] &quot;fahrenheit_to_celcius&quot;                                                       
-##  [8] &quot;group&quot;                                                                       
-##  [9] &quot;integer.variable&quot;                                                            
-## [10] &quot;linear_model&quot;                                                                
-## [11] &quot;mean_of_x&quot;                                                                   
-## [12] &quot;numeric_variable&quot;                                                            
-## [13] &quot;scores&quot;                                                                      
-## [14] &quot;temp_converter&quot;                                                              
-## [15] &quot;treatment_group_scores&quot;                                                      
-## [16] &quot;v&quot;                                                                           
-## [17] &quot;variable&quot;                                                                    
-## [18] &quot;VARIABLE&quot;                                                                    
-## [19] &quot;variable_in_workspace&quot;                                                       
-## [20] &quot;variable_name&quot;                                                               
-## [21] &quot;variable.name&quot;                                                               
-## [22] &quot;variable1&quot;                                                                   
-## [23] &quot;variable2&quot;                                                                   
-## [24] &quot;variablevariable&quot;                                                            
-## [25] &quot;why_is_hello_world_the_phrase_that_is_always_in_intro_to_programming_lessons&quot;
-## [26] &quot;wordVariable&quot;                                                                
-## [27] &quot;x&quot;                                                                           
-## [28] &quot;y&quot;                                                                           
-## [29] &quot;z&quot;</code></pre>
+<pre><code>## [1] &quot;variable_in_workspace&quot; &quot;x&quot;</code></pre>
 <pre class="r"><code>save.image(file = &#39;workspace.RData&#39;)
 rm(list=ls()) # remove all objects</code></pre>
 <pre class="r"><code>ls()</code></pre>
 <pre><code>## character(0)</code></pre>
 <pre class="r"><code>load(&quot;workspace.RData&quot;)
 ls()</code></pre>
-<pre><code>##  [1] &quot;casematters&quot;                                                                 
-##  [2] &quot;CaseMatters&quot;                                                                 
-##  [3] &quot;celcius_to_fahrenheit&quot;                                                       
-##  [4] &quot;character_variable&quot;                                                          
-##  [5] &quot;control_group_scores&quot;                                                        
-##  [6] &quot;elbairav&quot;                                                                    
-##  [7] &quot;fahrenheit_to_celcius&quot;                                                       
-##  [8] &quot;group&quot;                                                                       
-##  [9] &quot;integer.variable&quot;                                                            
-## [10] &quot;linear_model&quot;                                                                
-## [11] &quot;mean_of_x&quot;                                                                   
-## [12] &quot;numeric_variable&quot;                                                            
-## [13] &quot;scores&quot;                                                                      
-## [14] &quot;temp_converter&quot;                                                              
-## [15] &quot;treatment_group_scores&quot;                                                      
-## [16] &quot;v&quot;                                                                           
-## [17] &quot;variable&quot;                                                                    
-## [18] &quot;VARIABLE&quot;                                                                    
-## [19] &quot;variable_in_workspace&quot;                                                       
-## [20] &quot;variable_name&quot;                                                               
-## [21] &quot;variable.name&quot;                                                               
-## [22] &quot;variable1&quot;                                                                   
-## [23] &quot;variable2&quot;                                                                   
-## [24] &quot;variablevariable&quot;                                                            
-## [25] &quot;why_is_hello_world_the_phrase_that_is_always_in_intro_to_programming_lessons&quot;
-## [26] &quot;wordVariable&quot;                                                                
-## [27] &quot;x&quot;                                                                           
-## [28] &quot;y&quot;                                                                           
-## [29] &quot;z&quot;</code></pre>
+<pre><code>## [1] &quot;variable_in_workspace&quot; &quot;x&quot;</code></pre>
 <p><em>NOTE</em>: I would recommend against saving your workspace unless you have a clear purpose for doing so. Early on in your R career you are likely to create a lot of objects that are not what you want or expect. People often don’t clean their environment and then save the workspace leading to messy environments that take up a ton of storage space. Also, a lot of early R users rely too much on previously created objects, oftentimes at the expense of scripts. If you don’t write everything in a script you can run into the problem of having an object where you have no idea how you created it. Maybe you can go back through your .Rhistory log, but this is tedious and time consuming.</p>
 <p>Even if you do write your code in a script, you will always make changes. Let’s say you decide to delete a line of code that creates an objects that you now realize is superfluous. If you save everything in a script and don’t save the workspace, then you don’t have to worry about that object ever again. If, however, you save and load the workspace every session, the object is still there. Maybe this isn’t a big deal and only has the effect of taking up a small amount of memory space. BUT you run the risk of getting weird errors that are hard to track down.</p>
 <p>For example, let’s say that you accidentally use that variable name somewhere in the script. Small typos happen like this all the time. If that object is still in your workspace, R will use it. If you are lucky, something weird will happen that makes you go back through your code. If you are not lucky, you may end up never catching the mistake and producing false results.</p>
@@ -531,7 +475,7 @@ pop_usa &lt;- c(4, 3, 4, 2, , 4)</code></pre>
 <p>================================================================================</p>
 <div id="session-information" class="section level4">
 <h4>Session information:</h4>
-<p>Last update on 2021-10-04</p>
+<p>Last update on 2021-10-05</p>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.1.1 (2021-08-10)
 ## Platform: x86_64-pc-linux-gnu (64-bit)

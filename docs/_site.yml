@@ -29,7 +29,7 @@ navbar:
       menu: 
         - text: "Introduction to statistics"
           href: stats_tutorials/stats_intro.html
-
+new_session: true
 output:
   html_document:
     include:
