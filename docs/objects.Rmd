@@ -1,13 +1,7 @@
 ---
 title: 'IntroR: Objects'
-author: "Dan C. Mann"
-date: "10/14/2020"
-output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 ## III. Objects
 
 
@@ -139,3 +133,10 @@ head(df)
 ```
 
 
+```{r include=FALSE}
+date <- "2020-10-14"
+```
+
+
+```{r, child="_session-info.Rmd"}
+```

@@ -127,5 +127,11 @@ data2_csv$good_dogs <- as.character(data2_csv$good_dogs)
 
 Changing data types in a data frame is also pretty straight-forward in the package `dplyr` which we'll cover in another lesson. 
 
+
+
+```{r include=FALSE}
+date <- "2020-11-04"
+```
+
 ```{r, child="_session-info.Rmd"}
 ```

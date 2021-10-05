@@ -261,6 +261,8 @@ library(dplyr) # quotes are optional
 
 ```
 
-
+```{r include=FALSE}
+date <- "2020-10-14"
+```
 ```{r, child="_session-info.Rmd"}
 ```

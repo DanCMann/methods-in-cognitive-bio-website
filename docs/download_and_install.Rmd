@@ -20,6 +20,8 @@ For R Studio: [Hands-On Programming with R](https://rstudio-education.github.io/
 
 If you get stuck and aren't able to install R or R Studio, get help from your peers by posting your problems in this week's [Forum](https://moodle.univie.ac.at/mod/forum/view.php?id=6129181) or contact me (Dan) directly.
 
-
+```{r include=FALSE}
+date <- "2020-10-14"
+```
 ```{r, child="_session-info.Rmd"}
 ```

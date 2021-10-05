@@ -1,8 +1,8 @@
 ================================================================================
 
-#### Session information:
+### Session information:
 
-Last update on `r Sys.Date()`
+Last update on `r date`
   
 ```{r}
 sessionInfo()

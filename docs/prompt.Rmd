@@ -81,5 +81,10 @@ x
 
 We will come back to the square brackets when we discuss dataframes because they play a more important role there.
 
+
+```{r include=FALSE}
+date <- "2021-10-02"
+```
+
 ```{r, child="_session-info.Rmd"}
 ```

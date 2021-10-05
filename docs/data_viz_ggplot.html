@@ -313,13 +313,10 @@ $(document).ready(function () {
 </div>
 
 
-<pre><code># Data visualization
-
-In this class, we&#39;ll learn how to use the package `ggplot2` to visualize your data.  
-
-
-```r
-library(ggplot2)
+<div id="data-visualization" class="section level1">
+<h1>Data visualization</h1>
+<p>In this class, we’ll learn how to use the package <code>ggplot2</code> to visualize your data.</p>
+<pre class="r"><code>library(ggplot2)
 library(dplyr)
 library(tidyr)</code></pre>
 <p>Descriptive and inferential statistics are incredibly useful for understanding your data. However, as we have discussed, they are models and models always have error. We have to live with a certain amount of error, but we should make sure that our model is at least useful. For example, is a statement like “the vast majority of humans have more than the mean number of eyes” all that useful? One way that we can assess the usefulness of our numeric models is to visualize the data.</p>
@@ -391,6 +388,7 @@ ans_plot</code></pre>
    geom_smooth(formula = y ~ x, method = &quot;lm&quot;, se = FALSE, data = anscombe)</code></pre>
 <p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>The quantitative stats that we have tell us that these are the same, yet a visual inspection reveals stark differences. ALWAYS PLOT YOUR DATA!!! (When/if we get into linear models, we’ll see that there are some model diagnostics that you can run that reveal differences.)</p>
+</div>
 <div id="ggplot2" class="section level1">
 <h1><code>ggplot2</code></h1>
 <p>Let’s learn ggplot by playing around with the <code>starwars</code> data set.</p>
@@ -624,7 +622,7 @@ str(data)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    8 obs. of  3 variables:
 ##  $ ID     : chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
 ##  $ week   : num  1 1 1 1 2 2 2 2
-##  $ measure: num  8.16 5.44 3.34 3.59 10.99 ...</code></pre>
+##  $ measure: num  4.8 6.4 3.73 8.01 9.61 ...</code></pre>
 <p>First, let’s plot the data to see if there is a difference between weeks.</p>
 <pre class="r"><code>ggplot(data = data, aes(x = week, y = measure)) +
   geom_boxplot() +
@@ -651,7 +649,7 @@ str(data)</code></pre>
 <p>================================================================================</p>
 <div id="session-information" class="section level4">
 <h4>Session information:</h4>
-<p>Last update on 2021-10-05</p>
+<p>Last update on 2020-11-12</p>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.1.1 (2021-08-10)
 ## Platform: x86_64-pc-linux-gnu (64-bit)

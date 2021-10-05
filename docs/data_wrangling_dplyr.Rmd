@@ -291,6 +291,8 @@ As with all of these, remember that if you don't assign the output to a variable
 
 There is a lot more you can do with `dplyr`, so I would recommend checking out the documentation. The book [*R for Data Science* by Garrett Grolemund and Hadley Wickham](https://r4ds.had.co.nz/transform.html) has a chapter with a lot of useful information. 
 
-
+```{r include=FALSE}
+date <- "2020-11-05"
+```
 ```{r, child="_session-info.Rmd"}
 ```

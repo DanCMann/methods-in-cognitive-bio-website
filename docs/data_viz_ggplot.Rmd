@@ -1,7 +1,7 @@
 ---
 title: 'Data visualization and ggplot2'
 ---
-```
+
 # Data visualization
 
 In this class, we'll learn how to use the package `ggplot2` to visualize your data.  
@@ -355,7 +355,9 @@ ggplot(data = data, aes(x = as.factor(week), y = measure)) +
 
 `ggplot2` gives you a lot of power and flexibility to make really nice visualizations. It can't do everything though. There are packages, however, that build on `ggplot2`. You can even create interactive 3D plots and animations. It does take a bit of time to get used to the syntax and you will spend a lot of time on Google (even for things you've done multiple times). But once you get familiar with it, you'll have a lot of fun creating beautiful plots! 
 
-
+```{r include=FALSE}
+date <- "2020-11-12"
+```
 
 ```{r, child="_session-info.Rmd"}
 ```

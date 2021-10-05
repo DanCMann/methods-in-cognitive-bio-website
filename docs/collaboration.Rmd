@@ -219,5 +219,8 @@ Websites for Stats:
 - **Introduction to Statistics using R** by Tom Booth, Anastasia Ushakova, & Milan Valasek: [https://bookdown.org/animestina/intro_stats_rms/](https://bookdown.org/animestina/intro_stats_rms/)
 
 
+```{r include=FALSE}
+date <- "2021-01-09"
+```
 ```{r, child="_session-info.Rmd"}
 ```
