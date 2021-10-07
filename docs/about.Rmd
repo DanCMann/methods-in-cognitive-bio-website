@@ -1,4 +1,7 @@
 ---
-title: "About the course"
+title: "About"
 ---
-about the course, test
+
+This is a supporting website for the statistics and programming module of the Methods in Cognitive Biology offered at the University of Vienna. This course is taught by Cliodhna Quigley, Lisa Horn-Péter, & Dan C. Mann.
+
+I (Dan C. Mann) built this website to have an easy place to host the documents that I write for class instruction. I'm not experienced in website design or construction so don't judge too harshly :) (I'm happy to hear feedback, though!) I built the site using R Markdown and GitHub Pages. 
