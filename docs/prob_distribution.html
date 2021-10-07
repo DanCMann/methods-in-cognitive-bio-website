@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Probability and distributions</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Methods in Cognitive Biology</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fab fa-r-project"></span>
+     
+    R tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="download_and_install.html">How to download and install R and R Studio</a>
+    </li>
+    <li>
+      <a href="prompt.html">The R prompt</a>
+    </li>
+    <li>
+      <a href="actions.html">R actions</a>
+    </li>
+    <li>
+      <a href="objects.html">R objects</a>
+    </li>
+    <li>
+      <a href="reading_data_into_R.html">Reading data into R</a>
+    </li>
+    <li>
+      <a href="collaboration.html">Sharing your work</a>
+    </li>
+    <li>
+      <a href="data_wrangling_dplyr.html">Data wrangling</a>
+    </li>
+    <li>
+      <a href="data_viz_ggplot.html">Data visualization</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fas fa-chart-area"></span>
+     
+    Stats tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="stats_intro.html">Introduction to statistics</a>
+    </li>
+    <li>
+      <a href="prob_distribution.html">Probability and distributions</a>
+    </li>
+    <li>
+      <a href="hypoth_test_mod_error.html">Models and hypothesis testing</a>
+    </li>
+    <li>
+      <a href="t_tests.html">T-tests</a>
+    </li>
+    <li>
+      <a href="correlation.html">Correlation</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Probability and distributions</h1>
+
+</div>
+
+
+<p>Note: I"m always interested in making things clearer, so if you have any trouble understanding any part of this, please let me know!</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>We’re going to discuss data distributions and probability!</p>
+<p>In this lesson, I will introduce the following statistical terms and concepts:</p>
+<ul>
+<li><p>the uniform distribution</p></li>
+<li><p>The normal distribution (aka the Gaussian distribution)</p></li>
+<li><p>probability theory</p>
+<ul>
+<li><p>The law of large numbers</p></li>
+<li><p>Central Limit Theorem</p></li>
+</ul></li>
+</ul>
+<p>We will also cover the following skills and functions in R (though many of these we will explore in greater detail in our R lessons)</p>
+<ul>
+<li><p>loading packages</p></li>
+<li><p>plotting histograms</p></li>
+<li><p>the package ggplot2</p></li>
+<li><p>functions:</p>
+<ul>
+<li><p><code>sample()</code></p></li>
+<li><p><code>rep()</code></p></li>
+</ul></li>
+</ul>
+</div>
+<div id="loading-packages" class="section level2">
+<h2>Loading packages</h2>
+<p>To use the functions in a package, you must first load the package into R. You can do this by using <code>library(package = package_name)</code>. If you get an error stating “there is no package called ‘…’”, that means R can’t find the package. If you haven’t made a typo, you may not have installed the package. If you know that you have installed the package, it’s possible that the package is stored in a different library. The function <code>.libPaths()</code> will give you the pathway to your library and to any other R package libraries you may have installed on your computer.</p>
+<p>When writing a script, you should load all packages at the top of the script. This makes it easier to know which packages are used throughout the script.</p>
+<pre class="r"><code>library(package = ggplot2)</code></pre>
+</div>
+<div id="distributions" class="section level2">
+<h2>Distributions</h2>
+<p>A distribution is data organized from the smallest value to largest. We saw a distribution when we plotted histograms.</p>
+<pre class="r"><code>set.seed(111)
+x &lt;- rnorm(n = 1000)
+hist(x)</code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>A histogram is a visual representation of data distribution. On the x-axis, you can see the full range of your variable of interest. In this randomly generated data, we can tell the data range from roughly -3.5 to 3. We can check the precise values with the function <code>range()</code> which returns the minimum and maximum values in a vector.</p>
+<pre class="r"><code>range(x)</code></pre>
+<pre><code>## [1] -3.323335  2.926025</code></pre>
+<p>What about the y-axis?</p>
+<p>“Frequency” is basically a count of observations. The higher you go, the more observations there are with that value. So, in this case, there are <span class="math inline">\(y\)</span> observations with the value <span class="math inline">\(x\)</span>. With discrete outcomes this is pretty straight-forward. But the data above is continuous, so what does the histogram show?</p>
+<p>For continuous variables, we “bin” the data. In the histogram above the data are divided into 13 bins, each of which represents a range of the data. The first bin (roughly) contains all of the observations that lie within -3.499 to -3, the second those that lie between -2.99 and -2.5, the third -2.499 to - 2, etc. We can force the histogram function to choose a different number of bins by specifying the <code>breaks =</code> argument.</p>
+<pre class="r"><code>hist(x, breaks = 7)</code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>hist(x, breaks = 28)</code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Data generally can be described by well known mathematical distributions. (The distribution above is a <strong>normal distribution</strong>, which we’ll discuss a bit later.) These distributions are linked to the probability of seeing an observed value. That’s a bit abstract and confusing. Let’s think about a real-world example. When you role a normal dice<sup>1</sup> you will land on 1, 2, 3, 4, 5, or 6. Unless there is something wrong with the dice, each of those values is equally as possible. Otherwise, board games and gambling would be a lot easier.</p>
+<ol style="list-style-type: decimal">
+<li><div>
+<div class="line-block"><span class="smallcaps">technically, the singular of “dice” is “die”, but it sounds weird to me, so I’ll just use dice throughout.</span></div>
+</div></li>
+</ol>
+<p>So, how likely is it that we role a three?</p>
+<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p><strong>When you see a question, take a bit of time and try to get the answer yourself. You might get it wrong, but the processing of thinking about it will help you understand it better.</strong></p>
+</div>
+<p>There are six sides, each side is equally possible, so each value has a one in six chance (<span class="math inline">\(\frac{1}{6}\)</span>). An individual outcome over the number of possible outcomes.</p>
+<p>What are the chances that we role an even number?</p>
+<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px;">
+<ol style="list-style-type: lower-alpha">
+<li><p><span class="math inline">\(\frac{1}{3}\)</span></p></li>
+<li><p><span class="math inline">\(\frac{4}{6}\)</span></p></li>
+<li><p><span class="math inline">\(\frac{1}{2}\)</span></p></li>
+<li><p><span class="math inline">\(\frac{1}{6}\)</span></p></li>
+</ol>
+</div>
+<p>First, how many even numbers are possible? 2, 4, and 6. If we role one those three numbers we’ll define that as a “success”. 1, 3, and 5 would be a “failure”. Essentially, we have two possible outcomes (odd or even), and both have an equal chance. So, the answer is <span class="math inline">\(\frac{1}{2}\)</span>.</p>
+<p>You could also think of it as <span class="math inline">\(\frac{3}{6}\)</span>, which reduces to <span class="math inline">\(\frac{1}{2}\)</span>. There are six possible outcomes, three of which are successes and three of which are failures.</p>
+<p>What about the chances that we role anything other than a 3?</p>
+<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<ol style="list-style-type: lower-alpha">
+<li><p><span class="math inline">\(\frac{1}{6}\)</span></p></li>
+<li><p><span class="math inline">\(\frac{5}{6}\)</span></p></li>
+<li><p><span class="math inline">\(\frac{1}{3}\)</span></p></li>
+<li><p><span class="math inline">\(\frac{1}{2}\)</span></p></li>
+</ol>
+</div>
+<p>We can define a role of 1, 2, 4, 5, and 6 as a “success”, and a 3 as a “failure”. This one is a little trickier because if we simplify the outcomes, we no longer have equal chances. That is, if we say there are two possible outcomes, 3 and “not 3”, the chance of 3 is far less likely than “not 3”. But, we still have six possible outcomes, five of which are not a 3 So, we get <span class="math inline">\(\frac{5}{6}\)</span>.</p>
+<p>We have another way to arrive at that answer. When you role a dice, you will get an outcome; you will get 1, 2, 3, 4, 5, or 6 (we’re assuming nothing strange like the dice rolling off the table and a dog eating it). If you add up the probability for each number, what do you get?</p>
+<pre class="r"><code>prob_one &lt;- 1/6
+prob_two &lt;- 1/6
+prob_three &lt;- 1/6
+prob_four &lt;- 1/6
+prob_five &lt;- 1/6
+prob_six &lt;- 1/6
+
+prob_one + prob_two + prob_three + prob_four + prob_five + prob_six</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p>You should get 1!</p>
+<div style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p>Note: There is a much more efficient way to write this bit of code: <code>rep()</code> takes the argument <code>x</code>, in this case 1/6, and repeats it <span class="math inline">\(n\)</span> times, here 6.</p>
+<pre class="r"><code>prob_vector &lt;- rep(x = 1/6, times = 6)
+prob_vector</code></pre>
+<pre><code>## [1] 0.1666667 0.1666667 0.1666667 0.1666667 0.1666667 0.1666667</code></pre>
+<p>You can then use the <code>sum()</code> function to add each element of the vector together</p>
+<pre class="r"><code>sum(prob_vector)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p>The whole thing can even be done in one line:</p>
+<pre class="r"><code>sum(rep(x = 1/6, times = 6))</code></pre>
+<pre><code>## [1] 1</code></pre>
+</div>
+<p>The sum of each outcome in an event should equal 1. Probability values are always within a range of 0 to 1. A value of 0 means an even never occurs, 1 it always occurs. If you know the probability of an event occurring, you know the probability of that event not occurring (assuming the events are independent, more on that later). Just subtract from 1!</p>
+<pre class="r"><code>prob_three &lt;- 1/6
+1 - prob_three </code></pre>
+<pre><code>## [1] 0.8333333</code></pre>
+<p>The probability of not rolling a 3 is 1 minus 1/6, which is 5/6 or 0.8333</p>
+<p>OK, so what does this have to do with distributions? Remember that a distribution is data organized from the smallest values to the largest. Let’s say that you roll the dice 1,000 times and keep track of each role outcome. Each roll is a data point and because one roll has no effect on the following roll, each data point is independent. If we organized the data from smallest to largest what would the distribution look like?</p>
+<p>We’ll use the <code>sample()</code> function to randomly select a number from 1 to 6. The function has an argument <code>prob</code> that allows you to specify the chances, or <strong>probabilities</strong>, of each value. Each side has an equal probability, so we’ll set them all to 1/6. We’ll start slow and simulate 1 roll.</p>
+<pre class="r"><code>probs &lt;- rep(1/6, times = 6)
+rolls &lt;- sample(c(1:6), size = 1, replace = T, prob = probs)
+rolls</code></pre>
+<pre><code>## [1] 3</code></pre>
+<p>Our first roll was a <code>rolls</code>. Let’s visualize the distribution of the data we have. We’ll use the package <code>ggplot2</code> for visualizing.</p>
+<pre class="r"><code># all of the ggplot plots will be a bit too advanced at this point. Don&#39;t worry too much about how it&#39;s done, and just worry about the outcome. I&#39;ve left the code here so you can go back and play around with it. 
+ggplot(as.data.frame(rolls),aes(rolls)) +
+        geom_dotplot() +
+        scale_y_continuous(NULL, breaks = NULL) +
+        scale_x_continuous(
+                limits = c(1, 6),
+                breaks = c(1, 2, 3, 4, 5, 6),
+                labels = c(1, 2, 3, 4, 5, 6))+
+        ggtitle(&#39;Rolls of the dice&#39;)</code></pre>
+<pre><code>## Bin width defaults to 1/30 of the range of the data. Pick better value with `binwidth`.</code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>Since it’s only one data point, that’s not all that exciting. But, we have to start somewhere. Our possible outcomes are distributed along the x-axis and our data point is then placed at the appropriate value. Let’s do five more rolls.</p>
+<pre class="r"><code>rolls &lt;- append(rolls, 
+                sample(c(1:6), size = 5, replace = T, prob = probs)
+                )
+
+ggplot(as.data.frame(rolls),aes(rolls)) +
+        geom_dotplot() +
+        scale_y_continuous(NULL, breaks = NULL) +
+        scale_x_continuous(
+                limits = c(1, 6),
+                breaks = c(1, 2, 3, 4, 5, 6),
+                labels = c(1, 2, 3, 4, 5, 6))+
+        ggtitle(&#39;Rolls of the dice&#39;)</code></pre>
+<pre><code>## Bin width defaults to 1/30 of the range of the data. Pick better value with `binwidth`.</code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>Is it weird that in 6 rolls we didn’t get every possible outcome? Not really, the outcome of a roll is not affected by the roll before or after it, that is, it is independent. If we roll a 2, a 2 is equally as likely as any other value on the next roll. If we roll ten times and we still don’t have a 2, the chances of getting a 2 don’t increase on the next roll. The dice doesn’t have any way to track the previous or upcoming roll, so the past rolls give us no information about any individual future roll.</p>
+<p>Let’s start to fill out the distribution a bit more.</p>
+<pre class="r"><code>rolls &lt;- append(rolls, 
+                sample(c(1:6), size = 14, replace = T, prob = probs)
+                )
+
+ggplot(as.data.frame(rolls),aes(rolls)) +
+        geom_dotplot() +
+        scale_y_continuous(NULL, breaks = NULL) +
+        scale_x_continuous(
+                limits = c(1, 6),
+                breaks = c(1, 2, 3, 4, 5, 6),
+                labels = c(1, 2, 3, 4, 5, 6))+
+        ggtitle(&#39;Rolls of the dice&#39;)</code></pre>
+<pre><code>## Bin width defaults to 1/30 of the range of the data. Pick better value with `binwidth`.</code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Even if we can’t predict the outcome on any individual roll, as we add more data points and we start to fill out our distribution, we may start to see a shape in how the data are distributed. Let’s add a lot more points to get an even better idea.</p>
+<pre class="r"><code>rolls &lt;- append(rolls, 
+                sample(c(1:6), size = 60, replace = T, prob = probs)
+                )
+
+ggplot(as.data.frame(rolls),aes(rolls)) +
+        geom_dotplot() +
+        scale_y_continuous(NULL, breaks = NULL) +
+        scale_x_continuous(
+                limits = c(1, 6),
+                breaks = c(1, 2, 3, 4, 5, 6),
+                labels = c(1, 2, 3, 4, 5, 6))+
+        ggtitle(&#39;Rolls of the dice&#39;)</code></pre>
+<pre><code>## Bin width defaults to 1/30 of the range of the data. Pick better value with `binwidth`.</code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>The number of rolls for each side is not completely equal, but it’s starting to even out. What if we do 100,000 rolls?</p>
+<pre class="r"><code>rolls &lt;- append(rolls, 
+                sample(c(1:6), size = 99920, replace = T, prob = probs)
+                )
+
+ggplot(as.data.frame(rolls),aes(rolls)) +
+        geom_histogram() +
+        scale_y_continuous(NULL, breaks = NULL) +
+        scale_x_continuous(
+                breaks = c(1, 2, 3, 4, 5, 6),
+                labels = c(1, 2, 3, 4, 5, 6))+
+        ggtitle(&#39;Rolls of the dice&#39;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>At this point, our data are pretty much completely equally distributed across the six possible outcomes. Since our probabilities for each roll were equal, this is what we expected to happen. This is called a <strong>uniform distribution</strong>. The probabilities are constant across all values.</p>
+<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p>How can you tell if you have a loaded dice (a dice that has been manipulated to increase the chances of landing on a particular side)?</p>
+</div>
+<p>So, what does this really tell us? We’ve confirmed that our dice is fair, but it took quite a few throws to see a roughly equal distribution. And we now know how to calculate a probability for a single throw, but what about multiple throws (e.g., what are the chances of rolling two 6s in three tries?, ten tries?)</p>
+<p>Let’s try another dice example. Let’s say you have a friend who always beats you in board games that use dice. He always brings his “lucky” dice but you’re starting to suspect that his luck might be cheating. He seems to roll higher numbers a lot more than you would expect. How can you figure out if he’s cheating or not?</p>
+<p>First, let’s create his “lucky” dice by changing the probabilities:</p>
+<pre class="r"><code>lucky_dice &lt;- function(n_rolls, lucky_side_probs = 1/5){
+  other_probs &lt;- (1 - (lucky_side_probs *3))/3
+  probs &lt;- c(rep(other_probs, times = 3), rep(lucky_side_probs, times = 3))
+  roll = sample(c(1:6), size = n_rolls, replace = T, prob = probs)
+  return(roll)
+}
+# we&#39;ll create a similar function for a fair dice
+normal_dice &lt;- function(n_rolls){
+  probs &lt;- c(rep(1/6, times = 6))
+  roll = sample(c(1:6), size = n_rolls, replace = T, prob = probs)
+  return(roll)
+}</code></pre>
+<p>You know that there should be a one in two chance of rolling a 4, 5, or 6, so any individual roll doesn’t tell you anything. But, you decide to keep track of his rolls. You make sure to write down the outcome of 36 successive rolls during game night.</p>
+<pre class="r"><code>set.seed(111)
+friend_rolls &lt;- lucky_dice(n_rolls = 36)
+friend_rolls</code></pre>
+<pre><code>##  [1] 4 3 5 4 5 4 6 4 4 6 4 4 6 6 6 4 6 1 5 3 4 5 5 5 1 5 3 5 2 4 6 4 4 4 5 3</code></pre>
+<p>You then remember in your stats class that a roll of a dice is independent from other rolls and you remember some weird distributions with some of the smaller sample sizes. You feel like you took quite a few observations, but you can’t remember what amount of variation was in the samples. His rolls have a lot of 4s, 5s, and 6s, but now you’re not sure how randomness might affect the rolls. You decide to look at the scores in more detail before accusing him of cheating.</p>
+<p>So, how can you determine what is normal and what is suspicious? In a fair dice, each value is equally likely, so you can actually use the average of dice rolls. The mean of 1, 2, 3, 4, 5, 6 is 3.5. You can think of all of the rolls of fair dice throughout history (and into the future) as the population, this the “true mean” of this population is 3.5. While we can’t evaluate every single roll, a large enough sample size should confirm this:</p>
+<pre class="r"><code>mean(sample(c(1:6), 1000000, replace = T))</code></pre>
+<pre><code>## [1] 3.496513</code></pre>
+<p>How does this help you determine if your friend is using an unfair dice? Now we can easily compare the “sample” data - the dice rolls we observed during game night - to a fair dice. According to the <strong>law of larger numbers</strong>, if we repeat the same conditions, 36 rolls of a dice, we can assess how common a series of outcomes like that of our friends with a normal dice without worrying about the exact values or sequence of values.</p>
+<div style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p><strong>The law of large numbers</strong> - The mean of the sample means is close to the mean of the underlying population, provided that the samples are independent and the sampling methods are identical. The larger the sample size, the closer the mean of sample means is to the population mean.</p>
+</div>
+<p>So, you roll a dice 36 times and take the average of those outcomes. You then repeat this 1000 times (you are very competitive and really want to know if your friend is really this good at monopoly).</p>
+<pre class="r"><code>set.seed(123)
+probs &lt;- c(rep(1/6, times = 6))
+
+rep_roll_test &lt;- replicate(1000,
+                           mean(
+                             sample(c(1:6), 
+                                    size = 36, 
+                                    replace = T, 
+                                    prob = probs)
+                             )
+                           )
+normal_rolls_36 &lt;- data.frame(roll_means = rep_roll_test)
+ggplot(data = normal_rolls_36, aes(roll_means))+
+  geom_histogram(color = &#39;black&#39;, bins = 15)</code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p>Now we have a distribution of sample means (similar to how we did with the confidence intervals). Even though the probability of any single roll of the dice is uniform, the outcome of multiple rolls ends up being normally distributed. That’s strange, no?</p>
+<p>Not really. It turns out that sampling distributions (that is, the distributions of independent sample statistics, like the sample mean) adhere to the <strong>central limit theorem</strong>. The <strong>central limit theorem</strong> states that you perform identical but independent sampling and your sample size is large enough (~ 30) the distribution of the sample statistics (like the sample means) will be normally distributed. This is true even if the underlying probabilities do not follow a normal distribution.</p>
+<p>The normal distribution has properties that make calculating probabilities quite a bit easier. Because values in a normal distribution are symmetrically centered around the mean, calculating probability from the normal distribution is relatively straight-forward (“relatively” is probably doing a lot of work in that sentence). For instance, what is the probability of rolling a value higher than the mean? The mean is 3.5, 4, 5, 6, are above it; 1, 2, 3, below. So the probability of rolling a value higher than the mean is 0.5 or 50%.</p>
+<p>Even more useful, normal distributions follow a 68-95-99.7 rule (technically it’s 68.27, 95.45, and 99.73% but that’s not as catchy). 68% of the observations in a normal distribution lie one standard deviation above and below the mean.</p>
+<pre class="r"><code># create a data frame to make it easier to use in ggplot
+normal_rolls_36 &lt;- data.frame(roll_means = rep_roll_test)
+
+mean &lt;- mean(normal_rolls_36$roll_means)
+stand_dev &lt;- sd(normal_rolls_36$roll_means)
+
+one_sd &lt;- c(mean - stand_dev, mean + stand_dev)
+two_sd &lt;- c(mean - 2 * stand_dev, mean + 2 * stand_dev)
+three_sd &lt;- c(mean - 3 * stand_dev, mean + 3 * stand_dev)
+
+colors &lt;- topo.colors(10)
+ggplot(data = normal_rolls_36, aes(roll_means)) +
+    geom_vline(xintercept = mean, color = colors[1], linetype = &#39;solid&#39;, size = 2)+
+  geom_vline(xintercept = one_sd, color = colors[2], linetype = &#39;twodash&#39;, size = 2) +
+  geom_vline(xintercept = two_sd, color = colors[3],linetype = &#39;dashed&#39;, size = 2) +
+  geom_vline(xintercept = three_sd, color = colors[4],linetype = &#39;dotted&#39;, size = 2) +
+  stat_function(fun = dnorm, 
+                args = c(mean = mean(normal_rolls_36$roll_means), 
+                         sd = sd(normal_rolls_36$roll_means)), 
+                col = colors[5], size = 2) +
+  geom_segment(aes(x = one_sd[1], xend = one_sd[2], y = 0.8, yend = 0.8),
+               size = 2, color = colors[2]) +
+  geom_segment(aes(x = two_sd[1], xend = two_sd[2], y = 0.2, yend = 0.2),
+               size = 2, color = colors[3]) +
+  geom_segment(aes(x = three_sd[1], xend = three_sd[2], y = 0, yend = 0.),
+               size = 2, color = colors[4])+
+    geom_histogram(aes(y = ..density..), color = &#39;black&#39;, bins = 15, alpha = 0.3) +
+  annotate(geom = &#39;text&#39;, x = 3.5, y = 0.85, label = &#39;68.27%&#39;, size = 5) +
+  annotate(geom = &#39;text&#39;, x = 3.5, y = 0.25, label = &#39;95.45%&#39;, size = 5)+
+  annotate(geom = &#39;text&#39;, x = 3.5, y = 0.05, label = &#39;99.73%&#39;, size = 5) </code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>95% of observations lie within two standard deviations above and below the mean, and 99.7% lie within three standard deviations. This is useful because we can use the distribution to estimate the probability of a value coming from the distribution. Just like how we can look at a histogram of dice roll probabilities and estimate the probability of a single roll, we can now estimate the probability that the mean of your friend’s rolls assuming the dice is a fair dice. If the mean of his rolls is 3.75 should we assume that he manipulated the dice? Probably not. Even though it is higher than average, the mean of 36 dice rolls will fall between the true mean and one standard deviation above the true mean roughly 34% of the time (68/2). The mean of 36 dice rolls will be less than or equal to 3.75 a bit more than 80% of the time</p>
+<div style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p>How did I estimate that? The probabilities have to equal 1 (or 100%). 3.75 is within a standard deviation of the mean, which is 0.68. Because I said “less than or equal to”, I have to include everything below 3.75 even if it is more than 1 standard deviation away from the mean. 1 - 0.68 gives you everything that is more than a standard deviation from the mean.</p>
+<pre class="r"><code>1 - 0.6827</code></pre>
+<pre><code>## [1] 0.3173</code></pre>
+<p>To get the lower half, you divide by 2.</p>
+<pre class="r"><code>(1 - 0.6827)/2</code></pre>
+<pre><code>## [1] 0.15865</code></pre>
+<p>Now add the lower half to the 0.68</p>
+<pre class="r"><code>0.6827 + (1 - 0.6827)/2</code></pre>
+<pre><code>## [1] 0.84135</code></pre>
+<p>You get a little less than 85%. Because 3.75 is slightly under 1 standard deviation above the mean, I rounded down to 80%.</p>
+</div>
+<p>Now, let’s look at your friend’s sample statistic, the sample mean.</p>
+<pre class="r"><code>mean(friend_rolls)</code></pre>
+<pre><code>## [1] 4.305556</code></pre>
+<p>The sample mean is 4.3055556. Let’s assume your friend isn’t cheating. Is it possible for the outcome of 36 rolls to have a mean of 4.3055556 if you use a fair dice?</p>
+<p>We can check this visually. The yellow(ish) line is the mean of your friend’s rolls.</p>
+<pre class="r"><code>colors &lt;- topo.colors(10)
+ggplot(data = normal_rolls_36, aes(roll_means)) +
+    geom_vline(xintercept = mean, color = colors[1], linetype = &#39;solid&#39;, size = 2)+
+  geom_vline(xintercept = one_sd, color = colors[2], linetype = &#39;twodash&#39;, size = 2) +
+  geom_vline(xintercept = two_sd, color = colors[3],linetype = &#39;dashed&#39;, size = 2) +
+  geom_vline(xintercept = three_sd, color = colors[4],linetype = &#39;dotted&#39;, size = 2) +
+  stat_function(fun = dnorm, 
+                args = c(mean = mean(normal_rolls_36$roll_means), 
+                         sd = sd(normal_rolls_36$roll_means)), 
+                col = colors[5], size = 2) +
+  geom_segment(aes(x = one_sd[1], xend = one_sd[2], y = 0.8, yend = 0.8),
+               size = 2, color = colors[2]) +
+  geom_segment(aes(x = two_sd[1], xend = two_sd[2], y = 0.2, yend = 0.2),
+               size = 2, color = colors[3]) +
+  geom_segment(aes(x = three_sd[1], xend = three_sd[2], y = 0, yend = 0.),
+               size = 2, color = colors[4])+
+    geom_histogram(aes(y = ..density..), color = &#39;black&#39;, bins = 15, alpha = 0.3) +
+  annotate(geom = &#39;text&#39;, x = 3.5, y = 0.85, label = &#39;68.27%&#39;, size = 5) +
+  annotate(geom = &#39;text&#39;, x = 3.5, y = 0.25, label = &#39;95.45%&#39;, size = 5)+
+  annotate(geom = &#39;text&#39;, x = 3.5, y = 0.05, label = &#39;99.73%&#39;, size = 5) +
+  geom_vline(xintercept = mean(friend_rolls), color = colors[10], size = 2)</code></pre>
+<p><img src="prob_distribution_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p>Just from a visual inspection, what would you estimate the probability of the average of 36 rolls being 4.3055556, assuming the dice is fair?</p>
+<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<ol style="list-style-type: lower-alpha">
+<li><p>~99%</p></li>
+<li><p>~4.3%</p></li>
+<li><p>~0.5%</p></li>
+<li><p>~16.67%</p></li>
+</ol>
+</div>
+<p>The visualization above suggests that 4.3055556 is almost three standard deviations above the mean. Because it is more than 2 standard deviations from the mean, it is more extreme than 95% of sample mean(means of 36 dice rolls). It is higher than roughly 97.5% (95 + the bottom 2.5%). It’s within three standard deviations and we do see more extreme values, so it is technically possible. Still there is somewhere between a 0.15 and 2.5 % chance that the average of 36 rolls would be this extreme, if the dice is fair.</p>
+<p>We can get more precise numbers using some r functions. The function <code>pnorm()</code>. <code>pnorm()</code> calculates a <strong>cumulative distribution function</strong> for a normal distribution. A cumulative density function is the probability that that a variable is a value that is less than or equal to <span class="math inline">\(x\)</span>. In our case, the probability that a mean of 36 rolls of a dice is less than or equal to 4.3055556.</p>
+<pre class="r"><code>cdf &lt;- pnorm(mean(friend_rolls), mean = mean, sd = stand_dev)
+cdf</code></pre>
+<pre><code>## [1] 0.9968139</code></pre>
+<p>So, 0.9968139 of sample means are below our friend’s roll average.</p>
+<p>So, are you convinced that your friend has cheated?</p>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>This information might seem pretty abstract right now, but it forms the basis of much of statistics. Soon we’ll get into hypothesis testing, but with this information you will already understand most of the core concepts.</p>
+</div>
+<div id="extra-information" class="section level1">
+<h1>Extra information</h1>
+<div style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p>For any task you need to perform in R, there are almost always several options.</p>
+<p><em>To plot a histogram</em> You can use the base R function <code>hist()</code> or ggplot2’s function <code>geom_histogram()</code>. For quick checks, I usually just use the base R function.</p>
+<p>To use <code>hist()</code>, you have to specify the <code>x =</code> argument. This needs to be a vector of values. This can be an atomic vector or a column of a data frame, specified by using the data frame variable name (iris in this case), the <code>$</code> sign, and the variable/column name.</p>
+<p>The <code>geom_histogram()</code> method is a bit more complicated at first. We’ll cover it in more detail in a later lesson.</p>
+<p><em>To access a column in a data frame</em>, the most common was are:</p>
+<ol style="list-style-type: decimal">
+<li><p>use <code>$</code> with the column name: <code>iris$Sepal.Width</code>.</p></li>
+<li><p>use <code>[]</code> with the column number <code>iris[, 2]</code>.</p>
+<ul>
+<li><p>The square brackets let you subset a data frame by selecting rows and columns by a numerical index.</p></li>
+<li><p>In the iris data frame, Sepal.Width is the 2nd column.</p></li>
+<li><p>rows come before columns <code>dataframe[row_number, column_number]</code></p>
+<ul>
+<li><p><code>iris[1, 1]</code>is the first row of the first column;</p></li>
+<li><p><code>iris[1:10, 2]</code>would be the first ten rows of the second column.</p></li>
+</ul></li>
+<li><p>To select a full row or full column, leave the space empty.</p>
+<ul>
+<li><p><code>iris[, 2]</code>selects all of the rows of the 2nd column.</p></li>
+<li><p><code>iris[3, ]</code> selects the 3rd row from all columns.</p></li>
+</ul></li>
+</ul></li>
+<li><p>Use a package like <code>dplyr</code></p></li>
+</ol>
+<ul>
+<li>more on this later</li>
+</ul>
+<p>There are pros and cons to each of these methods. Using <code>dplyr</code> has a bit of a learning curve as it uses a bit of specialized syntax. <code>$</code> can be a bit trickier if you want to apply a function to multiple columns. <code>[]</code> is less readable for humans and errors can creep in, for instance if a column is inserted, the column indexes might be off causing trouble if you have to run the code again.</p>
+</div>
+<p>================================================================================</p>
+<div id="session-information" class="section level3">
+<h3>Session information:</h3>
+<p>Last update on 2020-11-03</p>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.1.1 (2021-08-10)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 20.04.3 LTS
+## 
+## Matrix products: default
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=de_AT.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=de_AT.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=de_AT.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=de_AT.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] ggplot2_3.3.5
+## 
+## loaded via a namespace (and not attached):
+##  [1] highr_0.9         bslib_0.2.5.1     compiler_4.1.1    pillar_1.6.2     
+##  [5] jquerylib_0.1.4   tools_4.1.1       digest_0.6.27     jsonlite_1.7.2   
+##  [9] evaluate_0.14     lifecycle_1.0.0   tibble_3.1.3      gtable_0.3.0     
+## [13] pkgconfig_2.0.3   rlang_0.4.11      DBI_1.1.1         yaml_2.2.1       
+## [17] xfun_0.25         withr_2.4.2       stringr_1.4.0     dplyr_1.0.7      
+## [21] knitr_1.33        generics_0.1.0    sass_0.4.0        vctrs_0.3.8      
+## [25] grid_4.1.1        tidyselect_1.1.1  glue_1.4.2        R6_2.5.1         
+## [29] fansi_0.5.0       rmarkdown_2.9     farver_2.1.0      purrr_0.3.4      
+## [33] magrittr_2.0.1    scales_1.1.1      ellipsis_0.3.2    htmltools_0.5.1.1
+## [37] assertthat_0.2.1  colorspace_2.0-2  labeling_0.4.2    utf8_1.2.2       
+## [41] stringi_1.7.3     munsell_0.5.0     crayon_1.4.1</code></pre>
+<p>================================================================================</p>
+</div>
+</div>
+
+<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+  
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

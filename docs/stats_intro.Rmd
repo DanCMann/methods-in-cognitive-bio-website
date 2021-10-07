@@ -1,0 +1,234 @@
+---
+title: "Basic Statistics"
+---
+
+# Statistics introduction
+
+Note: This is a work in progress, please let me know if you notice any mistakes or anything unclear.
+
+Let's create a population of a new species, the [wug](https://jeanberkogleason.com/the-wug-test-now-available/)
+
+We'll set the population size to 10,000. These are all of the (adult) wugs in the world.
+
+```{r}
+
+pop_size <- 10000
+weight_mean <- 30
+weight_sd <- 4
+
+population <- data.frame(
+        wug_id = seq(pop_size),
+        weight = rnorm(pop_size, mean = weight_mean, sd = weight_sd)
+)
+```
+
+```{r}
+hist(population$weight)
+```
+
+```{r}
+mean(population$weight)
+sd(population$weight)
+range(population$weight)
+```
+
+However, when you collect data, you normally don't have access to an entire population, [Hawaiian Crows notwithstanding](https://www.nature.com/articles/nature19103). So, what do we do? Sample!
+
+Sampling is fundamental to understanding statistics. Because we can't gather data on the whole population, we have to take samples from the population and make *inferences* based on the sample statistics.
+
+How do we know how many individuals we need? This is not a trivial issue, in fact, it's probably the most important question you will face as a researcher. It's also one of the most difficult to answer. We'll address this question several times during the course. (Lisa will also discuss sampling in the Experimental Design class).
+
+But let's try to get an intuitive notion of sampling theory. Because we generated the wug data, we know the true population mean: `r mean(population$weight)`.
+
+Let's sample one individual. To do this, let's use the `sample_n()` function in the `dplyr` package
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+population %>% 
+        sample_n(1)
+```
+
+Note: If you haven't installed `dplyr` yet, you can use the `sample()` function in "base" R.
+
+```{r}
+index <- sample(x = 1:nrow(population), size = 1)
+population[index, ]
+```
+
+Does your individual weigh the same as the mean? There is some randomness with sampling, most of you probably got something around `r mean(population$weight)`, but anything from `r range(population$weight)[1]` to `r range(population$weight)[2]` is possible.
+
+What happens if we take a lot of individuals? And then we take the mean of their weights?
+
+```{r}
+sample_size <- 10
+
+wug_sample <- population %>% 
+        sample_n(sample_size)
+mean(wug_sample$weight)
+# or 
+#index <- sample(x = 1:nrow(population), size = sample_size)
+#wug_sample <- population[index, ]
+```
+
+More than likely, you got a value that was pretty close to the true population mean. This is the *sample mean*.
+
+If we increase the population size even further, we will most likely get a sample mean that is even closer to the population mean.
+
+```{r}
+sample_size <- 1000
+
+wug_sample <- population %>% 
+        sample_n(sample_size)
+mean(wug_sample$weight)
+# or 
+#index <- sample(x = 1:nrow(population), size = sample_size)
+#wug_sample <- population[index, ]
+```
+
+To illustrate this, I've written some code that will repeat this sampling method 100 times. Larger sample sizes should be, on average, closer to the true mean.
+
+<div>
+
+The code in this less will get quite a bit more difficult. Don't worry about being able to reproduce this, even after we finish all three lessons. (It was also done in a hurry, so the next version of this code will be more thought out.)
+
+</div>
+
+```{r}
+library(ggplot2)
+
+## 
+wug_sample <- function(sample_size){
+        # Do 100 iterations of sampling
+        sample_means <- NULL
+        for(i in 1:100){
+                index <- sample(x = 1:nrow(population), 
+                                size = sample_size)
+                wug_sample <- population[index, ]
+                sample_means[i] <- mean(wug_sample$weight)
+        }
+        
+        wug_df <- data.frame(
+                sample_size = rep(x = sample_size, length.out = 100 ),
+                weight = sample_means
+        )
+        return(wug_df)
+        
+}  
+
+samp_comp <- rbind(wug_sample(sample_size = 1000), 
+                   wug_sample(sample_size = 100),
+                   wug_sample(sample_size = 10))
+
+ggplot(data = samp_comp, aes(weight,
+                             fill = as.factor(sample_size),
+                             color = as.factor(sample_size))) +
+        geom_histogram(aes(y = ..density..),
+                       alpha = 0.5, position = 'identity') +
+        geom_density(alpha = 0.5) +
+        ggtitle("Means of sample means")+
+        geom_vline(xintercept = mean(population$weight)) +
+        scale_fill_discrete(name = 'sample size') +
+        scale_color_discrete(name = 'sample size')
+```
+
+As your sample size increases, there is less variance in the sample means. If you repeat data collection 100 times and each time you have a sample size of 10, you will see the sample means from \~ 28 to 33. If you sample sizes are 1000, sample means stay within 0.5 kg of the true mean.
+
+Of course in reality, you will likely never see sample sizes of 1000, you will collect data only once, and you won't know the true population statistics. So, how do you figure out the true population mean? Well, you use the sample size calculated from your data as the *estimate of the population mean*
+
+How do you know if you can trust that estimate? More than likely, the estimate of the population mean will not be the same as the true population mean, but we can use our sample mean and sample standard deviation to calculate a 95% confidence interval for the mean.
+
+```{r}
+confint_int <- function(x, n, level = .95){
+        percentile <- 1 - (1 - level)/2
+        degree_of_freedom <- n - 1
+        
+        percentile_of_tdist <- qt(p =percentile , df = n -1)
+        standard_error_mean <-  sd(x)/sqrt(n)
+        
+        lower_bound <- mean(x) - (percentile_of_tdist * standard_error_mean)
+        upper_bound <- mean(x) + (percentile_of_tdist * standard_error_mean)
+        
+        return(c(lower_bound, upper_bound))
+}
+
+
+sample_size <- 10
+index <- sample(x = 1:nrow(population), 
+                size = sample_size)
+wug_sample <- population[index, ]
+ci <- confint_int(x = wug_sample$weight, n = sample_size)
+ci
+```
+
+There is a 95% chance that the true mean lies between `r ci[1]` and `r ci[2]`.
+
+```{r}
+
+ci_plot <- function(sample_size) {
+        ci_data <- data.frame(
+                'sample_mean' = numeric(),
+                'lower_ci' = numeric(),
+                'upper_ci' = numeric(),
+                'out_of_range' = logical()
+        )
+        for (i in 1:100) {
+                #sample_size <- 10
+                index <- sample(x = 1:nrow(population),
+                                size = sample_size)
+                wug_sample <- population[index,]
+                ci <-confint_int(x = wug_sample$weight, n = sample_size)
+                ci_data[i, 1] <- mean(wug_sample$weight)
+                ci_data[i, 2] <- ci[1]
+                ci_data[i, 3] <- ci[2]
+                if (mean(population$weight) > ci[2] |
+                    mean(population$weight) < ci[1]) {
+                        ci_data[i, 4] <- TRUE
+                } else{
+                        ci_data[i, 4] <- FALSE
+                }
+        }
+        
+        successes <-
+                sum(ci_data$out_of_range == F) / nrow(ci_data) * 100
+        
+        ggplot(ci_data,
+               aes(x = 1:nrow(ci_data),
+                   y = sample_mean,
+                   color = out_of_range)) +
+                geom_point() +
+                geom_linerange(aes(ymin = lower_ci, ymax = upper_ci)) +
+                ylim(c(22, 38)) +
+                xlab('replication number') +
+                geom_hline(yintercept = mean(population$weight)) +
+                scale_color_manual(values = c('black', 'red')) +
+                annotate(
+                        geom = 'text',
+                        x = 75,
+                        y = 37,
+                        label = paste("successes:", successes, "%")
+                )
+        
+}
+
+```
+
+```{r}
+ci_plot(sample_size = 10)
+```
+
+```{r}
+ci_plot(sample_size = 100)
+```
+
+So far, we've glossed over quite a few details. Don't worry, understanding statistics will take time and practice. But notice a few functions we used: `rnorm()`, `qt()`. What in the world are these? In the first, the "norm" in the function name refers to "normal", that is, the *normal distribution*. The "t" in the second function name refers to the *t distribution*. A distribution is usually data organized from the smallest value to the largest. We'll discuss distributions and probablity in the next lesson. 
+
+
+```{r include=FALSE}
+date <- "2020-10-19"
+```
+
+```{r, child="_session-info.Rmd"}
+```

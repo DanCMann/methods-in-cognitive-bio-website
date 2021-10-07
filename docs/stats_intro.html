@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Basic Statistics</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Methods in Cognitive Biology</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fab fa-r-project"></span>
+     
+    R tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="download_and_install.html">How to download and install R and R Studio</a>
+    </li>
+    <li>
+      <a href="prompt.html">The R prompt</a>
+    </li>
+    <li>
+      <a href="actions.html">R actions</a>
+    </li>
+    <li>
+      <a href="objects.html">R objects</a>
+    </li>
+    <li>
+      <a href="reading_data_into_R.html">Reading data into R</a>
+    </li>
+    <li>
+      <a href="collaboration.html">Sharing your work</a>
+    </li>
+    <li>
+      <a href="data_wrangling_dplyr.html">Data wrangling</a>
+    </li>
+    <li>
+      <a href="data_viz_ggplot.html">Data visualization</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fas fa-chart-area"></span>
+     
+    Stats tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="stats_intro.html">Introduction to statistics</a>
+    </li>
+    <li>
+      <a href="prob_distribution.html">Probability and distributions</a>
+    </li>
+    <li>
+      <a href="hypoth_test_mod_error.html">Models and hypothesis testing</a>
+    </li>
+    <li>
+      <a href="t_tests.html">T-tests</a>
+    </li>
+    <li>
+      <a href="correlation.html">Correlation</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Basic Statistics</h1>
+
+</div>
+
+
+<div id="statistics-introduction" class="section level1">
+<h1>Statistics introduction</h1>
+<p>Note: This is a work in progress, please let me know if you notice any mistakes or anything unclear.</p>
+<p>Let’s create a population of a new species, the <a href="https://jeanberkogleason.com/the-wug-test-now-available/">wug</a></p>
+<p>We’ll set the population size to 10,000. These are all of the (adult) wugs in the world.</p>
+<pre class="r"><code>pop_size &lt;- 10000
+weight_mean &lt;- 30
+weight_sd &lt;- 4
+
+population &lt;- data.frame(
+        wug_id = seq(pop_size),
+        weight = rnorm(pop_size, mean = weight_mean, sd = weight_sd)
+)</code></pre>
+<pre class="r"><code>hist(population$weight)</code></pre>
+<p><img src="stats_intro_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>mean(population$weight)</code></pre>
+<pre><code>## [1] 30.02168</code></pre>
+<pre class="r"><code>sd(population$weight)</code></pre>
+<pre><code>## [1] 3.993623</code></pre>
+<pre class="r"><code>range(population$weight)</code></pre>
+<pre><code>## [1] 14.20469 43.05403</code></pre>
+<p>However, when you collect data, you normally don’t have access to an entire population, <a href="https://www.nature.com/articles/nature19103">Hawaiian Crows notwithstanding</a>. So, what do we do? Sample!</p>
+<p>Sampling is fundamental to understanding statistics. Because we can’t gather data on the whole population, we have to take samples from the population and make <em>inferences</em> based on the sample statistics.</p>
+<p>How do we know how many individuals we need? This is not a trivial issue, in fact, it’s probably the most important question you will face as a researcher. It’s also one of the most difficult to answer. We’ll address this question several times during the course. (Lisa will also discuss sampling in the Experimental Design class).</p>
+<p>But let’s try to get an intuitive notion of sampling theory. Because we generated the wug data, we know the true population mean: 30.0216825.</p>
+<p>Let’s sample one individual. To do this, let’s use the <code>sample_n()</code> function in the <code>dplyr</code> package</p>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>population %&gt;% 
+        sample_n(1)</code></pre>
+<pre><code>##   wug_id   weight
+## 1   4595 29.57961</code></pre>
+<p>Note: If you haven’t installed <code>dplyr</code> yet, you can use the <code>sample()</code> function in “base” R.</p>
+<pre class="r"><code>index &lt;- sample(x = 1:nrow(population), size = 1)
+population[index, ]</code></pre>
+<pre><code>##      wug_id  weight
+## 6834   6834 24.8695</code></pre>
+<p>Does your individual weigh the same as the mean? There is some randomness with sampling, most of you probably got something around 30.0216825, but anything from 14.2046891 to 43.0540253 is possible.</p>
+<p>What happens if we take a lot of individuals? And then we take the mean of their weights?</p>
+<pre class="r"><code>sample_size &lt;- 10
+
+wug_sample &lt;- population %&gt;% 
+        sample_n(sample_size)
+mean(wug_sample$weight)</code></pre>
+<pre><code>## [1] 30.56154</code></pre>
+<pre class="r"><code># or 
+#index &lt;- sample(x = 1:nrow(population), size = sample_size)
+#wug_sample &lt;- population[index, ]</code></pre>
+<p>More than likely, you got a value that was pretty close to the true population mean. This is the <em>sample mean</em>.</p>
+<p>If we increase the population size even further, we will most likely get a sample mean that is even closer to the population mean.</p>
+<pre class="r"><code>sample_size &lt;- 1000
+
+wug_sample &lt;- population %&gt;% 
+        sample_n(sample_size)
+mean(wug_sample$weight)</code></pre>
+<pre><code>## [1] 30.21675</code></pre>
+<pre class="r"><code># or 
+#index &lt;- sample(x = 1:nrow(population), size = sample_size)
+#wug_sample &lt;- population[index, ]</code></pre>
+<p>To illustrate this, I’ve written some code that will repeat this sampling method 100 times. Larger sample sizes should be, on average, closer to the true mean.</p>
+<div>
+<p>The code in this less will get quite a bit more difficult. Don’t worry about being able to reproduce this, even after we finish all three lessons. (It was also done in a hurry, so the next version of this code will be more thought out.)</p>
+</div>
+<pre class="r"><code>library(ggplot2)
+
+## 
+wug_sample &lt;- function(sample_size){
+        # Do 100 iterations of sampling
+        sample_means &lt;- NULL
+        for(i in 1:100){
+                index &lt;- sample(x = 1:nrow(population), 
+                                size = sample_size)
+                wug_sample &lt;- population[index, ]
+                sample_means[i] &lt;- mean(wug_sample$weight)
+        }
+        
+        wug_df &lt;- data.frame(
+                sample_size = rep(x = sample_size, length.out = 100 ),
+                weight = sample_means
+        )
+        return(wug_df)
+        
+}  
+
+samp_comp &lt;- rbind(wug_sample(sample_size = 1000), 
+                   wug_sample(sample_size = 100),
+                   wug_sample(sample_size = 10))
+
+ggplot(data = samp_comp, aes(weight,
+                             fill = as.factor(sample_size),
+                             color = as.factor(sample_size))) +
+        geom_histogram(aes(y = ..density..),
+                       alpha = 0.5, position = &#39;identity&#39;) +
+        geom_density(alpha = 0.5) +
+        ggtitle(&quot;Means of sample means&quot;)+
+        geom_vline(xintercept = mean(population$weight)) +
+        scale_fill_discrete(name = &#39;sample size&#39;) +
+        scale_color_discrete(name = &#39;sample size&#39;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="stats_intro_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>As your sample size increases, there is less variance in the sample means. If you repeat data collection 100 times and each time you have a sample size of 10, you will see the sample means from ~ 28 to 33. If you sample sizes are 1000, sample means stay within 0.5 kg of the true mean.</p>
+<p>Of course in reality, you will likely never see sample sizes of 1000, you will collect data only once, and you won’t know the true population statistics. So, how do you figure out the true population mean? Well, you use the sample size calculated from your data as the <em>estimate of the population mean</em></p>
+<p>How do you know if you can trust that estimate? More than likely, the estimate of the population mean will not be the same as the true population mean, but we can use our sample mean and sample standard deviation to calculate a 95% confidence interval for the mean.</p>
+<pre class="r"><code>confint_int &lt;- function(x, n, level = .95){
+        percentile &lt;- 1 - (1 - level)/2
+        degree_of_freedom &lt;- n - 1
+        
+        percentile_of_tdist &lt;- qt(p =percentile , df = n -1)
+        standard_error_mean &lt;-  sd(x)/sqrt(n)
+        
+        lower_bound &lt;- mean(x) - (percentile_of_tdist * standard_error_mean)
+        upper_bound &lt;- mean(x) + (percentile_of_tdist * standard_error_mean)
+        
+        return(c(lower_bound, upper_bound))
+}
+
+
+sample_size &lt;- 10
+index &lt;- sample(x = 1:nrow(population), 
+                size = sample_size)
+wug_sample &lt;- population[index, ]
+ci &lt;- confint_int(x = wug_sample$weight, n = sample_size)
+ci</code></pre>
+<pre><code>## [1] 25.53393 31.37585</code></pre>
+<p>There is a 95% chance that the true mean lies between 25.5339349 and 31.3758542.</p>
+<pre class="r"><code>ci_plot &lt;- function(sample_size) {
+        ci_data &lt;- data.frame(
+                &#39;sample_mean&#39; = numeric(),
+                &#39;lower_ci&#39; = numeric(),
+                &#39;upper_ci&#39; = numeric(),
+                &#39;out_of_range&#39; = logical()
+        )
+        for (i in 1:100) {
+                #sample_size &lt;- 10
+                index &lt;- sample(x = 1:nrow(population),
+                                size = sample_size)
+                wug_sample &lt;- population[index,]
+                ci &lt;-confint_int(x = wug_sample$weight, n = sample_size)
+                ci_data[i, 1] &lt;- mean(wug_sample$weight)
+                ci_data[i, 2] &lt;- ci[1]
+                ci_data[i, 3] &lt;- ci[2]
+                if (mean(population$weight) &gt; ci[2] |
+                    mean(population$weight) &lt; ci[1]) {
+                        ci_data[i, 4] &lt;- TRUE
+                } else{
+                        ci_data[i, 4] &lt;- FALSE
+                }
+        }
+        
+        successes &lt;-
+                sum(ci_data$out_of_range == F) / nrow(ci_data) * 100
+        
+        ggplot(ci_data,
+               aes(x = 1:nrow(ci_data),
+                   y = sample_mean,
+                   color = out_of_range)) +
+                geom_point() +
+                geom_linerange(aes(ymin = lower_ci, ymax = upper_ci)) +
+                ylim(c(22, 38)) +
+                xlab(&#39;replication number&#39;) +
+                geom_hline(yintercept = mean(population$weight)) +
+                scale_color_manual(values = c(&#39;black&#39;, &#39;red&#39;)) +
+                annotate(
+                        geom = &#39;text&#39;,
+                        x = 75,
+                        y = 37,
+                        label = paste(&quot;successes:&quot;, successes, &quot;%&quot;)
+                )
+        
+}</code></pre>
+<pre class="r"><code>ci_plot(sample_size = 10)</code></pre>
+<p><img src="stats_intro_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>ci_plot(sample_size = 100)</code></pre>
+<p><img src="stats_intro_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>So far, we’ve glossed over quite a few details. Don’t worry, understanding statistics will take time and practice. But notice a few functions we used: <code>rnorm()</code>, <code>qt()</code>. What in the world are these? In the first, the “norm” in the function name refers to “normal”, that is, the <em>normal distribution</em>. The “t” in the second function name refers to the <em>t distribution</em>. A distribution is usually data organized from the smallest value to the largest. We’ll discuss distributions and probablity in the next lesson.</p>
+<p>================================================================================</p>
+<div id="session-information" class="section level3">
+<h3>Session information:</h3>
+<p>Last update on 2020-10-19</p>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.1.1 (2021-08-10)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 20.04.3 LTS
+## 
+## Matrix products: default
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=de_AT.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=de_AT.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=de_AT.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=de_AT.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] ggplot2_3.3.5 dplyr_1.0.7  
+## 
+## loaded via a namespace (and not attached):
+##  [1] pillar_1.6.2      bslib_0.2.5.1     compiler_4.1.1    jquerylib_0.1.4  
+##  [5] highr_0.9         tools_4.1.1       digest_0.6.27     jsonlite_1.7.2   
+##  [9] evaluate_0.14     lifecycle_1.0.0   tibble_3.1.3      gtable_0.3.0     
+## [13] pkgconfig_2.0.3   rlang_0.4.11      DBI_1.1.1         yaml_2.2.1       
+## [17] xfun_0.25         withr_2.4.2       stringr_1.4.0     knitr_1.33       
+## [21] generics_0.1.0    vctrs_0.3.8       sass_0.4.0        grid_4.1.1       
+## [25] tidyselect_1.1.1  glue_1.4.2        R6_2.5.1          fansi_0.5.0      
+## [29] rmarkdown_2.9     farver_2.1.0      purrr_0.3.4       magrittr_2.0.1   
+## [33] scales_1.1.1      ellipsis_0.3.2    htmltools_0.5.1.1 assertthat_0.2.1 
+## [37] colorspace_2.0-2  labeling_0.4.2    utf8_1.2.2        stringi_1.7.3    
+## [41] munsell_0.5.0     crayon_1.4.1</code></pre>
+<p>================================================================================</p>
+</div>
+</div>
+
+<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+  
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

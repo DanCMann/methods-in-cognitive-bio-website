@@ -1,0 +1,311 @@
+---
+title: "Simple statistical test"
+---
+
+# Introduction
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+
+In this lesson, we'll run through the t-test.  
+
+# Terms and clarification
+
+predictor == independent variable
+
+response == dependent variable
+
+# T-test
+
+T-tests are used when the response is a numeric, continuous variable. You can use a t-test for hypotheses related to whether a sample differs from a known or hypothetical population mean; whether two group differ from one another; or whether within-subject responses differ. T-tests are often used to compare the means of (no more than) two groups.
+
+-   One-sample t-test
+-   Two-sample t-test
+-   Paired sample t-test
+
+## The T-distribution
+
+Like the normal distribution, The t-distribution is symmetrical and center around the mean. However, the tails (values further away from the mean) are "fatter" in the t-distribution. This is to account for the fact that the true population standard deviation is unknown. The t-distribution uses the sample standard deviation, but adjusts the probability density function by adding in "degrees of freedom" which is the number of observations minus 1. The more observations, the higher the degrees of freedom, and the more normal the t-distribution looks.
+
+```{r}
+x  <- seq(from = -4, to = 4, length = 100)
+data <- data.frame(x = x,
+                   y = c(dnorm(x, mean = 0, sd = 1), dt(x, df = 3), dt(x, df = 15)),
+                   dist = rep(c('norm', 't(df = 3)', 't(df = 15)'), each = 100)
+                       )
+ggplot(data) +
+        geom_line(aes(x = x, y = y, color = dist), size = 2)
+```
+
+## R function `t.test()`
+
+To perform a t-test in R, use the function `t.test()`.
+
+| Argument                                          | Description                                                                                                                       | Test                                                                   |
+|---------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|
+| `x`                                               | vector of numeric data (the response variable)                                                                                    | all t-tests                                                            |
+| `y = NULL`                                        | vector of numeric data (response of a second group)                                                                               | two-sample t-test (both Welch's and Student's), paired samples t-test, |
+| `alternative = c('two-sided', 'less', 'greater')` | one (and only one) of the strings 'two-sided', 'less', or 'greater'. Choose depending on your hypothesis. Default is 'two-sided'. | all t-tests.                                                           |
+| `mu = 0`                                          | The population or hypothetical mean. Default is 0.                                                                                | One-sample t-test                                                      |
+| `paired = FALSE`                                  | Whether the data points should be paired or not (within subject). Default is false.                                               | Paired samples t-test                                                  |
+| `var.equal = FALSE`                               | Whether the two groups being tested have the same standard deviation. Default is false.                                           | TRUE: Student's t-test; FALSE: Welch's t-test.                         |
+
+## One-sample t-test
+
+In the one-sample t-test, you test whether your sample data differ from a population with a known or hypothetical mean. Often the hypothetical mean is 0.  
+
+### Hypothesis testing
+
+Grad school is hard. It's a lot of work, you may be working multiple jobs, you still want to have a social life, there's often not enough time in the day to get everything done. The first thing that may suffer is sleep. Lack of sleep can have negative physical and mental effects, so you decide to see if grad students are getting an average of 8 hours of sleep. (Get enough sleep! And make sure you have a proper work life balance!). You randomly survey 50 graduate students throughout Austria asking them to estimate how many of hours of sleep per night they get. 
+
+Population: Graduate Students in Austria.  
+Sample: Randomly sampled Graduate Students.  
+
+H0: Austrian graduate students get an average of 8 hours of sleep per night.  
+HA: Austrian graduate students do not get an average of 8 hours of sleep per night. 
+
+Let's simulate the sleep survey data
+```{r}
+## The set.seed() function helps make your data reproducible. Use this anytime there is a random process in your analysis. Your data will likely still be different from mine. 
+set.seed(123)
+hour_sleep <- seq(from = 3, to = 10, by = 0.25)
+grad_sleep <- sample(hour_sleep, 50, replace = T, dnorm(hour_sleep, mean = 7.5, sd = 1.5))
+```
+
+### Checking assumptions
+
+**Independence**: Our observations were randomly selected from different graduate institutions throughout Austria. 
+
+**Normality**: Our sample size is greater than ~ 30, because of the central limit theorem, we can assume our sampling distribution is normal. 
+
+### Running the test
+
+- `x = grad_sleep` : We want our numeric response here. In this case, our response is stored as a numeric vector. 
+- `mu = 8` : "mu" is a Greek letter, $\mu$. In statistics, it is used to represent the population mean. Our hypothetical population mean in this case is 8.
+- `alternative = 'two-sided'` : We hypothesize that Austrian grad students do not get an average of 8 hours of sleep per night. Maybe they get more. Maybe less. But it's not 8. 
+```{r}
+t_output <- t.test(x = grad_sleep, mu = 8, alternative = 'two.sided')
+t_output
+```
+What is this information telling us? Do we accept the alternative hypothesis? Or the null hypothesis? 
+
+### T test output
+
+Let's go into detail about what all of this is telling you.
+
+**data:** : 1st line in `t.test()` output.  
+
+This tells you what went into the `x = ` argument. 
+
+**t = ** : 2nd line, 1st value in `t.test()` output. 
+
+```{r}
+t_output$statistic
+```
+
+This is your t-score. You may have heard of a z-score, the t-score is similar. Both are standardized scores that tell you how far a data point is from the mean. Technically, how many standard deviations from the mean. In the one-sample t-test the t-score tells you how many standard deviations the sample mean is from the population (possibly hypothetical) mean. 
+
+**df = ** : 2nd line, 2nd value in `t.test()` output.  
+```{r}
+t_output$parameter
+```
+
+The degrees of freedom. The number of independent observations minus 1. The t distribution uses degrees of freedom to adjust the probability density values at the ends of the distribution curve.  
+
+Degrees of freedom is the number of values that can vary when calculating a statistic. That's probably a bit unclear, but an example might help. If you have a mean of 10 and you have 3 numbers, there are an infinite number of possibilities. YOu could have: (10, 10, 10) or (11, 10, 9) or (0.5, 19.25, 10.25) or (45, -15, 0) etc.  Even if you know one of the numbers, there are still infinite possibilities: 12 , (8, 10), (5, 13), (-13, 31), etc. However, if you know two numbers, then you cannot vary the final number: 12, 14, (4). In this example, no other number works other than 4. Out of the three numbers, only two can vary freely; thus $n - 1$.
+
+**p-value** : 2nd line, 3rd value in `t.test()` output. 
+```{r}
+t_output$p.value
+```
+
+Probably the most abused and misunderstood part of statistics. The p-value does not tell you that you did a good experiment, or that your results are true, or even that your results are false. Perhaps the best simplistic interpretation of a p-value is the following: Are your data weird if we assume the null hypothesis to be true? 
+
+P-values tell you about the probability of your results or more extreme results. What does the "more extreme" part mean? Well, a p-value has a big assumption and that assumption is that the null hypothesis is true. So, a more technical definition is the "probability of getting a value at least as extreme as the observed value under the assumption that the null hypothesis is true. 
+
+In the example above, you'll notice that p = `r t_output$p.value`. So, if we assume that graduate students actually get 8 hours of sleep, we assume that we will see a sample mean of `t_output$estimate` or more extreme around 5% of the time.   
+
+
+**alternative hypothesis** : 3rd line in `t.test()` output.  
+
+This restates your alternative hypothesis. It is not a statement about whether you should accept the alternative hypothesis. In a one-sample t-test this will tell you that "true mean is not equal to $\mu$" for a two-sided test, "true mean is greater than $\mu$" for a one-sided test where you predict the population mean to be greater than the null hypothesis and  "true mean is less than $\mu$" for a one-sided test where you predict the population mean to be less than the null hypothesis. 
+
+**95 percent confidence interval:** : 4th and 5th line in `t.test()` output.  
+```{r}
+t_output$conf.int
+```
+
+95% probability that the true population mean will be between these two values. This is giving you a range of the population parameter (the true population mean) based on the sample parameters (sample mean and sample standard deviation). Does the confidence interval range overlap with the null hypothesis?  
+
+**sample estimates**: 6th and 7th line in `t.test()` output.  
+```{r}
+t_output$estimate
+
+```
+The sample statistics being tested. 
+
+## Two-sample t-test 
+
+The two-sample t-test is useful for comparing two groups with each other. It's usually used to test whether the sample means differ between the two groups. 
+
+There are two types of two-sample t-tests: the student's t-test and Welch's t-test. The first assumes that the variance is equal between the two groups. The second does not make this assumption. The default for the `t.test()` function is the Welch's t-test (`var.equal = FALSE`). 
+
+### Hypothesis testing
+
+Wugs love veggie burgers. Some love burgers made from mushrooms; others love burgers made from soybeans. Wugs aren't good at flying but they can flap their wings and hover in the air for a few seconds. There are some anecdotal claims that soybean burger loving can hang in the air for longer than the mushroom burger lovers. Let's test this claim! 
+```{r}
+set.seed(123)
+wug_flight <- data.frame(food_pref = rep(c("soybean", "mushroom"), each = 35),
+                         hang_time = c(rnorm(35, mean = 9.25, sd = 0.8),
+                                       rnorm(35, mean = 7.7, sd = 4)
+                                       )
+                         )
+str(wug_flight)
+head(wug_flight)
+```
+
+
+H0: The true mean hang time is equal between the two groups.  
+HA: The true mean hang time in mushroom loving wugs is less than the true mean hang time in soybean loving wugs. 
+
+
+### Checking assumptions
+
+**Independence**: Our wugs were randomly selected. 
+
+**Normality**: Our sample size (for both groups) is greater than ~ 30, because of the central limit theorem, we can assume our sampling distribution is normal. 
+
+**Homogeneity of variance** : AKA “homoscedasticity”. Standard deviation is the same in both groups. If they aren't you can use `var.equal = False`. We'll discuss this in more detail later. 
+
+### Running the test
+
+- `formula = hang_time ~ food_pref` : We've done things a little different here. We've used a formula. To the left of the `~` we have the response and to the right we have the predictor variable, i.e., the groups we want to compare. If you don't include the `$` operator, then we have to include the `data =` argument with the appropriate data frame.   
+- `alternative = 'less'` : The difference between the groups is less than zero. This can be a bit confusing because how do you know if you should choose 'greater' or 'less'? You have to figure out which group R treats as the "reference" group. We think mean hang time is greater for soybean wugs, so, if soybean is 1st then you would choose 'greater' (9 - 8 = 1). If soybean wugs are second, then it should be 'less' (8 - 9 = -1). R usually orders factors by alphabetical order, but you can check by using `levels()`.  
+```{r}
+levels(wug_flight$food_pref)
+```
+- `var.equal = False` : We won't assume equal variances. 
+
+### t-test output
+
+```{r}
+t_output <-  t.test(formula = hang_time ~ food_pref,
+                    data = wug_flight,
+                    alternative = 'less',
+                    var.equal = F)
+t_output
+```
+
+The output is pretty much the same as the one-sample t-test. You'll notice that `data:` makes it clear what is being evaluated by stating response "by" predictor. The confidence intervals go to `-Inf` on the low end. Since our hypothesis is that the true mean is less than 0, anything on the lower range isn't important for us. You'll also see that there are two sample estimates: the mean for each group. 
+
+So, what numbers does the two-sample t-test use? In the one-sample, we compared the "true population" mean with the sample mean. Now that we have two sample means what do we use? We use the difference between the two means. Take a look at the confidence intervals. Using the data from the two samples R calculates a 95% confidence interval for the true *difference* between the two group means. So, what is the difference in the sample mean?
+
+```{r}
+as.numeric(t_output$estimate[1] - t_output$estimate[2])
+```
+
+So, our test evaluates the likelihood of seeing a difference of `r as.numeric(t_output$estimate[1] - t_output$estimate[2])` (or less) if the difference in the true population means is actually 0. 
+
+The two-sample t-test uses each groups' standard deviation to calculate the standard error used to calculate a t-score. 
+
+
+## Paired sample t-test
+
+Let's say that we want to test the whether dogs that go to the river on a walk eat more than dogs that go to the dog park. The problem is that we have a huge amount of variation in the sizes of dogs (therefore how much they eat). So, we decide to test the same dog in each condition. We randomly select 50 dogs and measure the amount of food they eat after a river walk and then on another day we test how much they eat after going to the dog park. We have 50 subjects and two experimental conditions, so  100 observations. 
+
+Do we run a one-sample t-test? Well we have two conditions so that doesn't seem intuitive. What about a two-sample? Well, our observations are not independent from each other which violates one of the most important assumptions in statistical testing (independence of observations). But, our set up is a common experimental design so we have to have some way to deal with these type of data, right?
+
+This where the paired sample t-test comes in! You can use a paired sample t-test when you have two conditions and each subject is measured in both conditions. 
+
+If you're nervous about learning the details of a completely new type of test, you're in luck! You basically already know how to do the paired sample t-test! The paired sample t-test is essentially a one-sample t-test. But how can that be!? Let's see. 
+
+```{r}
+set.seed(123)
+
+river <- rnorm(50, mean = 35, sd = 10)
+dog_park <- sapply(river, FUN = function(x) x + rnorm(1, mean = 0.25, sd = 0.5))
+
+
+dog_food <- data.frame(
+        subject = factor(rep(c(1:50), length.out = 50)),
+        condition = rep(c("river", "dog_park"), each = 50),
+        food_eaten = c(river, dog_park)
+                         )
+str(dog_food)
+head(dog_food)
+```
+
+```{r}
+pairt_output <- t.test(food_eaten ~ condition, paired = T, data = dog_food)
+pairt_output
+```
+
+```{r}
+# This uses a base R way of subsetting the data frame by the condition. 
+food_dif <- dog_food$food_eaten[which(dog_food$condition == 'dog_park')] - dog_food$food_eaten[which(dog_food$condition == 'river')]
+```
+
+```{r}
+onet_output <- t.test(food_dif, mu = 0, paried = F)
+onet_output
+```
+
+A paired t-test performs a one-sample t-test by finding the between condition difference for each individual. The two outputs have a few differences: the heading telling you the test performed, the "data:" line, and the sample estimate description. All of the calculated values, however, are exactly the same. You should also see that the sample estimate for the paired t-test states "mean of the differences", which is exactly what we calculated when we created the vector to use in the one sample t-test. 
+
+
+# Supplmentary info
+
+### The one-sample t-test by hand
+
+Our null hypothesis is that average hours per night of sleep is 8. We have a sample size of 50 observations. 
+```{r}
+h_null <- 8
+n <- 50
+``` 
+
+Our sample mean and sample standard deviation. 
+```{r}
+sample_mean <- mean(grad_sleep)
+sample_sd <- sd(grad_sleep)
+```
+
+Calculate the standard error of the mean by dividing the sample standard deviation by the square root of the 
+```{r}
+st_err_mean <- sample_sd / sqrt(n)
+```
+
+Calculate a t-score by subtracting the hypothesized population mean from the sample mean. Divide by the standard error of the mean. Does our t-score match? 
+```{r}
+t <- (sample_mean - h_null) / st_err_mean
+t
+```
+
+
+Use the `pt()` function to calculate the probability of getting this t-score (or a more extreme t-score) assuming the null hypothesis is true. 
+This function is a bit more complicated. ???
+```{r}
+pt(-abs(t), df = n-1, lower.tail = T)*2
+```
+
+
+
+Confidence interval
+
+```{r}
+conf_level <- 0.95
+sample_mean - (abs(qt((1-conf_level)/2, df = n - 1) * st_err_mean))
+sample_mean + (abs(qt((1-conf_level)/2, df = n - 1) * st_err_mean))
+```
+
+
+
+
+```{r include=FALSE}
+date <- "2020-11-10"
+```
+
+```{r, child="_session-info.Rmd"}
+```
