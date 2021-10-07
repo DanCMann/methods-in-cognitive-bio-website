@@ -65,7 +65,7 @@ ls()
 
 
 ```{r}
-save.image(file = 'workspace.RData')
+save.image(file = '../data/workspace.RData')
 rm(list=ls()) # remove all objects
 ```
 
@@ -76,7 +76,7 @@ ls()
 
 
 ```{r}
-load("workspace.RData")
+load("../data/workspace.RData")
 ls()
 ```
 
@@ -152,7 +152,7 @@ So, that brings us to the crucial question. How do you share your R projects, R 
 
 The easiest way is via email. If you are using an R project, find the folder where the .Rproj file is saved. Even if you aren't using an R project, you should have a project folder with some organizational structure. Compress the main folder into a zip file. Both Windows and Macs allow you to compress folders by right clicking and selecting the compress option (for Windows 10 it's Right click > Send to > Compressed (zipped) folder, on a Mac it's Right click > Compress). 
 
-![*Zipping a file in Windows 10.*](../../img/zipping_img.PNG)
+![*Zipping a file in Windows 10.*](../img/zipping_img.PNG)
 
 Zipping will maintain the structure of your project folder. Your collaborator can then unzip the files and have access to your project code and data by opening the .Rproj file in R Studio. If they don't use R Studio they will still have access to your scripts, data, and saved workspaces. 
 
@@ -165,7 +165,7 @@ ucloud, Dropbox, Microsoft OneDrive, Google Drive, etc. allow you save and share
 
 File hosting and sending links are helpful, but if multiple people are actively working on a project, you may run into file conflicts. You also often grow a large number of past version. 
 
-![*notFinal.doc from the web comic phdcomics*](../../img/phd101212s.gif)
+![*notFinal.doc from the web comic phdcomics*](../img/phd101212s.gif)
 
 Programs like Git and hosting platforms like Github can streamline collaborative work and help researchers document project changes. We don't have enough time to go into great detail, but I'll introduce you to the core concepts. 
 
@@ -173,7 +173,7 @@ Programs like Git and hosting platforms like Github can streamline collaborative
 
 [Git](https://git-scm.com) is a version control system. A version control system tracks changes of a project across time. With Git you can always return to a previous version of the project so if something goes wrong, you can always return to a stable version. For collaborative research this is extremely helpful because it allows researchers to log changes to a project while maintaining clear organizational structure. Git also helps researchers work independently and test their ideas without disturbing the main documents in the project. Git keeps a log of changes to a project, who made changes, and when the changes were made. So, researchers can work simultaneously while minimizing redundancy.  
 
-![*Git branching. Image from Puia Zahedi*](../../img/git.jpg)
+![*Git branching. Image from Puia Zahedi*](../img/git.jpg)
 
 Git allows you to log changes by using **commits**. You can test ideas and make changes to the project just like normal, but they won't become part of the project until you commit the changes (new files, modified files, deletions, etc). You can also create a **branch**. A branch creates a copy of the project at that time (almost like a parallel universe branch off). You can then work on that side branch without disturbing the main branch. If you decide to keep what you were working on, then you can **merge** the side branch and the main branch together. You can do all of this, even on a project that doesn't have collaborators. In fact, Git deal with a project locally (on your computer). In order to work collaboratively with Git, you need someway to share your files. 
 

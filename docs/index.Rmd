@@ -9,6 +9,7 @@ title: "Methods in Cognitive Biology"
 - [R actions](actions.html)
 - [R objects](objects.html)
 - [Reading data into R](reading_data_into_R.html)
+- [Sharing your work](collaboration.html)
 - [Data wrangling](data_wrangling_dplyr.html)
 - [Data visualization](data_viz_ggplot.html)
 
