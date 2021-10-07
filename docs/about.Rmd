@@ -2,6 +2,12 @@
 title: "About"
 ---
 
-This is a supporting website for the statistics and programming module of the Methods in Cognitive Biology offered at the University of Vienna. This course is taught by Cliodhna Quigley, Lisa Horn-Péter, & Dan C. Mann.
+This is a supporting website for the statistics and programming module of the Methods in Cognitive Biology offered at the University of Vienna. This course is taught by [Cliodhna Quigley](https://fusanilab.org/people/cliodhna-quigley-phd/), [Lisa Horn-Péter](https://cogbio.univie.ac.at/people/postdoctoral-researchers/lisa-horn/), & Dan C. Mann.
 
-I (Dan C. Mann) built this website to have an easy place to host the documents that I write for class instruction. I'm not experienced in website design or construction so don't judge too harshly :) (I'm happy to hear feedback, though!) I built the site using R Markdown and GitHub Pages. 
+I (Dan C. Mann) built this website to have an easy place to host the documents that I write for class instruction. I'm not experienced in website design or construction so don't judge too harshly :) (I'm happy to hear feedback, though!) I built the site using [R Markdown](https://rmarkdown.rstudio.com/) and [GitHub Pages](https://pages.github.com/). 
+
+The repo containing all of the source documents is located on [GitHub](https://github.com/DanCMann/methods-in-cognitive-bio-website):  
+  
+  
+  
+  
