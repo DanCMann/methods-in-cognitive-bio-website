@@ -1,5 +1,5 @@
 ---
-title: "Simple statistical test"
+title: "Simple statistical tests"
 ---
 
 # Introduction

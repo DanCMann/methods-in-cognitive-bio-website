@@ -59,7 +59,6 @@ if (window.hljs) {
 
 
 
-<link rel="stylesheet" href="styles.css" type="text/css" />
 
 
 
@@ -275,6 +274,9 @@ $(document).ready(function () {
       <a href="reading_data_into_R.html">Reading data into R</a>
     </li>
     <li>
+      <a href="collaboration.html">Sharing your work</a>
+    </li>
+    <li>
       <a href="data_wrangling_dplyr.html">Data wrangling</a>
     </li>
     <li>
@@ -292,7 +294,19 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="stats_tutorials/stats_intro.html">Introduction to statistics</a>
+      <a href="stats_intro.html">Introduction to statistics</a>
+    </li>
+    <li>
+      <a href="prob_distribution.html">Probability and distributions</a>
+    </li>
+    <li>
+      <a href="hypoth_test_mod_error.html">Models and hypothesis testing</a>
+    </li>
+    <li>
+      <a href="t_tests.html">T-tests</a>
+    </li>
+    <li>
+      <a href="correlation.html">Correlation</a>
     </li>
   </ul>
 </li>
@@ -503,8 +517,8 @@ anova(linear_model)</code></pre>
 ## 
 ## Response: scores
 ##            Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
-## group       1  8042.2  8042.2  99.412 &lt; 2.2e-16 ***
-## Residuals 198 16017.8    80.9                      
+## group       1  5772.4  5772.4  79.591 3.103e-16 ***
+## Residuals 198 14359.9    72.5                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>summary(linear_model)</code></pre>
@@ -514,18 +528,18 @@ anova(linear_model)</code></pre>
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
-## -26.0937  -5.7767   0.1697   5.8157  26.0048 
+## -21.1707  -5.8425  -0.2929   5.4336  23.5085 
 ## 
 ## Coefficients:
 ##                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)     74.7845     0.8994  83.146   &lt;2e-16 ***
-## grouptreatment  12.6824     1.2720   9.971   &lt;2e-16 ***
+## (Intercept)     75.5539     0.8516  88.718  &lt; 2e-16 ***
+## grouptreatment  10.7446     1.2044   8.921  3.1e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 8.994 on 198 degrees of freedom
-## Multiple R-squared:  0.3343, Adjusted R-squared:  0.3309 
-## F-statistic: 99.41 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
+## Residual standard error: 8.516 on 198 degrees of freedom
+## Multiple R-squared:  0.2867, Adjusted R-squared:  0.2831 
+## F-statistic: 79.59 on 1 and 198 DF,  p-value: 3.103e-16</code></pre>
 <p>Other functions perform actions that are essential to working in R, but won’t (necessarily) produce an object that you can use. For example, you can get your working directory by using the function <code>getwd()</code>. You can change your working directory by using <code>setwd()</code>. <code>list.files()</code> will produce a list of all of the files in your working directory.</p>
 <p>Two of the most useful functions that you will use are <code>install.packages()</code> and <code>library()</code>. Packages are like “add-ons” to R. A package contains R functions, example data, and helpful documentation. If you find yourself thinking “I wonder if there is a way to do this” the answer is most likely “yes and there is a package that does it”. You can find all of the R approved packages at <a href="https://cran.r-project.org" class="uri">https://cran.r-project.org</a>. Packages that are on this website are very easy to download and start using. Simply use the <code>install.packages()</code> function and put the name of the package as an argument: <code>install.packages("package Name")</code></p>
 <p>The packages you download are stored in your R library. The function <code>library()</code> produces a list of all the packages currently installed. To use a package you have to load it first. To load a package put the package name as an argument into the <code>library()</code> function: <code>library("package Name")</code>. If you don’t know the path to your library, you can use <code>.libPaths()</code></p>
@@ -534,8 +548,9 @@ anova(linear_model)</code></pre>
 library(dplyr) # quotes are optional</code></pre>
 <p>================================================================================</p>
 </div>
-<div id="session-information" class="section level4">
-<h4>Session information:</h4>
+</div>
+<div id="session-information" class="section level3">
+<h3>Session information:</h3>
 <p>Last update on 2020-10-14</p>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.1.1 (2021-08-10)
@@ -564,7 +579,6 @@ library(dplyr) # quotes are optional</code></pre>
 ## [13] xfun_0.25         yaml_2.2.1        compiler_4.1.1    htmltools_0.5.1.1
 ## [17] knitr_1.33        sass_0.4.0</code></pre>
 <p>================================================================================</p>
-</div>
 </div>
 </div>
 

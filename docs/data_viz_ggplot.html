@@ -59,7 +59,6 @@ if (window.hljs) {
 
 
 
-<link rel="stylesheet" href="styles.css" type="text/css" />
 
 
 
@@ -275,6 +274,9 @@ $(document).ready(function () {
       <a href="reading_data_into_R.html">Reading data into R</a>
     </li>
     <li>
+      <a href="collaboration.html">Sharing your work</a>
+    </li>
+    <li>
       <a href="data_wrangling_dplyr.html">Data wrangling</a>
     </li>
     <li>
@@ -292,7 +294,19 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="stats_tutorials/stats_intro.html">Introduction to statistics</a>
+      <a href="stats_intro.html">Introduction to statistics</a>
+    </li>
+    <li>
+      <a href="prob_distribution.html">Probability and distributions</a>
+    </li>
+    <li>
+      <a href="hypoth_test_mod_error.html">Models and hypothesis testing</a>
+    </li>
+    <li>
+      <a href="t_tests.html">T-tests</a>
+    </li>
+    <li>
+      <a href="correlation.html">Correlation</a>
     </li>
   </ul>
 </li>
@@ -622,7 +636,7 @@ str(data)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    8 obs. of  3 variables:
 ##  $ ID     : chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
 ##  $ week   : num  1 1 1 1 2 2 2 2
-##  $ measure: num  4.8 6.4 3.73 8.01 9.61 ...</code></pre>
+##  $ measure: num  6.12 4.95 4.03 5.34 8.73 ...</code></pre>
 <p>First, let’s plot the data to see if there is a difference between weeks.</p>
 <pre class="r"><code>ggplot(data = data, aes(x = week, y = measure)) +
   geom_boxplot() +
@@ -647,8 +661,8 @@ str(data)</code></pre>
 <h2>Summary</h2>
 <p><code>ggplot2</code> gives you a lot of power and flexibility to make really nice visualizations. It can’t do everything though. There are packages, however, that build on <code>ggplot2</code>. You can even create interactive 3D plots and animations. It does take a bit of time to get used to the syntax and you will spend a lot of time on Google (even for things you’ve done multiple times). But once you get familiar with it, you’ll have a lot of fun creating beautiful plots!</p>
 <p>================================================================================</p>
-<div id="session-information" class="section level4">
-<h4>Session information:</h4>
+<div id="session-information" class="section level3">
+<h3>Session information:</h3>
 <p>Last update on 2020-11-12</p>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.1.1 (2021-08-10)

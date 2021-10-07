@@ -59,7 +59,6 @@ if (window.hljs) {
 
 
 
-<link rel="stylesheet" href="styles.css" type="text/css" />
 
 
 
@@ -275,6 +274,9 @@ $(document).ready(function () {
       <a href="reading_data_into_R.html">Reading data into R</a>
     </li>
     <li>
+      <a href="collaboration.html">Sharing your work</a>
+    </li>
+    <li>
       <a href="data_wrangling_dplyr.html">Data wrangling</a>
     </li>
     <li>
@@ -292,7 +294,19 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="stats_tutorials/stats_intro.html">Introduction to statistics</a>
+      <a href="stats_intro.html">Introduction to statistics</a>
+    </li>
+    <li>
+      <a href="prob_distribution.html">Probability and distributions</a>
+    </li>
+    <li>
+      <a href="hypoth_test_mod_error.html">Models and hypothesis testing</a>
+    </li>
+    <li>
+      <a href="t_tests.html">T-tests</a>
+    </li>
+    <li>
+      <a href="correlation.html">Correlation</a>
     </li>
   </ul>
 </li>
@@ -335,62 +349,62 @@ First, we’re going to create some fake data and save the file so we don’t ha
         binaer =rep(c(TRUE, FALSE), length.out = 100)
 )
                     
-write.csv(data1, file = &quot;data1.csv&quot;, row.names = F)
-write.table(data1, file = &quot;data1.txt&quot;, row.names = F)</code></pre>
+write.csv(data1, file = &quot;../data/data1.csv&quot;, row.names = F)
+write.table(data1, file = &quot;../data/data1.txt&quot;, row.names = F)</code></pre>
 <p>Now lets read the csv file back into R</p>
-<pre class="r"><code>data1_csv &lt;- read.csv(&quot;data1.csv&quot;)</code></pre>
+<pre class="r"><code>data1_csv &lt;- read.csv(&quot;../data/data1.csv&quot;)</code></pre>
 <p>How can we tell if it worked?</p>
 <p>First, if you are using R Studio, you will see that there is a new object in your Environment pane. You can directly click on the data in the Environment window and the full data set will open in your Source pane. You can achieve the same result by using the function <code>View()</code> and putting the data set name (the variable name in R, not the file name) as the <code>x =</code> argument (e.g., <code>View(x = data1_csv)</code>).</p>
 <p>You’ll usually have a lot of data and viewing the data in this format is a bit of a sensory overload. The functions <code>head()</code> and <code>str()</code> are super useful.</p>
 <p><code>head()</code> prints the first 6 rows (observations) of the data frame (by default, you can change the number of rows to show by specifying the <code>n =</code> argument).</p>
 <pre class="r"><code>head(data1_csv)</code></pre>
-<pre><code>##    numerisch ganze_zahlen kategorisch binaer
-## 1  5.4223155            1           a   TRUE
-## 2 -0.2103320            2           b  FALSE
-## 3  2.7607222            3           c   TRUE
-## 4  0.2415064            4           d  FALSE
-## 5  4.6033206            5           a   TRUE
-## 6  8.6442268            6           b  FALSE</code></pre>
+<pre><code>##   numerisch ganze_zahlen kategorisch binaer
+## 1 4.1428242            1           a   TRUE
+## 2 7.8493014            2           b  FALSE
+## 3 0.8140373            3           c   TRUE
+## 4 1.9662963            4           d  FALSE
+## 5 8.2045971            5           a   TRUE
+## 6 2.6017799            6           b  FALSE</code></pre>
 <p>The column names are above the columns and it looks like the data we were expecting. However, we are expecting four columns but we see five and the first column does have a column name. Why? The very first shows you the index. These are also called the row names. This information can be useful for subsetting your data.</p>
 <p><code>str()</code> prints the structure of the data. Here you can see the number and names of columns (aka variables), the number of observations, and the data type of each column.</p>
 <pre class="r"><code>str(data1_csv)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    100 obs. of  4 variables:
-##  $ numerisch   : num  5.422 -0.21 2.761 0.242 4.603 ...
+##  $ numerisch   : num  4.143 7.849 0.814 1.966 8.205 ...
 ##  $ ganze_zahlen: int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ kategorisch : chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
 ##  $ binaer      : logi  TRUE FALSE TRUE FALSE TRUE FALSE ...</code></pre>
 <p>In this data set, we just have 100 observations (rows) of 4 variables with their column names. Our categorical variable is a “Factor”. This is important and we’ll come back to it.</p>
 <p>Now, let’s try the .txt file.</p>
-<pre class="r"><code>data1_txt &lt;- read.table(&quot;data1.txt&quot;)
+<pre class="r"><code>data1_txt &lt;- read.table(&quot;../data/data1.txt&quot;)
 head(data1_txt)</code></pre>
-<pre><code>##                   V1           V2          V3     V4
-## 1          numerisch ganze_zahlen kategorisch binaer
-## 2   5.42231547106144            1           a   TRUE
-## 3 -0.210331975808293            2           b  FALSE
-## 4   2.76072220066514            3           c   TRUE
-## 5  0.241506413470475            4           d  FALSE
-## 6   4.60332064474955            5           a   TRUE</code></pre>
+<pre><code>##                  V1           V2          V3     V4
+## 1         numerisch ganze_zahlen kategorisch binaer
+## 2  4.14282424802934            1           a   TRUE
+## 3  7.84930143685012            2           b  FALSE
+## 4 0.814037349654308            3           c   TRUE
+## 5  1.96629630670969            4           d  FALSE
+## 6   8.2045971343695            5           a   TRUE</code></pre>
 <pre class="r"><code>str(data1_txt)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    101 obs. of  4 variables:
-##  $ V1: chr  &quot;numerisch&quot; &quot;5.42231547106144&quot; &quot;-0.210331975808293&quot; &quot;2.76072220066514&quot; ...
+##  $ V1: chr  &quot;numerisch&quot; &quot;4.14282424802934&quot; &quot;7.84930143685012&quot; &quot;0.814037349654308&quot; ...
 ##  $ V2: chr  &quot;ganze_zahlen&quot; &quot;1&quot; &quot;2&quot; &quot;3&quot; ...
 ##  $ V3: chr  &quot;kategorisch&quot; &quot;a&quot; &quot;b&quot; &quot;c&quot; ...
 ##  $ V4: chr  &quot;binaer&quot; &quot;TRUE&quot; &quot;FALSE&quot; &quot;TRUE&quot; ...</code></pre>
 <p>Why do we have 101 observations and why are all of our variables factors?</p>
 <p>The <code>read.table()</code> and <code>read.csv()</code> functions have an argument, <code>header</code>, that tells R how to interpret the first line in a data file. If your data contains a header you want to make sure that <code>header = T</code>. A column can only contain data of a single type. It is easier to make a number into a string than a string into a number, so if R sees any strings in a column it interprets all of the values as strings (or factors).</p>
 <p>We didn’t get this problem in <code>read.csv()</code> because <code>header = T</code> is the default for this function. <code>header = F</code> is the default for <code>read.table()</code>.</p>
-<pre class="r"><code>data1_txt &lt;- read.table(&quot;data1.txt&quot;, header = T)
+<pre class="r"><code>data1_txt &lt;- read.table(&quot;../data/data1.txt&quot;, header = T)
 head(data1_txt)</code></pre>
-<pre><code>##    numerisch ganze_zahlen kategorisch binaer
-## 1  5.4223155            1           a   TRUE
-## 2 -0.2103320            2           b  FALSE
-## 3  2.7607222            3           c   TRUE
-## 4  0.2415064            4           d  FALSE
-## 5  4.6033206            5           a   TRUE
-## 6  8.6442268            6           b  FALSE</code></pre>
+<pre><code>##   numerisch ganze_zahlen kategorisch binaer
+## 1 4.1428242            1           a   TRUE
+## 2 7.8493014            2           b  FALSE
+## 3 0.8140373            3           c   TRUE
+## 4 1.9662963            4           d  FALSE
+## 5 8.2045971            5           a   TRUE
+## 6 2.6017799            6           b  FALSE</code></pre>
 <pre class="r"><code>str(data1_txt)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    100 obs. of  4 variables:
-##  $ numerisch   : num  5.422 -0.21 2.761 0.242 4.603 ...
+##  $ numerisch   : num  4.143 7.849 0.814 1.966 8.205 ...
 ##  $ ganze_zahlen: int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ kategorisch : chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
 ##  $ binaer      : logi  TRUE FALSE TRUE FALSE TRUE FALSE ...</code></pre>
@@ -398,9 +412,9 @@ head(data1_txt)</code></pre>
 <pre class="r"><code>data2 &lt;- data.frame(good_dogs = c(&quot;Rex&quot;, &quot;Lassie&quot;, &quot;Petey&quot;, &quot;Sergeant Stubby&quot;, &quot;Laika&quot;),
                     age = c(2, 5, 3, 9, 3))
                     
-write.csv(data2, file = &quot;data2.csv&quot;, row.names = F)
+write.csv(data2, file = &quot;../data/data2.csv&quot;, row.names = F)
 
-data2_csv &lt;-read.csv(&quot;data2.csv&quot;, header = T)</code></pre>
+data2_csv &lt;-read.csv(&quot;../data/data2.csv&quot;, header = T)</code></pre>
 <p>What happens if you try to add an observation?</p>
 <pre class="r"><code>new_row &lt;- c(&quot;Lady&quot;, 6)
 
@@ -414,7 +428,7 @@ rbind(data2_csv, new_row)</code></pre>
 ## 6            Lady   6</code></pre>
 <p>The problem here is that, by default, R often treats strings as “factors”. Factors store categorical values as integers which can be useful for efficient memory storage. When a data frame is created all of the possible factor values are assigned so you cannot easily add a new categorical value (like you can with numerical values).</p>
 <p>To overcome this, you can set the argument <code>stringsAsFactors</code> to <code>F</code> (or <code>FALSE</code>). In old versions of R, the default was <code>stringsAsFactors = TRUE</code>, but it seems as though the default has changed in newer versions.</p>
-<pre class="r"><code>data2_csv &lt;-read.csv(&quot;data2.csv&quot;, header = T, stringsAsFactors = F)
+<pre class="r"><code>data2_csv &lt;-read.csv(&quot;../data/data2.csv&quot;, header = T, stringsAsFactors = F)
 new_row &lt;- c(&quot;Lady&quot;, 6)
 
 rbind(data2_csv, new_row)</code></pre>
@@ -431,8 +445,8 @@ rbind(data2_csv, new_row)</code></pre>
 <pre class="r"><code>data2_csv$good_dogs &lt;- as.character(data2_csv$good_dogs)</code></pre>
 <p>Changing data types in a data frame is also pretty straight-forward in the package <code>dplyr</code> which we’ll cover in another lesson.</p>
 <p>================================================================================</p>
-<div id="session-information" class="section level4">
-<h4>Session information:</h4>
+<div id="session-information" class="section level3">
+<h3>Session information:</h3>
 <p>Last update on 2020-11-04</p>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.1.1 (2021-08-10)

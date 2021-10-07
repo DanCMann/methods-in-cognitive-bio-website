@@ -2,8 +2,6 @@
 title: "Correlation"
 ---
 
-# Correlation
-
 ```{r}
 library(ggplot2)
 library(tidyr)

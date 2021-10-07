@@ -59,7 +59,6 @@ if (window.hljs) {
 
 
 
-<link rel="stylesheet" href="styles.css" type="text/css" />
 
 
 
@@ -275,6 +274,9 @@ $(document).ready(function () {
       <a href="reading_data_into_R.html">Reading data into R</a>
     </li>
     <li>
+      <a href="collaboration.html">Sharing your work</a>
+    </li>
+    <li>
       <a href="data_wrangling_dplyr.html">Data wrangling</a>
     </li>
     <li>
@@ -292,7 +294,19 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="stats_tutorials/stats_intro.html">Introduction to statistics</a>
+      <a href="stats_intro.html">Introduction to statistics</a>
+    </li>
+    <li>
+      <a href="prob_distribution.html">Probability and distributions</a>
+    </li>
+    <li>
+      <a href="hypoth_test_mod_error.html">Models and hypothesis testing</a>
+    </li>
+    <li>
+      <a href="t_tests.html">T-tests</a>
+    </li>
+    <li>
+      <a href="correlation.html">Correlation</a>
     </li>
   </ul>
 </li>
@@ -358,11 +372,11 @@ variable_in_workspace &lt;- 6
 
 ls()</code></pre>
 <pre><code>## [1] &quot;variable_in_workspace&quot; &quot;x&quot;</code></pre>
-<pre class="r"><code>save.image(file = &#39;workspace.RData&#39;)
+<pre class="r"><code>save.image(file = &#39;../data/workspace.RData&#39;)
 rm(list=ls()) # remove all objects</code></pre>
 <pre class="r"><code>ls()</code></pre>
 <pre><code>## character(0)</code></pre>
-<pre class="r"><code>load(&quot;workspace.RData&quot;)
+<pre class="r"><code>load(&quot;../data/workspace.RData&quot;)
 ls()</code></pre>
 <pre><code>## [1] &quot;variable_in_workspace&quot; &quot;x&quot;</code></pre>
 <p><em>NOTE</em>: I would recommend against saving your workspace unless you have a clear purpose for doing so. Early on in your R career you are likely to create a lot of objects that are not what you want or expect. People often don’t clean their environment and then save the workspace leading to messy environments that take up a ton of storage space. Also, a lot of early R users rely too much on previously created objects, oftentimes at the expense of scripts. If you don’t write everything in a script you can run into the problem of having an object where you have no idea how you created it. Maybe you can go back through your .Rhistory log, but this is tedious and time consuming.</p>
@@ -410,7 +424,7 @@ pop_usa &lt;- c(4, 3, 4, 2, , 4)</code></pre>
 <h3>Email</h3>
 <p>The easiest way is via email. If you are using an R project, find the folder where the .Rproj file is saved. Even if you aren’t using an R project, you should have a project folder with some organizational structure. Compress the main folder into a zip file. Both Windows and Macs allow you to compress folders by right clicking and selecting the compress option (for Windows 10 it’s Right click &gt; Send to &gt; Compressed (zipped) folder, on a Mac it’s Right click &gt; Compress).</p>
 <div class="figure">
-<img src="../../img/zipping_img.PNG" alt="" />
+<img src="../img/zipping_img.PNG" alt="" />
 <p class="caption"><em>Zipping a file in Windows 10.</em></p>
 </div>
 <p>Zipping will maintain the structure of your project folder. Your collaborator can then unzip the files and have access to your project code and data by opening the .Rproj file in R Studio. If they don’t use R Studio they will still have access to your scripts, data, and saved workspaces.</p>
@@ -423,7 +437,7 @@ pop_usa &lt;- c(4, 3, 4, 2, , 4)</code></pre>
 <h3>Version control</h3>
 <p>File hosting and sending links are helpful, but if multiple people are actively working on a project, you may run into file conflicts. You also often grow a large number of past version.</p>
 <div class="figure">
-<img src="../../img/phd101212s.gif" alt="" />
+<img src="../img/phd101212s.gif" alt="" />
 <p class="caption"><em>notFinal.doc from the web comic phdcomics</em></p>
 </div>
 <p>Programs like Git and hosting platforms like Github can streamline collaborative work and help researchers document project changes. We don’t have enough time to go into great detail, but I’ll introduce you to the core concepts.</p>
@@ -431,7 +445,7 @@ pop_usa &lt;- c(4, 3, 4, 2, , 4)</code></pre>
 <h4>Git</h4>
 <p><a href="https://git-scm.com">Git</a> is a version control system. A version control system tracks changes of a project across time. With Git you can always return to a previous version of the project so if something goes wrong, you can always return to a stable version. For collaborative research this is extremely helpful because it allows researchers to log changes to a project while maintaining clear organizational structure. Git also helps researchers work independently and test their ideas without disturbing the main documents in the project. Git keeps a log of changes to a project, who made changes, and when the changes were made. So, researchers can work simultaneously while minimizing redundancy.</p>
 <div class="figure">
-<img src="../../img/git.jpg" alt="" />
+<img src="../img/git.jpg" alt="" />
 <p class="caption"><em>Git branching. Image from Puia Zahedi</em></p>
 </div>
 <p>Git allows you to log changes by using <strong>commits</strong>. You can test ideas and make changes to the project just like normal, but they won’t become part of the project until you commit the changes (new files, modified files, deletions, etc). You can also create a <strong>branch</strong>. A branch creates a copy of the project at that time (almost like a parallel universe branch off). You can then work on that side branch without disturbing the main branch. If you decide to keep what you were working on, then you can <strong>merge</strong> the side branch and the main branch together. You can do all of this, even on a project that doesn’t have collaborators. In fact, Git deal with a project locally (on your computer). In order to work collaboratively with Git, you need someway to share your files.</p>
@@ -473,8 +487,8 @@ pop_usa &lt;- c(4, 3, 4, 2, , 4)</code></pre>
 <li><strong>Introduction to Statistics using R</strong> by Tom Booth, Anastasia Ushakova, &amp; Milan Valasek: <a href="https://bookdown.org/animestina/intro_stats_rms/">https://bookdown.org/animestina/intro_stats_rms/</a></li>
 </ul>
 <p>================================================================================</p>
-<div id="session-information" class="section level4">
-<h4>Session information:</h4>
+<div id="session-information" class="section level3">
+<h3>Session information:</h3>
 <p>Last update on 2021-01-09</p>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.1.1 (2021-08-10)

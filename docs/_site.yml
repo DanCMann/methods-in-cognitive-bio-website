@@ -30,7 +30,15 @@ navbar:
       icon: "fas fa-chart-area"
       menu: 
         - text: "Introduction to statistics"
-          href: stats_tutorials/stats_intro.html
+          href: stats_intro.html
+        - text: "Probability and distributions"
+          href: prob_distribution.html
+        - text: "Models and hypothesis testing"
+          href: hypoth_test_mod_error.html
+        - text: "T-tests"
+          href: t_tests.html
+        - text: "Correlation"
+          href: correlation.html
 new_session: true
 output:
   html_document:
