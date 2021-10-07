@@ -14,11 +14,8 @@ title: "Methods in Cognitive Biology"
 - [Data visualization](data_viz_ggplot.html)
 
 # Stats Tutorials
-- [Introduction to statistics](stats_tutorials/stats_intro.html)
-- [Probability and distributions](stats_tutorials/prob_distribution.html)
-- [Models and hypothesis testing](stats_tutorials/hypoth_test_mod_error.html)
-- [T-tests](stats_tutorials/t_tests.html)
-- [Correlation](stats_tutorials/correlation.html)
-- Chi-square: in prep
-- Normality, sample size, power analysis, and non-parametric tests: in prep
-- ANOVA: tbd
+- [Introduction to statistics](stats_intro.html)
+- [Probability and distributions](prob_distribution.html)
+- [Models and hypothesis testing](hypoth_test_mod_error.html)
+- [T-tests](t_tests.html)
+- [Correlation](correlation.html)
