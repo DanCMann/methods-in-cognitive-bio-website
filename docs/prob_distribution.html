@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="custom.css" type="text/css" />
 
 
 
@@ -379,16 +380,17 @@ hist(x)</code></pre>
 <p>Data generally can be described by well known mathematical distributions. (The distribution above is a <strong>normal distribution</strong>, which we’ll discuss a bit later.) These distributions are linked to the probability of seeing an observed value. That’s a bit abstract and confusing. Let’s think about a real-world example. When you role a normal dice<sup>1</sup> you will land on 1, 2, 3, 4, 5, or 6. Unless there is something wrong with the dice, each of those values is equally as possible. Otherwise, board games and gambling would be a lot easier.</p>
 <ol style="list-style-type: decimal">
 <li><div>
-<div class="line-block"><span class="smallcaps">technically, the singular of “dice” is “die”, but it sounds weird to me, so I’ll just use dice throughout.</span></div>
-</div></li>
+
+<div class="line-block"><span class="smallcaps">technically, the singular of “dice” is “die”, but it sounds weird to me, so I’ll just use dice throughout.</span></div></li>
 </ol>
+</div>
 <p>So, how likely is it that we role a three?</p>
-<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<div>
 <p><strong>When you see a question, take a bit of time and try to get the answer yourself. You might get it wrong, but the processing of thinking about it will help you understand it better.</strong></p>
 </div>
 <p>There are six sides, each side is equally possible, so each value has a one in six chance (<span class="math inline">\(\frac{1}{6}\)</span>). An individual outcome over the number of possible outcomes.</p>
 <p>What are the chances that we role an even number?</p>
-<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px;">
+<div class="question">
 <ol style="list-style-type: lower-alpha">
 <li><p><span class="math inline">\(\frac{1}{3}\)</span></p></li>
 <li><p><span class="math inline">\(\frac{4}{6}\)</span></p></li>
@@ -399,7 +401,7 @@ hist(x)</code></pre>
 <p>First, how many even numbers are possible? 2, 4, and 6. If we role one those three numbers we’ll define that as a “success”. 1, 3, and 5 would be a “failure”. Essentially, we have two possible outcomes (odd or even), and both have an equal chance. So, the answer is <span class="math inline">\(\frac{1}{2}\)</span>.</p>
 <p>You could also think of it as <span class="math inline">\(\frac{3}{6}\)</span>, which reduces to <span class="math inline">\(\frac{1}{2}\)</span>. There are six possible outcomes, three of which are successes and three of which are failures.</p>
 <p>What about the chances that we role anything other than a 3?</p>
-<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<div class="question">
 <ol style="list-style-type: lower-alpha">
 <li><p><span class="math inline">\(\frac{1}{6}\)</span></p></li>
 <li><p><span class="math inline">\(\frac{5}{6}\)</span></p></li>
@@ -419,7 +421,7 @@ prob_six &lt;- 1/6
 prob_one + prob_two + prob_three + prob_four + prob_five + prob_six</code></pre>
 <pre><code>## [1] 1</code></pre>
 <p>You should get 1!</p>
-<div style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<div class="tmi">
 <p>Note: There is a much more efficient way to write this bit of code: <code>rep()</code> takes the argument <code>x</code>, in this case 1/6, and repeats it <span class="math inline">\(n\)</span> times, here 6.</p>
 <pre class="r"><code>prob_vector &lt;- rep(x = 1/6, times = 6)
 prob_vector</code></pre>
@@ -515,7 +517,7 @@ ggplot(as.data.frame(rolls),aes(rolls)) +
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="prob_distribution_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p>At this point, our data are pretty much completely equally distributed across the six possible outcomes. Since our probabilities for each roll were equal, this is what we expected to happen. This is called a <strong>uniform distribution</strong>. The probabilities are constant across all values.</p>
-<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<div class="question">
 <p>How can you tell if you have a loaded dice (a dice that has been manipulated to increase the chances of landing on a particular side)?</p>
 </div>
 <p>So, what does this really tell us? We’ve confirmed that our dice is fair, but it took quite a few throws to see a roughly equal distribution. And we now know how to calculate a probability for a single throw, but what about multiple throws (e.g., what are the chances of rolling two 6s in three tries?, ten tries?)</p>
@@ -543,7 +545,7 @@ friend_rolls</code></pre>
 <pre class="r"><code>mean(sample(c(1:6), 1000000, replace = T))</code></pre>
 <pre><code>## [1] 3.496513</code></pre>
 <p>How does this help you determine if your friend is using an unfair dice? Now we can easily compare the “sample” data - the dice rolls we observed during game night - to a fair dice. According to the <strong>law of larger numbers</strong>, if we repeat the same conditions, 36 rolls of a dice, we can assess how common a series of outcomes like that of our friends with a normal dice without worrying about the exact values or sequence of values.</p>
-<div style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<div class = "important>
 <p><strong>The law of large numbers</strong> - The mean of the sample means is close to the mean of the underlying population, provided that the samples are independent and the sampling methods are identical. The larger the sample size, the closer the mean of sample means is to the population mean.</p>
 </div>
 <p>So, you roll a dice 36 times and take the average of those outcomes. You then repeat this 1000 times (you are very competitive and really want to know if your friend is really this good at monopoly).</p>
@@ -598,7 +600,7 @@ ggplot(data = normal_rolls_36, aes(roll_means)) +
   annotate(geom = &#39;text&#39;, x = 3.5, y = 0.05, label = &#39;99.73%&#39;, size = 5) </code></pre>
 <p><img src="prob_distribution_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <p>95% of observations lie within two standard deviations above and below the mean, and 99.7% lie within three standard deviations. This is useful because we can use the distribution to estimate the probability of a value coming from the distribution. Just like how we can look at a histogram of dice roll probabilities and estimate the probability of a single roll, we can now estimate the probability that the mean of your friend’s rolls assuming the dice is a fair dice. If the mean of his rolls is 3.75 should we assume that he manipulated the dice? Probably not. Even though it is higher than average, the mean of 36 dice rolls will fall between the true mean and one standard deviation above the true mean roughly 34% of the time (68/2). The mean of 36 dice rolls will be less than or equal to 3.75 a bit more than 80% of the time</p>
-<div style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<div class="tmi">
 <p>How did I estimate that? The probabilities have to equal 1 (or 100%). 3.75 is within a standard deviation of the mean, which is 0.68. Because I said “less than or equal to”, I have to include everything below 3.75 even if it is more than 1 standard deviation away from the mean. 1 - 0.68 gives you everything that is more than a standard deviation from the mean.</p>
 <pre class="r"><code>1 - 0.6827</code></pre>
 <pre><code>## [1] 0.3173</code></pre>
@@ -638,7 +640,7 @@ ggplot(data = normal_rolls_36, aes(roll_means)) +
   geom_vline(xintercept = mean(friend_rolls), color = colors[10], size = 2)</code></pre>
 <p><img src="prob_distribution_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 <p>Just from a visual inspection, what would you estimate the probability of the average of 36 rolls being 4.3055556, assuming the dice is fair?</p>
-<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<div class="question">
 <ol style="list-style-type: lower-alpha">
 <li><p>~99%</p></li>
 <li><p>~4.3%</p></li>
@@ -660,7 +662,7 @@ cdf</code></pre>
 </div>
 <div id="extra-information" class="section level1">
 <h1>Extra information</h1>
-<div style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<div class="tmi">
 <p>For any task you need to perform in R, there are almost always several options.</p>
 <p><em>To plot a histogram</em> You can use the base R function <code>hist()</code> or ggplot2’s function <code>geom_histogram()</code>. For quick checks, I usually just use the base R function.</p>
 <p>To use <code>hist()</code>, you have to specify the <code>x =</code> argument. This needs to be a vector of values. This can be an atomic vector or a column of a data frame, specified by using the data frame variable name (iris in this case), the <code>$</code> sign, and the variable/column name.</p>

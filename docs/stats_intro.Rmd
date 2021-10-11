@@ -223,7 +223,7 @@ ci_plot(sample_size = 10)
 ci_plot(sample_size = 100)
 ```
 
-So far, we've glossed over quite a few details. Don't worry, understanding statistics will take time and practice. But notice a few functions we used: `rnorm()`, `qt()`. What in the world are these? In the first, the "norm" in the function name refers to "normal", that is, the *normal distribution*. The "t" in the second function name refers to the *t distribution*. A distribution is usually data organized from the smallest value to the largest. We'll discuss distributions and probablity in the next lesson. 
+So far, we've glossed over quite a few details. Don't worry, understanding statistics will take time and practice. But notice a few functions we used: `rnorm()`, `qt()`. What in the world are these? In the first, the "norm" in the function name refers to "normal", that is, the *normal distribution*. The "t" in the second function name refers to the *t distribution*. A distribution is usually data organized from the smallest value to the largest. We'll discuss distributions and probability in the next lesson. 
 
 
 ```{r include=FALSE}

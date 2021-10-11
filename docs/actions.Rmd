@@ -84,8 +84,8 @@ Variable names can start with uppercase or lowercase letters but cannot start wi
 _variable <- 1
 ```
 
-<div>
-
+<div class = "tmi">
+#### *More info!*  
 Note: R does allow variable names to start with `.` as long as it's not followed by a number.
 
 ```{r}
@@ -127,7 +127,8 @@ integer.variable
 is.integer(integer.variable)
 ```
 
-R just doesn't care. But humans do. And humans will read your code (at least one human, you). So variables names like those above work perfectly fine in R, but are hell if you are trying to figure out what is going on. Your code will break, it will produce unexpected results, and you will forget what certain things are doing. 
+R just doesn't care. But humans do. And humans will read your code (at least one human, you). So variables names like those above work perfectly fine in R, but are hell if you are trying to figure out what is going on. Your code will break, it will produce unexpected results, and you will forget what certain things are doing.  
+
 #### Reserved keywords
 R has a list of names that have special purposes, these are off-limits to use as a variable name. You can access the full list with `?reserved`
 
@@ -262,7 +263,7 @@ library(dplyr) # quotes are optional
 ```
 
 ```{r include=FALSE}
-date <- "2020-10-14"
+date <- "2021-10-11"
 ```
 ```{r, child="_session-info.Rmd"}
 ```
