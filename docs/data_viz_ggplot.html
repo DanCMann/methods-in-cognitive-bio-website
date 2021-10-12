@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="custom.css" type="text/css" />
 
 
 
@@ -636,7 +637,7 @@ str(data)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    8 obs. of  3 variables:
 ##  $ ID     : chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
 ##  $ week   : num  1 1 1 1 2 2 2 2
-##  $ measure: num  6.12 4.95 4.03 5.34 8.73 ...</code></pre>
+##  $ measure: num  3.43 4.68 2.14 5.37 10.41 ...</code></pre>
 <p>First, let’s plot the data to see if there is a difference between weeks.</p>
 <pre class="r"><code>ggplot(data = data, aes(x = week, y = measure)) +
   geom_boxplot() +
