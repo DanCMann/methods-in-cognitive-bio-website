@@ -1,0 +1,35 @@
+
+div.tmi{
+  background: AliceBlue; 
+  border: dotted; 
+  padding-left: 25px; 
+  padding-top: 25px; 
+  padding-bottom: 25px; 
+  padding-right: 25px;
+  margin-bottom: 25px;
+  margin-top: 25px;
+}
+
+div.question{
+  background: lightgrey; 
+  border: double; 
+  padding-left: 50px; 
+  padding-top: 25px; 
+  padding-bottom: 25px; 
+  padding-right: 25px;
+  margin-bottom: 25px;
+  margin-top: 25px;
+  
+}
+
+div.important{
+  background: lightyellow; 
+  border: solid; 
+  padding-left: 25px; 
+  padding-top: 25px; 
+  padding-bottom: 25px; 
+  padding-right: 25px;
+  margin-bottom: 25px;
+  margin-top: 25px;
+  
+}

@@ -81,19 +81,19 @@ Data generally can be described by well known mathematical distributions. (The d
 
     | [technically, the singular of "dice" is "die", but it sounds weird to me, so I'll just use dice throughout.]{.smallcaps}
 
-    </div>
+  </div>
 
 So, how likely is it that we role a three?
 
-::: {style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px"}
+<div>
 **When you see a question, take a bit of time and try to get the answer yourself. You might get it wrong, but the processing of thinking about it will help you understand it better.**
-:::
+</div>
 
 There are six sides, each side is equally possible, so each value has a one in six chance ($\frac{1}{6}$). An individual outcome over the number of possible outcomes.
 
 What are the chances that we role an even number?
 
-::: {style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px;"}
+<div class = "question">
 a.  $\frac{1}{3}$
 
 b.  $\frac{4}{6}$
@@ -101,7 +101,7 @@ b.  $\frac{4}{6}$
 c.  $\frac{1}{2}$
 
 d.  $\frac{1}{6}$
-:::
+</div>
 
 First, how many even numbers are possible? 2, 4, and 6. If we role one those three numbers we'll define that as a "success". 1, 3, and 5 would be a "failure". Essentially, we have two possible outcomes (odd or even), and both have an equal chance. So, the answer is $\frac{1}{2}$.
 
@@ -109,7 +109,8 @@ You could also think of it as $\frac{3}{6}$, which reduces to $\frac{1}{2}$. The
 
 What about the chances that we role anything other than a 3?
 
-::: {style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px"}
+<div class = "question">
+
 a.  $\frac{1}{6}$
 
 b.  $\frac{5}{6}$
@@ -117,7 +118,7 @@ b.  $\frac{5}{6}$
 c.  $\frac{1}{3}$
 
 d.  $\frac{1}{2}$
-:::
+</div>
 
 We can define a role of 1, 2, 4, 5, and 6 as a "success", and a 3 as a "failure". This one is a little trickier because if we simplify the outcomes, we no longer have equal chances. That is, if we say there are two possible outcomes, 3 and "not 3", the chance of 3 is far less likely than "not 3". But, we still have six possible outcomes, five of which are not a 3 So, we get $\frac{5}{6}$.
 
@@ -137,7 +138,7 @@ prob_one + prob_two + prob_three + prob_four + prob_five + prob_six
 
 You should get 1!
 
-::: {style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px"}
+<div class = "tmi">
 Note: There is a much more efficient way to write this bit of code: `rep()` takes the argument `x`, in this case 1/6, and repeats it $n$ times, here 6.
 
 ```{r}
@@ -156,7 +157,7 @@ The whole thing can even be done in one line:
 ```{r}
 sum(rep(x = 1/6, times = 6))
 ```
-:::
+</div>
 
 The sum of each outcome in an event should equal 1. Probability values are always within a range of 0 to 1. A value of 0 means an even never occurs, 1 it always occurs. If you know the probability of an event occurring, you know the probability of that event not occurring (assuming the events are independent, more on that later). Just subtract from 1!
 
@@ -265,9 +266,9 @@ ggplot(as.data.frame(rolls),aes(rolls)) +
 
 At this point, our data are pretty much completely equally distributed across the six possible outcomes. Since our probabilities for each roll were equal, this is what we expected to happen. This is called a **uniform distribution**. The probabilities are constant across all values.
 
-::: {style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px"}
+<div class = "question">
 How can you tell if you have a loaded dice (a dice that has been manipulated to increase the chances of landing on a particular side)?
-:::
+</div>
 
 So, what does this really tell us? We've confirmed that our dice is fair, but it took quite a few throws to see a roughly equal distribution. And we now know how to calculate a probability for a single throw, but what about multiple throws (e.g., what are the chances of rolling two 6s in three tries?, ten tries?)
 
@@ -308,9 +309,9 @@ mean(sample(c(1:6), 1000000, replace = T))
 
 How does this help you determine if your friend is using an unfair dice? Now we can easily compare the "sample" data - the dice rolls we observed during game night - to a fair dice. According to the **law of larger numbers**, if we repeat the same conditions, 36 rolls of a dice, we can assess how common a series of outcomes like that of our friends with a normal dice without worrying about the exact values or sequence of values.
 
-::: {style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px"}
+<div class = "important">
 **The law of large numbers** - The mean of the sample means is close to the mean of the underlying population, provided that the samples are independent and the sampling methods are identical. The larger the sample size, the closer the mean of sample means is to the population mean.
-:::
+</div>
 
 So, you roll a dice 36 times and take the average of those outcomes. You then repeat this 1000 times (you are very competitive and really want to know if your friend is really this good at monopoly).
 
@@ -376,7 +377,7 @@ ggplot(data = normal_rolls_36, aes(roll_means)) +
 
 95% of observations lie within two standard deviations above and below the mean, and 99.7% lie within three standard deviations. This is useful because we can use the distribution to estimate the probability of a value coming from the distribution. Just like how we can look at a histogram of dice roll probabilities and estimate the probability of a single roll, we can now estimate the probability that the mean of your friend's rolls assuming the dice is a fair dice. If the mean of his rolls is 3.75 should we assume that he manipulated the dice? Probably not. Even though it is higher than average, the mean of 36 dice rolls will fall between the true mean and one standard deviation above the true mean roughly 34% of the time (68/2). The mean of 36 dice rolls will be less than or equal to 3.75 a bit more than 80% of the time
 
-::: {style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px"}
+<div class = "tmi">
 How did I estimate that? The probabilities have to equal 1 (or 100%). 3.75 is within a standard deviation of the mean, which is 0.68. Because I said "less than or equal to", I have to include everything below 3.75 even if it is more than 1 standard deviation away from the mean. 1 - 0.68 gives you everything that is more than a standard deviation from the mean.
 
 ```{r}
@@ -396,7 +397,7 @@ Now add the lower half to the 0.68
 ```
 
 You get a little less than 85%. Because 3.75 is slightly under 1 standard deviation above the mean, I rounded down to 80%.
-:::
+</div>
 
 Now, let's look at your friend's sample statistic, the sample mean.
 
@@ -436,7 +437,7 @@ ggplot(data = normal_rolls_36, aes(roll_means)) +
 
 Just from a visual inspection, what would you estimate the probability of the average of 36 rolls being `r mean(friend_rolls)`, assuming the dice is fair?
 
-::: {style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px"}
+<div class = "question">
 a.  \~99%
 
 b.  \~4.3%
@@ -444,7 +445,7 @@ b.  \~4.3%
 c.  \~0.5%
 
 d.  \~16.67%
-:::
+</div>
 
 The visualization above suggests that `r mean(friend_rolls)` is almost three standard deviations above the mean. Because it is more than 2 standard deviations from the mean, it is more extreme than 95% of sample mean(means of 36 dice rolls). It is higher than roughly 97.5% (95 + the bottom 2.5%). It's within three standard deviations and we do see more extreme values, so it is technically possible. Still there is somewhere between a 0.15 and 2.5 % chance that the average of 36 rolls would be this extreme, if the dice is fair.
 
@@ -465,7 +466,7 @@ This information might seem pretty abstract right now, but it forms the basis of
 
 # Extra information
 
-::: {style="background: lightblue; border: solid; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px"}
+<div class = "tmi">
 For any task you need to perform in R, there are almost always several options.
 
 *To plot a histogram* You can use the base R function `hist()` or ggplot2's function `geom_histogram()`. For quick checks, I usually just use the base R function.
@@ -501,7 +502,7 @@ The `geom_histogram()` method is a bit more complicated at first. We'll cover it
 -   more on this later
 
 There are pros and cons to each of these methods. Using `dplyr` has a bit of a learning curve as it uses a bit of specialized syntax. `$` can be a bit trickier if you want to apply a function to multiple columns. `[]` is less readable for humans and errors can creep in, for instance if a column is inserted, the column indexes might be off causing trouble if you have to run the code again.
-:::
+</div>
 
 
 ```{r include=FALSE}

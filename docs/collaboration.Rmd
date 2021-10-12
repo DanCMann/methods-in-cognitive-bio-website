@@ -37,13 +37,13 @@ You should include `set.seed()` if your script includes any random processes. Wh
 
 If you are unsure whether you should include `set.seed()` in your script, include it. 
 
-:::{style="background: AliceBlue; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px"}
+<div class = "tmi">
 **TMI**: 
 Randomness is a tricky concept. True randomness is difficult to find. Most things that we think of as random are actually "pseudo-random", i.e., fake random. In reality, these processes are "deterministic" - which means that they will produce the same result if given the same input. We think of them as random because we lack knowledge about the inputs. 
 
 Computers are definitely deterministic. So, how do we get a deterministic machine to produce randomness? Well, we don't. We get it to produce pseudo-randomness. They use complex algorithms to produce outputs that seem to be random. In reality, they are completely deterministic. The "seed" serves as the starting point. 
 
-:::
+</div>
 
 
 ### Commenting your code

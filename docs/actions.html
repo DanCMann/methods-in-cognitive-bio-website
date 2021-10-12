@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="custom.css" type="text/css" />
 
 
 
@@ -394,7 +395,9 @@ variable_name &lt;- &quot;Hallo Welt&quot;</code></pre>
 <pre><code>## Error: &lt;text&gt;:1:1: unexpected input
 ## 1: _
 ##     ^</code></pre>
-<div>
+</div>
+<div id="more-info" class="section level4 tmi">
+<h4><em>More info!</em></h4>
 <p>Note: R does allow variable names to start with <code>.</code> as long as it’s not followed by a number.</p>
 <pre class="r"><code>.x &lt;- 1
 ._x &lt;- 2</code></pre>
@@ -428,7 +431,10 @@ integer.variable</code></pre>
 <pre><code>## [1] 0.6666667</code></pre>
 <pre class="r"><code>is.integer(integer.variable)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
-<p>R just doesn’t care. But humans do. And humans will read your code (at least one human, you). So variables names like those above work perfectly fine in R, but are hell if you are trying to figure out what is going on. Your code will break, it will produce unexpected results, and you will forget what certain things are doing. #### Reserved keywords R has a list of names that have special purposes, these are off-limits to use as a variable name. You can access the full list with <code>?reserved</code></p>
+<p>R just doesn’t care. But humans do. And humans will read your code (at least one human, you). So variables names like those above work perfectly fine in R, but are hell if you are trying to figure out what is going on. Your code will break, it will produce unexpected results, and you will forget what certain things are doing.</p>
+<div id="reserved-keywords" class="section level4">
+<h4>Reserved keywords</h4>
+<p>R has a list of names that have special purposes, these are off-limits to use as a variable name. You can access the full list with <code>?reserved</code></p>
 <pre class="r"><code>?reserved</code></pre>
 </div>
 </div>
@@ -516,9 +522,9 @@ anova(linear_model)</code></pre>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Response: scores
-##            Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
-## group       1  5772.4  5772.4  79.591 3.103e-16 ***
-## Residuals 198 14359.9    72.5                      
+##            Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## group       1   6696  6696.0  92.697 &lt; 2.2e-16 ***
+## Residuals 198  14302    72.2                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>summary(linear_model)</code></pre>
@@ -527,19 +533,19 @@ anova(linear_model)</code></pre>
 ## lm(formula = scores ~ group)
 ## 
 ## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -21.1707  -5.8425  -0.2929   5.4336  23.5085 
+##     Min      1Q  Median      3Q     Max 
+## -31.828  -5.042  -0.080   5.664  20.401 
 ## 
 ## Coefficients:
 ##                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)     75.5539     0.8516  88.718  &lt; 2e-16 ***
-## grouptreatment  10.7446     1.2044   8.921  3.1e-16 ***
+## (Intercept)     75.8757     0.8499  89.275   &lt;2e-16 ***
+## grouptreatment  11.5723     1.2020   9.628   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 8.516 on 198 degrees of freedom
-## Multiple R-squared:  0.2867, Adjusted R-squared:  0.2831 
-## F-statistic: 79.59 on 1 and 198 DF,  p-value: 3.103e-16</code></pre>
+## Residual standard error: 8.499 on 198 degrees of freedom
+## Multiple R-squared:  0.3189, Adjusted R-squared:  0.3154 
+## F-statistic:  92.7 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Other functions perform actions that are essential to working in R, but won’t (necessarily) produce an object that you can use. For example, you can get your working directory by using the function <code>getwd()</code>. You can change your working directory by using <code>setwd()</code>. <code>list.files()</code> will produce a list of all of the files in your working directory.</p>
 <p>Two of the most useful functions that you will use are <code>install.packages()</code> and <code>library()</code>. Packages are like “add-ons” to R. A package contains R functions, example data, and helpful documentation. If you find yourself thinking “I wonder if there is a way to do this” the answer is most likely “yes and there is a package that does it”. You can find all of the R approved packages at <a href="https://cran.r-project.org" class="uri">https://cran.r-project.org</a>. Packages that are on this website are very easy to download and start using. Simply use the <code>install.packages()</code> function and put the name of the package as an argument: <code>install.packages("package Name")</code></p>
 <p>The packages you download are stored in your R library. The function <code>library()</code> produces a list of all the packages currently installed. To use a package you have to load it first. To load a package put the package name as an argument into the <code>library()</code> function: <code>library("package Name")</code>. If you don’t know the path to your library, you can use <code>.libPaths()</code></p>
@@ -551,7 +557,7 @@ library(dplyr) # quotes are optional</code></pre>
 </div>
 <div id="session-information" class="section level3">
 <h3>Session information:</h3>
-<p>Last update on 2020-10-14</p>
+<p>Last update on 2021-10-11</p>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.1.1 (2021-08-10)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
