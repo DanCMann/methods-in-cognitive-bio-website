@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Linear regression and more!</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="custom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Methods in Cognitive Biology</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fab fa-r-project"></span>
+     
+    R tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="download_and_install.html">How to download and install R and R Studio</a>
+    </li>
+    <li>
+      <a href="prompt.html">The R prompt</a>
+    </li>
+    <li>
+      <a href="actions.html">R actions</a>
+    </li>
+    <li>
+      <a href="objects.html">R objects</a>
+    </li>
+    <li>
+      <a href="reading_data_into_R.html">Reading data into R</a>
+    </li>
+    <li>
+      <a href="collaboration.html">Sharing your work</a>
+    </li>
+    <li>
+      <a href="data_wrangling_dplyr.html">Data wrangling</a>
+    </li>
+    <li>
+      <a href="data_viz_ggplot.html">Data visualization</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fas fa-chart-area"></span>
+     
+    Stats tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="stats_intro.html">Introduction to statistics</a>
+    </li>
+    <li>
+      <a href="prob_distribution.html">Probability and distributions</a>
+    </li>
+    <li>
+      <a href="hypoth_test_mod_error.html">Models and hypothesis testing</a>
+    </li>
+    <li>
+      <a href="t_tests.html">T-tests</a>
+    </li>
+    <li>
+      <a href="correlation.html">Correlation</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Linear regression and more!</h1>
+
+</div>
+
+
+<div id="linear-regression" class="section level1">
+<h1>Linear regression</h1>
+<pre class="r"><code>library(ggplot2)
+library(dplyr)</code></pre>
+<pre class="r"><code>set.seed(42)</code></pre>
+<p>When we looked at <a href="correlation.html">correlation</a>, we said that we could tell the strength of an association and we could tell if the association was positive or negative. We could also test the probability that two numeric variables would be correlated if the true population correlation was actually 0.</p>
+<p>We can also use a linear regression to get this information. Let’s look at how by loading our spurious correlation from the last lesson:</p>
+<pre class="r"><code>sp_cor &lt;- data.frame(
+  year = factor(2005:2009),
+  cage_films = c(2, 3, 4, 1, 4),
+  fem_editors = c(9, 14, 19, 12, 19)
+)
+
+head(sp_cor)</code></pre>
+<pre><code>##   year cage_films fem_editors
+## 1 2005          2           9
+## 2 2006          3          14
+## 3 2007          4          19
+## 4 2008          1          12
+## 5 2009          4          19</code></pre>
+<pre class="r"><code>str(sp_cor)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    5 obs. of  3 variables:
+##  $ year       : Factor w/ 5 levels &quot;2005&quot;,&quot;2006&quot;,..: 1 2 3 4 5
+##  $ cage_films : num  2 3 4 1 4
+##  $ fem_editors: num  9 14 19 12 19</code></pre>
+<pre class="r"><code>cor.test(sp_cor$cage_films, sp_cor$fem_editors)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  sp_cor$cage_films and sp_cor$fem_editors
+## t = 2.861, df = 3, p-value = 0.06452
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  -0.1093485  0.9903012
+## sample estimates:
+##       cor 
+## 0.8554467</code></pre>
+<pre class="r"><code>mod &lt;- lm(sp_cor$cage_films ~ sp_cor$fem_editors)
+summary(mod)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = sp_cor$cage_films ~ sp_cor$fem_editors)
+## 
+## Residuals:
+##       1       2       3       4       5 
+##  0.6218  0.3523  0.0829 -1.1399  0.0829 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)        -0.90674    1.34172  -0.676   0.5476  
+## sp_cor$fem_editors  0.25389    0.08874   2.861   0.0645 .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.7797 on 3 degrees of freedom
+## Multiple R-squared:  0.7318, Adjusted R-squared:  0.6424 
+## F-statistic: 8.185 on 1 and 3 DF,  p-value: 0.06452</code></pre>
+<p>The linear regression, <code>lm()</code>, output is pretty complex compared to the Pearson correlation test output. But we can find some similar numbers. If you look at the part that say <code>Coefficients:</code>, you’ll see <code>sp_cor$fem_editors</code> and then a row of numbers. The last two match the t-value and p-value that the correlation test produced, so that’s good (we’ll go into more detail about interpreting the linear model results below).</p>
+<p>But where’s our correlation coefficient? The second to the last line has `Multiple R-squared: 0.7318". If you take the square root of that value, you get the same correlation coefficient that we saw in the Pearson correlation test.</p>
+<pre class="r"><code>sqrt(summary(mod)$r.squared)</code></pre>
+<pre><code>## [1] 0.8554467</code></pre>
+<p>Now, technically, the square root of the <span class="math inline">\(R^2\)</span> value is the correlation coefficient <span class="math inline">\(r\)</span> if the two variables have the same standard deviation. So, why would we use a linear model? The output is less clear and we don’t directly get a correlation coefficient!</p>
+<p>Remember the limitations of the correlation test. Correlation just measures the strength of association. A linear regression allows you to quantitatively measure the effect of a “predictor” (remember that term? aka dependent variable) on a “response” (aka independent variable). This does require us to make a claim about the direction of the effect. Here, Nicolas Cage films are predicted by the number of female editors at the Harvard Law Review. In this example, the direction doesn’t really make sense. Had we reversed the direction we would have gotten a different model but we would have seen similar results.</p>
+<p>Remember, our causal model might not make any sense, but we are making claim about causality.</p>
+<pre class="r"><code>mod &lt;- lm(sp_cor$fem_editors ~ sp_cor$cage_films)
+summary(mod)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = sp_cor$fem_editors ~ sp_cor$cage_films)
+## 
+## Residuals:
+##       1       2       3       4       5 
+## -3.2941 -1.1765  0.9412  2.5882  0.9412 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)          6.529      3.056   2.137   0.1222  
+## sp_cor$cage_films    2.882      1.007   2.861   0.0645 .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.627 on 3 degrees of freedom
+## Multiple R-squared:  0.7318, Adjusted R-squared:  0.6424 
+## F-statistic: 8.185 on 1 and 3 DF,  p-value: 0.06452</code></pre>
+<p>The <code>formula =</code> argument (the first argument) in <code>lm()</code> is written as <code>y ~ x</code> and can be read as “<span class="math inline">\(y\)</span> is predicted by <span class="math inline">\(x\)</span>”. In observational studies, we would not want to make a claim about causation, but we can still use the linear model to make predictions and quantify how much of an effect the predictor has on the response variable. E.g., for every increase in one Nic Cage films, we should expect 2.88 more HLR female editors.</p>
+<p>A linear regression gives us a lot more information in experimental settings. In a properly set up experiment, you make claims about causality using a linear model. Another benefit? You can extend a simple linear model to include multiple numeric and categorical predictors. T-tests, ANOVAs, Chi-square tests, etc. are all variants of linear models!</p>
+<div id="what-is-a-linear-regression-model" class="section level2">
+<h2>What is a linear regression model?</h2>
+<p>In layman’s terms, a simple linear regression models the relationship between two numeric variables by fitting a line through the data. Using that line, you can predict <span class="math inline">\(y\)</span> from <span class="math inline">\(x\)</span>.</p>
+<pre class="r"><code>x &lt;- seq(from = -10, to = 10, by = 2)
+y &lt;- x + 1
+
+ggplot(data.frame(x, y), aes(x, y))+
+        geom_point()</code></pre>
+<p><img src="linear_regression_files/figure-html/simple_plot-1.png" width="672" /></p>
+<p>If we have a perfect correlation, this is easy. We can fit a line through the data points:</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y))+
+        geom_point() +
+        geom_abline(slope = 1, intercept = 1)</code></pre>
+<p><img src="linear_regression_files/figure-html/line_fit-1.png" width="672" /></p>
+<p>What would we predict, <span class="math inline">\(y\)</span> to be if <span class="math inline">\(x\)</span> is 5? Let’s use the line:</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 1) +
+  geom_vline(xintercept = 5)</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_prediction1-1.png" width="672" /></p>
+<p>What is the <span class="math inline">\(y\)</span> value when the fitted line crosses 5?</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 1) +
+  geom_vline(xintercept = 5) +
+  geom_hline(yintercept = 6) +
+  geom_point(aes(x = 5, y = 6), size = 10, shape = 21, color = &quot;red&quot;) +
+  scale_y_continuous(breaks = c(seq(from = -10, to = 10, by = 2)))</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_prediction2-1.png" width="672" /></p>
+<p>We can use our linear model to directly calculate our predicted value.</p>
+<pre class="r"><code>slope &lt;- 1
+intercept &lt;- 1
+predicted_y &lt;- 5 * slope + intercept 
+predicted_y</code></pre>
+<pre><code>## [1] 6</code></pre>
+<p>It matches our visual calculation!</p>
+<p>For those of you that remember algebra class (so, not me) this equation might look familiar, it’s <span class="math inline">\(y = mx + b\)</span> (or <span class="math inline">\(y = ax + b\)</span>). If you don’t know this, don’t worry, it’s pretty simple. The equation is just what we did above with the plot. You can get a <span class="math inline">\(y\)</span> value by multiplying an <span class="math inline">\(x\)</span> value by the slope and adding the intercept. Even simplified that might be quite a bit. What is the <strong>intercept</strong>? The intercept is the <span class="math inline">\(y\)</span> value when <span class="math inline">\(x\)</span> is at 0 (technically, this is the y-intercept). That is, where the line crosses 0 on the x-axis. What is our intercept?</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 1) +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 1) +
+  geom_point(aes(x = 0, y = 1), size = 10, shape = 21, color = &quot;red&quot;) +
+  scale_y_continuous(breaks = c(seq(from = -9, to = 9, by = 2)))</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_intercept-1.png" width="672" /></p>
+<p>What happens if we change the intercept? Let’s change it to -5 (we’ll keep the original data points and fitted line on the plot)</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 1) +
+  geom_abline(slope = 1, intercept = -5, color = &quot;blue&quot;, linetype = 2) +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = -5) +
+  geom_point(aes(x = 0, y = -5), size = 10, shape = 21, color = &quot;red&quot;) +
+  scale_y_continuous(breaks = c(seq(from = -9, to = 9, by = 2)))</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_intercept_shift-1.png" width="672" /></p>
+<p>The line moves down. If our intercept were 5, the line would move up. Notice, however, that the lines are perfectly parallel to each other. This is because we didn’t change the <strong>slope</strong>. The slope tells us how much <span class="math inline">\(y\)</span> changes for every increase of <span class="math inline">\(x\)</span>. What was our slope in our fitted line? Let’s zoom in a bit.</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 1) +
+  scale_x_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  scale_y_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  coord_cartesian(ylim = c(-5, 5), xlim = c(-5, 5))</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_zoom-1.png" width="672" /></p>
+<p>Starting at 0, let’s increase 1 unit of <span class="math inline">\(x\)</span>.</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 1) +
+  scale_x_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  scale_y_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  coord_cartesian(ylim = c(-5, 5), xlim = c(-5, 5)) +
+  annotate(
+    geom = &quot;segment&quot;, x = 0, xend = 1, y = 1, yend = 1,
+    arrow = arrow()
+  )</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_slope_movex-1.png" width="672" /></p>
+<p>Now we find where the line crosses our new <span class="math inline">\(x\)</span> value.</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 1) +
+  scale_x_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  scale_y_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  coord_cartesian(ylim = c(-5, 5), xlim = c(-5, 5)) +
+  annotate(geom = &quot;segment&quot;, x = 0, xend = 1, y = 1, yend = 1) +
+  annotate(
+    geom = &quot;segment&quot;, x = 1, xend = 1, y = 1, yend = 2,
+    arrow = arrow()
+  )</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_slope_movey-1.png" width="672" /></p>
+<p>What is the <span class="math inline">\(y\)</span> value?</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 1) +
+  scale_x_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  scale_y_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  coord_cartesian(ylim = c(-5, 5), xlim = c(-5, 5)) +
+  annotate(geom = &quot;segment&quot;, x = 0, xend = 1, y = 1, yend = 1) +
+  annotate(geom = &quot;segment&quot;, x = 1, xend = 1, y = 1, yend = 2) +
+  annotate(geom = &quot;segment&quot;, x = 1, xend = -6, y = 2, yend = 2, linetype = 3)</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_slope_move_yval-1.png" width="672" /></p>
+<p>2! We moved 1 step over and 1 step up. To calculate slope, you take the “rise over run”. That is, the increase in <span class="math inline">\(y\)</span> divided by the increase in <span class="math inline">\(x\)</span>. In this case, that’s pretty simple it’s <span class="math inline">\(\frac{1}{1}\)</span>, which is 1.</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 1) +
+  scale_x_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  scale_y_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  coord_cartesian(ylim = c(-5, 5), xlim = c(-5, 5)) +
+  annotate(geom = &quot;segment&quot;, x = 0, xend = 1, y = 1, yend = 1) +
+  annotate(geom = &quot;segment&quot;, x = 1, xend = 1, y = 1, yend = 2) +
+  annotate(geom = &quot;text&quot;, x = 0.5, y = 0.5, label = &quot;1&quot;) +
+  annotate(geom = &quot;text&quot;, x = 1.5, y = 1.5, label = &quot;1&quot;)</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_slope_change-1.png" width="672" /></p>
+<p>What happens if we change the slope? We’ll change it to 3. First, let’s see if we can predict <span class="math inline">\(y\)</span> if <span class="math inline">\(x\)</span> is 1, slope is 3 (intercept remains the same).</p>
+<pre class="r"><code>slope &lt;- 3
+intercept &lt;- 1
+xval &lt;- 1
+y_predict &lt;- slope * xval + intercept
+y_predict</code></pre>
+<pre><code>## [1] 4</code></pre>
+<p>Let’s check the plot.</p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 1) +
+  geom_abline(slope = 3, intercept = 1, color = &quot;blue&quot;, linetype = 2) +
+  scale_x_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  scale_y_continuous(breaks = c(seq(from = -5, to = 5, by = 1))) +
+  coord_cartesian(ylim = c(-5, 5), xlim = c(-5, 5)) +
+  annotate(geom = &quot;segment&quot;, x = 0, xend = 1, y = 1, yend = 1) +
+  annotate(geom = &quot;text&quot;, x = 0.5, y = 0.5, label = &quot;1&quot;) +
+  annotate(
+    geom = &quot;segment&quot;, x = 1, xend = 1, y = 1, yend = 4,
+    color = &quot;blue&quot;, linetype = 2
+  ) +
+  annotate(geom = &quot;text&quot;, x = 1.2, y = 2.5, label = &quot;3&quot;, color = &quot;blue&quot;) +
+  annotate(
+    geom = &quot;segment&quot;, x = 1, xend = -6, y = 4, yend = 4,
+    linetype = 3, color = &quot;blue&quot;
+  )</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_slope_check-1.png" width="672" /></p>
+<p>If you understand this, you already have a nice foundation for understanding linear regression. To demonstrate let’s run a model on some simulated data.</p>
+<pre class="r"><code>x &lt;- rnorm(50, mean = 0, sd = 1)
+y &lt;- x + rnorm(50, mean = 3, sd = 0.5)
+xx &lt;- data.frame(
+  x = x,
+  y = y
+)
+
+ggplot(xx, aes(x, y)) +
+  geom_point()</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_sim_data-1.png" width="672" /></p>
+<pre class="r"><code>mod &lt;- lm(y ~ x, data = xx)
+summary(mod)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x, data = xx)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.3497 -0.3055  0.0916  0.3006  0.7758 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.04693    0.06420   47.46   &lt;2e-16 ***
+## x            0.90399    0.05629   16.06   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.4537 on 48 degrees of freedom
+## Multiple R-squared:  0.8431, Adjusted R-squared:  0.8398 
+## F-statistic: 257.9 on 1 and 48 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Again, there’s a lot of information here and it looks pretty daunting. Let’s just focus on a very small part. You’ll notice the word “Intercept” is in the model summary. It’s under the <code>Coefficients:</code> heading.</p>
+<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p>The word <strong>Estimate</strong> might be familiar. If you don’t remember hearing that word, think back to the t-tests where “Estimate” referred to the mean. An estimate is just that: an <em>estimate</em> of the value that you are interested in.</p>
+<p>The term <strong>coefficient</strong> is a mathy way to say a number that is multiplied by a variable. In <span class="math inline">\(6 = 2f\)</span>, 2 is a coefficient and <span class="math inline">\(f\)</span> is a variable.</p>
+</div>
+<p><br />
+</p>
+<p>Let’s get these estimates and plot them.</p>
+<pre class="r"><code>mod$coefficients</code></pre>
+<pre><code>## (Intercept)           x 
+##   3.0469259   0.9039917</code></pre>
+<pre class="r"><code>ggplot(xx, aes(x, y)) +
+  geom_point() +
+  geom_abline(
+    slope = mod$coefficients[2],
+    intercept = mod$coefficients[1]
+  )</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_fit-1.png" width="672" /></p>
+<p>The coefficients in the linear model output are the slope and intercept for our linear regression model. <code>mod$coefficients[1]</code> is the <span class="math inline">\(y\)</span> value when the regression line crosses 0 on the x-axis. <code>mod$coefficients[2]</code> is the amount that <span class="math inline">\(y\)</span> increases when we increase <span class="math inline">\(x\)</span> by one unit.</p>
+</div>
+<div id="model-error" class="section level2">
+<h2>Model error</h2>
+<p>Of course, if all of data points fit on a perfect line our lives would be a lot easier. In the last example, you’ll notice that most of the points didn’t fall directly on the regression line. You also might have wondered, how the <code>lm()</code> function chose the slope and intercept. Remember how we calculated the standard deviation by taking calculating the difference from the data point and the mean? We calculated the “deviances” from the model (the mean). A similar method is used to create a linear model. In regression, the differences between the model and the actual data are called <strong>residuals</strong>. The linear model that has the lowest <strong>sum of squared residuals</strong> is the model we use for our data (<strong>method of least squares</strong>).</p>
+<pre class="r"><code>x &lt;- seq(from = 1, to = 10, by = 1)
+y &lt;- c(2, 1, 5, 4, 3, 7, 4, 6, 10, 14)
+
+ggplot(data.frame(x, y), aes(x, y))+
+        geom_point()</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_points-1.png" width="672" /></p>
+<pre class="r"><code>slope1 &lt;- 1
+intercept1 &lt;- -0.5
+slope2 &lt;- 2
+intercept2 &lt;- -0.5
+slope3 &lt;- 1
+intercept3 &lt;- 2
+fit1 &lt;- (slope1 * x) + intercept1
+fit2 &lt;- (slope2 * x) + intercept2
+fit3 &lt;- (slope3 * x) + intercept3</code></pre>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(
+    slope = slope1, intercept = intercept1,
+    color = &quot;sky blue&quot;, linetype = 2
+  ) +
+  geom_segment(aes(
+    x = x, xend = x,
+    y = y, yend = fit1
+  ),
+  color = &quot;sky blue&quot;
+  )</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_fit1-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(
+    slope = slope2, intercept = intercept2,
+    color = &quot;orange&quot;, linetype = 3
+  ) +
+  geom_segment(aes(
+    x = x, xend = x,
+    y = y, yend = fit2
+  ),
+  color = &quot;orange&quot;
+  )</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_fit2-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(
+    slope = slope3, intercept = intercept3,
+    color = &quot;blue&quot;, linetype = 4
+  ) +
+  geom_segment(aes(
+    x = x, xend = x,
+    y = y, yend = fit3
+  ),
+  color = &quot;blue&quot;
+  )</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_fit3-1.png" width="672" /></p>
+<p>If you wanted, you could calculate this yourself, but it would be a pretty mind-numbing task. Luckily, linear regression functions will find the best fit line for you.</p>
+<p>Be aware, however, just because R will find a “best” fit, that doesn’t mean that a linear model is a good fit and will give you useful information.</p>
+<ul>
+<li>Not completely linear:</li>
+</ul>
+<pre class="r"><code>x &lt;- seq(from = -.25, to = 1.25 * pi, length.out = 50)
+y &lt;- cos(x)
+ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point()</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_cosine-1.png" width="672" /></p>
+<pre class="r"><code>cosmod &lt;- lm(y ~ x)
+summary(cosmod)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.3040 -0.1952 -0.0001  0.1600  0.6345 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.98326    0.05775   17.03   &lt;2e-16 ***
+## x           -0.59202    0.02611  -22.68   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2271 on 48 degrees of freedom
+## Multiple R-squared:  0.9146, Adjusted R-squared:  0.9129 
+## F-statistic: 514.3 on 1 and 48 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = cosmod$coefficients[2], intercept = cosmod$coefficients[1])</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_cosine_mod-1.png" width="672" /></p>
+<ul>
+<li>Influential observations</li>
+</ul>
+<pre class="r"><code>x &lt;- rnorm(n = 50, mean = 0, sd = 1)
+y &lt;- x + rnorm(n = 50, mean = 0, sd = 1)
+y[33:36] &lt;- rnorm(n = 4, mean = 40, sd = 1)
+
+ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point()</code></pre>
+<p><img src="linear_regression_files/figure-html/influential_obs-1.png" width="672" /></p>
+<pre class="r"><code>outmod &lt;- lm(y ~ x)
+summary(outmod)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -7.850 -4.262 -2.835 -1.375 41.653 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)    3.468      1.577   2.199   0.0327 *
+## x              2.790      1.695   1.646   0.1062  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 11 on 48 degrees of freedom
+## Multiple R-squared:  0.05345,    Adjusted R-squared:  0.03373 
+## F-statistic:  2.71 on 1 and 48 DF,  p-value: 0.1062</code></pre>
+<pre class="r"><code>ggplot(data.frame(x, y), aes(x, y)) +
+  geom_point() +
+  geom_abline(slope = outmod$coefficients[2], intercept = outmod$coefficients[1])</code></pre>
+<p><img src="linear_regression_files/figure-html/plot_influential-1.png" width="672" /></p>
+<p>There will always be error associated with your model, but you should plot your data beforehand to assess whether you can use a model. After you run the model, you should check that the model fit. We’ll walk through that now.</p>
+</div>
+<div id="linear-regression-assumptions-and-diagnostics" class="section level2">
+<h2>Linear regression assumptions and diagnostics</h2>
+<p>Let’s go back to working with some wug data.</p>
+<div id="create-the-data" class="section level3">
+<h3>Create the data</h3>
+<pre class="r"><code>wug_forage_pop &lt;- read.csv(&#39;../data/wug_forage.csv&#39;, header = T)
+index &lt;- sample(nrow(wug_forage_pop), 100)
+sample &lt;- wug_forage_pop[index,]</code></pre>
+</div>
+<div id="checking-data" class="section level3">
+<h3>Checking data</h3>
+<pre class="r"><code>hist(sample$time_foraging)</code></pre>
+<p><img src="linear_regression_files/figure-html/hist_time_forage-1.png" width="672" /></p>
+<pre class="r"><code>hist(sample$food_gathered)</code></pre>
+<p><img src="linear_regression_files/figure-html/hist_food_gathered-1.png" width="672" /></p>
+<p>How do these distributions look to you?</p>
+<p>What are you looking for? Mainly any weird outliers or anything that could indicate some error in data collection/transcription (e.g., time value that is below 0). The distribution matters, but not as much as you might think. Depending on the distribution, you may need to transform data, but linear models don’t make assumptions about the normality of the response (and less so the predictors). We are concerned with normality, but the normality of <em>residuals</em>, which we’ll discuss later. We won’t transform anything right now, but we’ll discuss transformation a bit later.</p>
+<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p><strong>What do you think? To plot or not to plot</strong></p>
+<p>You’ll notice that I haven’t actually plotted the time foraging data against the amount foraged. This runs counter to some advice that you will hear (from me even!). There are statisticians who argue against plotting your data beforehand (outside of inspecting data quality). Why might they advise against this? Is it realistic to expect people to not plot before testing?</p>
+</div>
+</div>
+<div id="running-the-model" class="section level3">
+<h3>Running the model</h3>
+<p>Let’s run the model. By now, you’ve seen this a few times, but let’s discuss the organization of the arguments in the <code>lm()</code> function. The first argument is <code>formula =</code>. In this argument you’ll put your response and predictors (and later, interactions, random effects, etc). The first element in the formula is the response (dependent variable). The response is followed by <code>~</code>. In this formula, the <code>~</code> symbol can be interpreted as “is predicted by”. After this, you include your predictors. In a simple linear regression, we have just one predictor, but you can add more (“multiple regression”). You are also not limited to numeric predictors. In <strong>multiple regression</strong> you can estimate how a response is affected by categorical and/or numeric predictors. To add more predictors, don’t use a comma, but rather, use <code>+</code>. e.g., <code>formula = y ~ weight + treatment + age</code></p>
+<pre class="r"><code>mod &lt;- lm(food_gathered ~ time_foraging, data = sample)</code></pre>
+<p>OK, we have our model. It’s tempting to print the full summary now, but let’s make sure that we have a valid model first.</p>
+</div>
+<div id="model-diagnostics" class="section level3">
+<h3>Model diagnostics</h3>
+<div id="residuals" class="section level4">
+<h4>Residuals</h4>
+<p>We first want to check that the errors in the model are unbiased. Again, in any random sample we will have error. But if we truly have a random sample, the error should be random as well (<a href="stats_intro.html">Central Limit Theorem</a> back again). We can plot the residuals in a histogram.</p>
+<pre class="r"><code>hist(residuals(mod), probability = T)</code></pre>
+<p><img src="linear_regression_files/figure-html/hist_wug_resid-1.png" width="672" /></p>
+<p>We can also use a QQ plot. A Q-Q plot orders the actual values of the residuals and plots them against theoretical values that would come from a normal distribution.</p>
+<pre class="r"><code>qqnorm(residuals(mod))
+qqline(residuals(mod))</code></pre>
+<p><img src="linear_regression_files/figure-html/qq_wug_resid-1.png" width="672" /></p>
+<p>The values should fit to a pretty clear line. The <code>qqline()</code> function helps you visually inspect the fit. There is no clear cut-off for a good fit or poor fit.</p>
+<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p>You can check it yourself by doing the following</p>
+<pre class="r"><code>q &lt;- seq(0.01, 0.99, length.out = length(mod$residuals))
+plot(qnorm(q), as.vector(sort(mod$residuals)))</code></pre>
+<p><img src="linear_regression_files/figure-html/qq_hand-1.png" width="672" /></p>
+</div>
+<p><br />
+</p>
+<p><strong>Homogeneity</strong> You should also plot the fitted values with the residuals to make sure that there are no clear patterns in the residuals.</p>
+<pre class="r"><code>fitres &lt;- data.frame(residuals = mod$residuals,
+                     fitted_val = mod$fitted.values
+)
+ggplot(fitres, aes(fitted_val, residuals)) +
+        geom_point()+
+        geom_abline(slope = 0, intercept = 0)</code></pre>
+<p><img src="linear_regression_files/figure-html/homo_wug-1.png" width="672" /></p>
+<p>There are some other checks that are a bit beyond this course. These check the stability of the model by removing observations and rerunning the model to assess how much the coefficients change.</p>
+<pre class="r"><code>max(abs(dffits(mod)))</code></pre>
+<pre><code>## [1] 0.3604946</code></pre>
+<pre class="r"><code>max(cooks.distance(mod))</code></pre>
+<pre><code>## [1] 0.06186608</code></pre>
+</div>
+</div>
+<div id="model-interpretation" class="section level3">
+<h3>Model interpretation</h3>
+<p>OK, so this model isn’t too bad. The residuals are maybe a bit large in the context of our question, but we shouldn’t throw it out.</p>
+<p>Let’s plot the data so that we have a better idea of what our model tells us.</p>
+<pre class="r"><code>ggplot(data = sample, aes(time_foraging, food_gathered))+
+        geom_point()</code></pre>
+<p><img src="linear_regression_files/figure-html/wug_plot-1.png" width="672" /></p>
+<p>What do you think?</p>
+<p><br />
+</p>
+<p>Let’s get the model summary!</p>
+<pre class="r"><code>summary(mod)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = food_gathered ~ time_foraging, data = sample)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -69.601 -22.418   1.072  23.174  74.557 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   190.0487    14.3528   13.24  &lt; 2e-16 ***
+## time_foraging  -0.5887     0.1031   -5.71 1.21e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 31.72 on 98 degrees of freedom
+## Multiple R-squared:  0.2496, Adjusted R-squared:  0.242 
+## F-statistic:  32.6 on 1 and 98 DF,  p-value: 1.212e-07</code></pre>
+<div id="call" class="section level4">
+<h4>Call:</h4>
+<p>As we saw with the other tests, the first line repeats the test you ran. Check to make sure everything is kosher.</p>
+</div>
+<div id="residuals-1" class="section level4">
+<h4>Residuals</h4>
+<p>Summary statistics of the residuals. The minimum, maximum, median, first, and third quartile residual values.</p>
+</div>
+<div id="coefficients" class="section level4">
+<h4>Coefficients</h4>
+<p>For the simple linear regression, these estimate values are the intercept and slope. What do these values mean in the context of our data? The intercept is the amount of food gathered if the time spent foraging were 0. That doesn’t really make a lot of sense, does it? This is often the case. The intercept often doesn’t make real world sense.</p>
+<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p><strong>Tough questions</strong></p>
+<p>Any ideas on how to make the intercept interpretable?</p>
+</div>
+<p><br />
+</p>
+<p>The second estimate is the slope. For every unit increase in time_foraging the amount of food gather changes by -0.5887203. Again, this doesn’t make a lot of sense, right? Well, unlike the intercept, the slope should be somewhat interpretable. At the very least, the direction. Our model is telling us that the more time that a wug spends foraging the less food they gather. That’s weird. But it is consistent with our plot. There does seem to be a negative relationship between the two variables.</p>
+<p>What are these other values?</p>
+<p><strong>Standard error</strong>. The error of our estimates. We saw standard error of estimates when we looked at confidence intervals of the mean. We can also use these values to get the t-values which can get a p-value. What do the t-values and p-values tell us? As with the other test, they tell us the probability that we could obtain these estimates at least this extreme if the true population estimate were 0.</p>
+<p>The slope values are usually pretty important. A slope of 0 would mean that there is no correlation between the two variables and that if you increase the amount of time foraging, you should see no change in the amount of food gathered.</p>
+<p>The importance of the intercept values are a bit less straight-forward and can often be meaningless (not always though!) In this case, it’s not very meaningful at all.</p>
+<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p><strong>Tough questions</strong></p>
+<p>Can you think of a test where testing the intercept might be meaningful?</p>
+</div>
+<p><br />
+#### Standard error, R-squared, and F-statistic</p>
+<pre class="r"><code>summary(mod)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = food_gathered ~ time_foraging, data = sample)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -69.601 -22.418   1.072  23.174  74.557 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   190.0487    14.3528   13.24  &lt; 2e-16 ***
+## time_foraging  -0.5887     0.1031   -5.71 1.21e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 31.72 on 98 degrees of freedom
+## Multiple R-squared:  0.2496, Adjusted R-squared:  0.242 
+## F-statistic:  32.6 on 1 and 98 DF,  p-value: 1.212e-07</code></pre>
+<p><strong>Residual standard error</strong>: This value gives you information on the quality of the fit. This value is the average deviation from the regression line for the response variable. So, we have an average of 31.7202735 kgs.</p>
+<p>We’ve seen degrees of freedom as <span class="math inline">\(n - 1\)</span> before, but now we have an n of 100 but degrees of freedom of 98. What gives? We remove a degree of freedom for each parameter in our model. One degree of freedom for the slope and one for the intercept.</p>
+<p><strong>Multiple R-squared</strong>: This value is the amount of variation explained by our model. Our <span class="math inline">\(R^2\)</span> value seems kind of low. Especially given the relationship we are addressing. <strong>Adjusted R-squared</strong> has a similar interpretation but it’s calculation includes a cost for the number of parameters in the model.</p>
+<p><strong>F-statistic</strong>: If you’ve ever run an ANOVA, you’ve probably seen an F-statistic. This tests the model as a whole and whether or not the regression slope is statistically different from 0. So in the case of a single numeric predictor we would expect the p-value for the f-test and the t-test to be the same. When there are multiple slopes, the f-test will tell you if at least one of the slopes is statistically different from 0.</p>
+</div>
+</div>
+</div>
+<div id="supplement" class="section level2">
+<h2>Supplement</h2>
+<p>Calculating the Residual standard error and R-Squared.</p>
+<pre class="r"><code>set.seed(111)
+x &lt;- rnorm(10, mean = 50, sd = 2)
+
+y &lt;- rnorm(10, mean = 20, sd = 2)
+
+mod &lt;- lm(y ~ x)
+summary(mod)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.8935 -0.6997 -0.1751  0.7643  3.8401 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)  24.8247    21.2795   1.167    0.277
+## x            -0.1007     0.4371  -0.230    0.824
+## 
+## Residual standard error: 2.058 on 8 degrees of freedom
+## Multiple R-squared:  0.006595,   Adjusted R-squared:  -0.1176 
+## F-statistic: 0.05311 on 1 and 8 DF,  p-value: 0.8235</code></pre>
+<p>What does the model predict?</p>
+<pre class="r"><code>mod$fitted.values</code></pre>
+<pre><code>##        1        2        3        4        5        6        7        8 
+## 19.74101 19.85503 19.85118 20.25221 19.82282 19.76014 20.09006 19.99190 
+##        9       10 
+## 19.97947 19.88791</code></pre>
+<p>What is the error?</p>
+<pre class="r"><code>mod$residuals</code></pre>
+<pre><code>##           1           2           3           4           5           6 
+## -0.08836035 -0.66822379  3.84009649  0.53589357  1.77223515 -2.89346934 
+##           7           8           9          10 
+## -0.26176262 -0.71018354 -2.36669023  0.84046466</code></pre>
+<pre class="r"><code>xx &lt;- data.frame(x, y,
+  fit = mod$fitted.values,
+  res = mod$residuals
+)
+
+ggplot(xx, aes(x = x, y = y)) +
+  geom_point()</code></pre>
+<p><img src="linear_regression_files/figure-html/sup_plot_data-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(xx, aes(x = x, fit)) +
+        geom_point()</code></pre>
+<p><img src="linear_regression_files/figure-html/sup_plot_fit-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(xx) +
+  geom_jitter(aes(x = x, y = fit + res, color = &quot;blue&quot;), width = 0.1) +
+  geom_point(aes(x = x, y = y, color = &quot;red&quot;))</code></pre>
+<p><img src="linear_regression_files/figure-html/sup_fit_plus_res-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(xx) +
+  geom_point(aes(x = x, y = fit, color = &quot;blue&quot;)) +
+  geom_point(aes(x = x, y = y, color = &quot;red&quot;))</code></pre>
+<p><img src="linear_regression_files/figure-html/sup_plot_fit_data-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(xx) +
+  geom_point(aes(x = x, y = fit, color = &quot;blue&quot;)) +
+  geom_point(aes(x = x, y = y, color = &quot;red&quot;)) +
+  geom_segment(aes(
+    x = x, xend = x,
+    y = y, yend = fit
+  )) +
+  geom_abline(slope = mod$coefficients[2], intercept = mod$coefficients[1])</code></pre>
+<p><img src="linear_regression_files/figure-html/sup_plot_error-1.png" width="672" /></p>
+<p>How to calculate</p>
+<p>Square residuals</p>
+<pre class="r"><code>mod$residuals^2</code></pre>
+<pre><code>##            1            2            3            4            5            6 
+##  0.007807551  0.446523039 14.746341050  0.287181919  3.140817423  8.372164839 
+##            7            8            9           10 
+##  0.068519670  0.504360660  5.601222621  0.706380847</code></pre>
+<p>Residual sum of squares (AKA residual sum of squares and sum of squared estimate errors)</p>
+<pre class="r"><code>ssr &lt;- sum(mod$residuals^2)
+ssr</code></pre>
+<pre><code>## [1] 33.88132</code></pre>
+<pre class="r"><code>ggplot(xx) +
+  geom_point(aes(x = x, y = y, color = &quot;red&quot;)) +
+  geom_segment(aes(
+    x = x, xend = x,
+    y = y, yend = mean(y)
+  )) +
+  geom_abline(slope = 0, intercept = mean(y))   </code></pre>
+<p><img src="linear_regression_files/figure-html/sup_plot_null_error-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(xx) +
+  geom_point(aes(x = x, y = mean(y), color = &quot;blue&quot;)) +
+  geom_point(aes(x = x, y = y, color = &quot;red&quot;)) +
+  geom_segment(aes(
+    x = x, xend = x,
+    y = fit, yend = mean(y)
+  )) +
+  geom_abline(slope = 0, intercept = mean(y), linetype = 3) +
+  geom_abline(
+    slope = mod$coefficients[2], intercept = mod$coefficients[1],
+    linetype = 2
+  )</code></pre>
+<p><img src="linear_regression_files/figure-html/sup_plot_rot-1.png" width="672" /></p>
+<p>We compare the model to the most basic model, the mean. Calculate the deviances</p>
+<pre class="r"><code>y - mean(y)</code></pre>
+<pre><code>##  [1] -0.2705218 -0.7363711  3.7680990  0.8649346  1.6718834 -3.0565043
+##  [7] -0.0948756 -0.6414525 -2.3103915  0.8051999</code></pre>
+<p>Square them</p>
+<pre class="r"><code>(y - mean(y))^2</code></pre>
+<pre><code>##  [1]  0.073182062  0.542242452 14.198569698  0.748111936  2.795194187
+##  [6]  9.342218523  0.009001379  0.411461361  5.337908932  0.648346873</code></pre>
+<p>Then get the sum.</p>
+<pre class="r"><code>sst &lt;- sum((y - mean(y))^2)
+sst</code></pre>
+<pre><code>## [1] 34.10624</code></pre>
+<p>Now we can calculate the model sum of squares</p>
+<pre class="r"><code>sst - ssr</code></pre>
+<pre><code>## [1] 0.2249178</code></pre>
+<pre class="r"><code>(sst - ssr)/sst</code></pre>
+<pre><code>## [1] 0.006594623</code></pre>
+<p>Why did we do this?</p>
+<pre class="r"><code>summary(mod)$r.squared</code></pre>
+<pre><code>## [1] 0.006594623</code></pre>
+<p>We just calculated the R2</p>
+<p>Now F stat</p>
+<pre class="r"><code>ssm &lt;- (sst - ssr)
+n &lt;- length(y)
+k &lt;- length(mod$coefficients)-1
+
+(ssm/k)/(ssr/(n-(k+1)))</code></pre>
+<pre><code>## [1] 0.05310721</code></pre>
+<pre class="r"><code>sqrt(ssr/(n-(1+k)))</code></pre>
+<pre><code>## [1] 2.057952</code></pre>
+<p>================================================================================</p>
+<div id="session-information" class="section level3">
+<h3>Session information:</h3>
+<p>Last update on 2021-11-10</p>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.1.2 (2021-11-01)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 20.04.3 LTS
+## 
+## Matrix products: default
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=de_AT.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=de_AT.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=de_AT.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=de_AT.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] dplyr_1.0.7   ggplot2_3.3.5
+## 
+## loaded via a namespace (and not attached):
+##  [1] highr_0.9         bslib_0.2.5.1     compiler_4.1.2    pillar_1.6.4     
+##  [5] jquerylib_0.1.4   tools_4.1.2       digest_0.6.28     jsonlite_1.7.2   
+##  [9] evaluate_0.14     lifecycle_1.0.1   tibble_3.1.5      gtable_0.3.0     
+## [13] pkgconfig_2.0.3   rlang_0.4.12      DBI_1.1.1         yaml_2.2.1       
+## [17] xfun_0.27         withr_2.4.2       stringr_1.4.0     knitr_1.36       
+## [21] generics_0.1.1    sass_0.4.0        vctrs_0.3.8       grid_4.1.2       
+## [25] tidyselect_1.1.1  glue_1.4.2        R6_2.5.1          fansi_0.5.0      
+## [29] rmarkdown_2.9     farver_2.1.0      purrr_0.3.4       magrittr_2.0.1   
+## [33] scales_1.1.1      ellipsis_0.3.2    htmltools_0.5.1.1 assertthat_0.2.1 
+## [37] colorspace_2.0-2  labeling_0.4.2    utf8_1.2.2        stringi_1.7.5    
+## [41] munsell_0.5.0     crayon_1.4.2</code></pre>
+<p>================================================================================</p>
+</div>
+</div>
+</div>
+
+<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+  
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
