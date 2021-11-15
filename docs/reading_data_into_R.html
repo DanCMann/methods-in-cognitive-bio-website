@@ -309,6 +309,9 @@ $(document).ready(function () {
     <li>
       <a href="correlation.html">Correlation</a>
     </li>
+    <li>
+      <a href="linear_regression.html">Linear Regression</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -360,17 +363,17 @@ write.table(data1, file = &quot;../data/data1.txt&quot;, row.names = F)</code></
 <p><code>head()</code> prints the first 6 rows (observations) of the data frame (by default, you can change the number of rows to show by specifying the <code>n =</code> argument).</p>
 <pre class="r"><code>head(data1_csv)</code></pre>
 <pre><code>##   numerisch ganze_zahlen kategorisch binaer
-## 1  6.510951            1           a   TRUE
-## 2  5.808350            2           b  FALSE
-## 3  3.956529            3           c   TRUE
-## 4  4.797437            4           d  FALSE
-## 5  4.019321            5           a   TRUE
-## 6  1.564087            6           b  FALSE</code></pre>
+## 1  3.882322            1           a   TRUE
+## 2  3.462171            2           b  FALSE
+## 3  3.581922            3           c   TRUE
+## 4  1.874832            4           d  FALSE
+## 5  2.962503            5           a   TRUE
+## 6  2.694321            6           b  FALSE</code></pre>
 <p>The column names are above the columns and it looks like the data we were expecting. However, we are expecting four columns but we see five and the first column does have a column name. Why? The very first shows you the index. These are also called the row names. This information can be useful for subsetting your data.</p>
 <p><code>str()</code> prints the structure of the data. Here you can see the number and names of columns (aka variables), the number of observations, and the data type of each column.</p>
 <pre class="r"><code>str(data1_csv)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    100 obs. of  4 variables:
-##  $ numerisch   : num  6.51 5.81 3.96 4.8 4.02 ...
+##  $ numerisch   : num  3.88 3.46 3.58 1.87 2.96 ...
 ##  $ ganze_zahlen: int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ kategorisch : chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
 ##  $ binaer      : logi  TRUE FALSE TRUE FALSE TRUE FALSE ...</code></pre>
@@ -380,14 +383,14 @@ write.table(data1, file = &quot;../data/data1.txt&quot;, row.names = F)</code></
 head(data1_txt)</code></pre>
 <pre><code>##                 V1           V2          V3     V4
 ## 1        numerisch ganze_zahlen kategorisch binaer
-## 2 6.51095143233673            1           a   TRUE
-## 3 5.80834996312087            2           b  FALSE
-## 4 3.95652883035986            3           c   TRUE
-## 5 4.79743656891452            4           d  FALSE
-## 6    4.01932143207            5           a   TRUE</code></pre>
+## 2 3.88232216217724            1           a   TRUE
+## 3 3.46217100904267            2           b  FALSE
+## 4 3.58192223126618            3           c   TRUE
+## 5 1.87483156677636            4           d  FALSE
+## 6 2.96250343329557            5           a   TRUE</code></pre>
 <pre class="r"><code>str(data1_txt)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    101 obs. of  4 variables:
-##  $ V1: chr  &quot;numerisch&quot; &quot;6.51095143233673&quot; &quot;5.80834996312087&quot; &quot;3.95652883035986&quot; ...
+##  $ V1: chr  &quot;numerisch&quot; &quot;3.88232216217724&quot; &quot;3.46217100904267&quot; &quot;3.58192223126618&quot; ...
 ##  $ V2: chr  &quot;ganze_zahlen&quot; &quot;1&quot; &quot;2&quot; &quot;3&quot; ...
 ##  $ V3: chr  &quot;kategorisch&quot; &quot;a&quot; &quot;b&quot; &quot;c&quot; ...
 ##  $ V4: chr  &quot;binaer&quot; &quot;TRUE&quot; &quot;FALSE&quot; &quot;TRUE&quot; ...</code></pre>
@@ -397,15 +400,15 @@ head(data1_txt)</code></pre>
 <pre class="r"><code>data1_txt &lt;- read.table(&quot;../data/data1.txt&quot;, header = T)
 head(data1_txt)</code></pre>
 <pre><code>##   numerisch ganze_zahlen kategorisch binaer
-## 1  6.510951            1           a   TRUE
-## 2  5.808350            2           b  FALSE
-## 3  3.956529            3           c   TRUE
-## 4  4.797437            4           d  FALSE
-## 5  4.019321            5           a   TRUE
-## 6  1.564087            6           b  FALSE</code></pre>
+## 1  3.882322            1           a   TRUE
+## 2  3.462171            2           b  FALSE
+## 3  3.581922            3           c   TRUE
+## 4  1.874832            4           d  FALSE
+## 5  2.962503            5           a   TRUE
+## 6  2.694321            6           b  FALSE</code></pre>
 <pre class="r"><code>str(data1_txt)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    100 obs. of  4 variables:
-##  $ numerisch   : num  6.51 5.81 3.96 4.8 4.02 ...
+##  $ numerisch   : num  3.88 3.46 3.58 1.87 2.96 ...
 ##  $ ganze_zahlen: int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ kategorisch : chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
 ##  $ binaer      : logi  TRUE FALSE TRUE FALSE TRUE FALSE ...</code></pre>
@@ -450,7 +453,7 @@ rbind(data2_csv, new_row)</code></pre>
 <h3>Session information:</h3>
 <p>Last update on 2020-11-04</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.1.1 (2021-08-10)
+<pre><code>## R version 4.1.2 (2021-11-01)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.3 LTS
 ## 
@@ -470,11 +473,11 @@ rbind(data2_csv, new_row)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] digest_0.6.27     R6_2.5.1          jsonlite_1.7.2    magrittr_2.0.1   
-##  [5] evaluate_0.14     rlang_0.4.11      stringi_1.7.3     jquerylib_0.1.4  
-##  [9] bslib_0.2.5.1     rmarkdown_2.9     tools_4.1.1       stringr_1.4.0    
-## [13] xfun_0.25         yaml_2.2.1        compiler_4.1.1    htmltools_0.5.1.1
-## [17] knitr_1.33        sass_0.4.0</code></pre>
+##  [1] digest_0.6.28     R6_2.5.1          jsonlite_1.7.2    magrittr_2.0.1   
+##  [5] evaluate_0.14     rlang_0.4.12      stringi_1.7.5     jquerylib_0.1.4  
+##  [9] bslib_0.2.5.1     rmarkdown_2.9     tools_4.1.2       stringr_1.4.0    
+## [13] xfun_0.27         yaml_2.2.1        compiler_4.1.2    htmltools_0.5.1.1
+## [17] knitr_1.36        sass_0.4.0</code></pre>
 <p>================================================================================</p>
 </div>
 </div>

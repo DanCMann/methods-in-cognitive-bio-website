@@ -309,6 +309,9 @@ $(document).ready(function () {
     <li>
       <a href="correlation.html">Correlation</a>
     </li>
+    <li>
+      <a href="linear_regression.html">Linear Regression</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -344,15 +347,15 @@ population &lt;- data.frame(
 <pre class="r"><code>hist(population$weight)</code></pre>
 <p><img src="stats_intro_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <pre class="r"><code>mean(population$weight)</code></pre>
-<pre><code>## [1] 30.01766</code></pre>
+<pre><code>## [1] 29.97843</code></pre>
 <pre class="r"><code>sd(population$weight)</code></pre>
-<pre><code>## [1] 3.930661</code></pre>
+<pre><code>## [1] 4.023985</code></pre>
 <pre class="r"><code>range(population$weight)</code></pre>
-<pre><code>## [1] 13.39328 45.06093</code></pre>
+<pre><code>## [1] 13.93255 46.12094</code></pre>
 <p>However, when you collect data, you normally don’t have access to an entire population, <a href="https://www.nature.com/articles/nature19103">Hawaiian Crows notwithstanding</a>. So, what do we do? Sample!</p>
 <p>Sampling is fundamental to understanding statistics. Because we can’t gather data on the whole population, we have to take samples from the population and make <em>inferences</em> based on the sample statistics.</p>
 <p>How do we know how many individuals we need? This is not a trivial issue, in fact, it’s probably the most important question you will face as a researcher. It’s also one of the most difficult to answer. We’ll address this question several times during the course. (Lisa will also discuss sampling in the Experimental Design class).</p>
-<p>But let’s try to get an intuitive notion of sampling theory. Because we generated the wug data, we know the true population mean: 30.0176632.</p>
+<p>But let’s try to get an intuitive notion of sampling theory. Because we generated the wug data, we know the true population mean: 29.9784349.</p>
 <p>Let’s sample one individual. To do this, let’s use the <code>sample_n()</code> function in the <code>dplyr</code> package</p>
 <pre class="r"><code>library(dplyr)</code></pre>
 <pre><code>## 
@@ -365,21 +368,21 @@ population &lt;- data.frame(
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>population %&gt;% 
         sample_n(1)</code></pre>
-<pre><code>##   wug_id   weight
-## 1   7753 33.58953</code></pre>
+<pre><code>##   wug_id  weight
+## 1   2452 24.1785</code></pre>
 <p>Note: If you haven’t installed <code>dplyr</code> yet, you can use the <code>sample()</code> function in “base” R.</p>
 <pre class="r"><code>index &lt;- sample(x = 1:nrow(population), size = 1)
 population[index, ]</code></pre>
 <pre><code>##      wug_id   weight
-## 9504   9504 31.43322</code></pre>
-<p>Does your individual weigh the same as the mean? There is some randomness with sampling, most of you probably got something around 30.0176632, but anything from 13.3932838 to 45.060932 is possible.</p>
+## 1234   1234 33.92373</code></pre>
+<p>Does your individual weigh the same as the mean? There is some randomness with sampling, most of you probably got something around 29.9784349, but anything from 13.9325505 to 46.1209407 is possible.</p>
 <p>What happens if we take a lot of individuals? And then we take the mean of their weights?</p>
 <pre class="r"><code>sample_size &lt;- 10
 
 wug_sample &lt;- population %&gt;% 
         sample_n(sample_size)
 mean(wug_sample$weight)</code></pre>
-<pre><code>## [1] 30.12432</code></pre>
+<pre><code>## [1] 30.9797</code></pre>
 <pre class="r"><code># or 
 #index &lt;- sample(x = 1:nrow(population), size = sample_size)
 #wug_sample &lt;- population[index, ]</code></pre>
@@ -390,7 +393,7 @@ mean(wug_sample$weight)</code></pre>
 wug_sample &lt;- population %&gt;% 
         sample_n(sample_size)
 mean(wug_sample$weight)</code></pre>
-<pre><code>## [1] 30.0942</code></pre>
+<pre><code>## [1] 29.88522</code></pre>
 <pre class="r"><code># or 
 #index &lt;- sample(x = 1:nrow(population), size = sample_size)
 #wug_sample &lt;- population[index, ]</code></pre>
@@ -458,8 +461,8 @@ index &lt;- sample(x = 1:nrow(population),
 wug_sample &lt;- population[index, ]
 ci &lt;- confint_int(x = wug_sample$weight, n = sample_size)
 ci</code></pre>
-<pre><code>## [1] 25.37338 32.28651</code></pre>
-<p>There is a 95% chance that the true mean lies between 25.3733768 and 32.2865061.</p>
+<pre><code>## [1] 26.22517 31.87568</code></pre>
+<p>There is a 95% chance that the true mean lies between 26.225171 and 31.8756763.</p>
 <pre class="r"><code>ci_plot &lt;- function(sample_size) {
         ci_data &lt;- data.frame(
                 &#39;sample_mean&#39; = numeric(),
@@ -515,7 +518,7 @@ ci</code></pre>
 <h3>Session information:</h3>
 <p>Last update on 2020-10-19</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.1.1 (2021-08-10)
+<pre><code>## R version 4.1.2 (2021-11-01)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.3 LTS
 ## 
@@ -538,17 +541,17 @@ ci</code></pre>
 ## [1] ggplot2_3.3.5 dplyr_1.0.7  
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] pillar_1.6.2      bslib_0.2.5.1     compiler_4.1.1    jquerylib_0.1.4  
-##  [5] highr_0.9         tools_4.1.1       digest_0.6.27     jsonlite_1.7.2   
-##  [9] evaluate_0.14     lifecycle_1.0.0   tibble_3.1.3      gtable_0.3.0     
-## [13] pkgconfig_2.0.3   rlang_0.4.11      DBI_1.1.1         yaml_2.2.1       
-## [17] xfun_0.25         withr_2.4.2       stringr_1.4.0     knitr_1.33       
-## [21] generics_0.1.0    vctrs_0.3.8       sass_0.4.0        grid_4.1.1       
+##  [1] pillar_1.6.4      bslib_0.2.5.1     compiler_4.1.2    jquerylib_0.1.4  
+##  [5] highr_0.9         tools_4.1.2       digest_0.6.28     jsonlite_1.7.2   
+##  [9] evaluate_0.14     lifecycle_1.0.1   tibble_3.1.5      gtable_0.3.0     
+## [13] pkgconfig_2.0.3   rlang_0.4.12      DBI_1.1.1         yaml_2.2.1       
+## [17] xfun_0.27         withr_2.4.2       stringr_1.4.0     knitr_1.36       
+## [21] generics_0.1.1    vctrs_0.3.8       sass_0.4.0        grid_4.1.2       
 ## [25] tidyselect_1.1.1  glue_1.4.2        R6_2.5.1          fansi_0.5.0      
 ## [29] rmarkdown_2.9     farver_2.1.0      purrr_0.3.4       magrittr_2.0.1   
 ## [33] scales_1.1.1      ellipsis_0.3.2    htmltools_0.5.1.1 assertthat_0.2.1 
-## [37] colorspace_2.0-2  labeling_0.4.2    utf8_1.2.2        stringi_1.7.3    
-## [41] munsell_0.5.0     crayon_1.4.1</code></pre>
+## [37] colorspace_2.0-2  labeling_0.4.2    utf8_1.2.2        stringi_1.7.5    
+## [41] munsell_0.5.0     crayon_1.4.2</code></pre>
 <p>================================================================================</p>
 </div>
 </div>

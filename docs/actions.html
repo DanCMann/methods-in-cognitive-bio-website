@@ -309,6 +309,9 @@ $(document).ready(function () {
     <li>
       <a href="correlation.html">Correlation</a>
     </li>
+    <li>
+      <a href="linear_regression.html">Linear Regression</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -522,9 +525,9 @@ anova(linear_model)</code></pre>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Response: scores
-##            Df Sum Sq Mean Sq F value    Pr(&gt;F)    
-## group       1   6696  6696.0  92.697 &lt; 2.2e-16 ***
-## Residuals 198  14302    72.2                      
+##            Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## group       1  7534.1  7534.1  104.68 &lt; 2.2e-16 ***
+## Residuals 198 14251.0    72.0                      
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>summary(linear_model)</code></pre>
@@ -533,19 +536,19 @@ anova(linear_model)</code></pre>
 ## lm(formula = scores ~ group)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -31.828  -5.042  -0.080   5.664  20.401 
+##      Min       1Q   Median       3Q      Max 
+## -25.0054  -5.7200   0.0757   4.4237  28.5962 
 ## 
 ## Coefficients:
 ##                Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)     75.8757     0.8499  89.275   &lt;2e-16 ***
-## grouptreatment  11.5723     1.2020   9.628   &lt;2e-16 ***
+## (Intercept)     73.9786     0.8484   87.20   &lt;2e-16 ***
+## grouptreatment  12.2752     1.1998   10.23   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 8.499 on 198 degrees of freedom
-## Multiple R-squared:  0.3189, Adjusted R-squared:  0.3154 
-## F-statistic:  92.7 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
+## Residual standard error: 8.484 on 198 degrees of freedom
+## Multiple R-squared:  0.3458, Adjusted R-squared:  0.3425 
+## F-statistic: 104.7 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Other functions perform actions that are essential to working in R, but won’t (necessarily) produce an object that you can use. For example, you can get your working directory by using the function <code>getwd()</code>. You can change your working directory by using <code>setwd()</code>. <code>list.files()</code> will produce a list of all of the files in your working directory.</p>
 <p>Two of the most useful functions that you will use are <code>install.packages()</code> and <code>library()</code>. Packages are like “add-ons” to R. A package contains R functions, example data, and helpful documentation. If you find yourself thinking “I wonder if there is a way to do this” the answer is most likely “yes and there is a package that does it”. You can find all of the R approved packages at <a href="https://cran.r-project.org" class="uri">https://cran.r-project.org</a>. Packages that are on this website are very easy to download and start using. Simply use the <code>install.packages()</code> function and put the name of the package as an argument: <code>install.packages("package Name")</code></p>
 <p>The packages you download are stored in your R library. The function <code>library()</code> produces a list of all the packages currently installed. To use a package you have to load it first. To load a package put the package name as an argument into the <code>library()</code> function: <code>library("package Name")</code>. If you don’t know the path to your library, you can use <code>.libPaths()</code></p>
@@ -559,7 +562,7 @@ library(dplyr) # quotes are optional</code></pre>
 <h3>Session information:</h3>
 <p>Last update on 2021-10-11</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.1.1 (2021-08-10)
+<pre><code>## R version 4.1.2 (2021-11-01)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.3 LTS
 ## 
@@ -579,11 +582,11 @@ library(dplyr) # quotes are optional</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] digest_0.6.27     R6_2.5.1          jsonlite_1.7.2    magrittr_2.0.1   
-##  [5] evaluate_0.14     rlang_0.4.11      stringi_1.7.3     jquerylib_0.1.4  
-##  [9] bslib_0.2.5.1     rmarkdown_2.9     tools_4.1.1       stringr_1.4.0    
-## [13] xfun_0.25         yaml_2.2.1        compiler_4.1.1    htmltools_0.5.1.1
-## [17] knitr_1.33        sass_0.4.0</code></pre>
+##  [1] digest_0.6.28     R6_2.5.1          jsonlite_1.7.2    magrittr_2.0.1   
+##  [5] evaluate_0.14     rlang_0.4.12      stringi_1.7.5     jquerylib_0.1.4  
+##  [9] bslib_0.2.5.1     rmarkdown_2.9     tools_4.1.2       stringr_1.4.0    
+## [13] xfun_0.27         yaml_2.2.1        compiler_4.1.2    htmltools_0.5.1.1
+## [17] knitr_1.36        sass_0.4.0</code></pre>
 <p>================================================================================</p>
 </div>
 </div>
