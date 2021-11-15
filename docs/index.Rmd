@@ -19,3 +19,4 @@ title: "Methods in Cognitive Biology"
 - [Models and hypothesis testing](hypoth_test_mod_error.html)
 - [T-tests](t_tests.html)
 - [Correlation](correlation.html)
+- [Linear Regression](linear_regression.html)
