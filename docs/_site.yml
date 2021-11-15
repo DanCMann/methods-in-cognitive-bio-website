@@ -39,6 +39,8 @@ navbar:
           href: t_tests.html
         - text: "Correlation"
           href: correlation.html
+        - text: "Linear Regression"
+          href: linear_regression.html
 new_session: true
 output:
   html_document:
