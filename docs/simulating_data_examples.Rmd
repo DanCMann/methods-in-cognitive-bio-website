@@ -1,0 +1,547 @@
+---
+title: "Simulating data examples"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Templates
+
+
+# Single predictor
+
+In these examples, we are simulating a data set with one predictor (independent) variable.  
+
+
+## Categorical predictor 
+
+Here, the predictor is categorical with two levels. This is useful for when you want to compare two groups, in particular when you have a treatment condition and a control condition. 
+
+You will want to set some measure of the central tendency for both levels. Depending on the type of response you expect, you will also need to set the variance for each group. 
+
+
+### Continuous response (with negatives and 0s)
+
+Now, we'll deal with the response (aka dependent, outcome) variable. In the following example, our response is continuous and can have negatives and 0s. In these cases, the most natural distribution is the normal (aka Gaussian) distribution.  
+ 
+For the normal distribution, the central tendency parameter is the mean and you have a variance parameter.   
+
+
+
+```{r}
+## set up
+n <- 30 # sample size
+mean_control <- 35
+mean_treatment <- 27
+
+sd_control <- 5
+sd_treatment <- 5
+
+## simulate
+
+### create the predictor
+control_predictor <- rep("control", n/2)
+treatment_predictor <- rep("treatment", n/2)
+predictor <- c(control_predictor, treatment_predictor)                       
+
+### create response
+control_response <- rnorm(n = n/2, mean = mean_control, sd = sd_control)
+treatment_response <- rnorm(n = n/2, mean = mean_treatment, sd = sd_treatment)
+response <- c(control_response, treatment_response) ## combine the two vectors
+
+
+## set up data frame
+dat <- data.frame(
+  response = response, # first column
+  predictor = predictor # second column
+)
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+```
+
+
+### Continuous response (no negatives and 0s)
+
+If you have a continuous response, but you cannot have negatives or zeros (like distance or duration), the gamma distribution is the distribution you will need.  
+
+
+```{r}
+## set up
+n <- 30 # sample size
+central_control <- 3
+central_treatment <-2
+
+## simulate
+
+### create the predictor
+control_predictor <- rep("control", n/2)
+treatment_predictor <- rep("treatment", n/2)
+predictor <- c(control_predictor, treatment_predictor)                       
+
+### create response
+control_response <- rgamma(n = n/2, shape = central_control)
+treatment_response <- rgamma(n = n/2, shape = central_treatment)
+response <- c(control_response, treatment_response) ## combine the two vectors
+
+
+## set up data frame
+dat <- data.frame(
+  response = response, # first column
+  predictor = predictor # second column
+)
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+```
+
+
+
+### Integer response (no negatives and 0s)
+
+For count data, you will use a Poisson distribution.  
+
+
+```{r}
+## set up
+n <- 30 # sample size
+central_control <- 5
+central_treatment <-2
+
+## simulate
+
+### create the predictor
+control_predictor <- rep("control", n/2)
+treatment_predictor <- rep("treatment", n/2)
+predictor <- c(control_predictor, treatment_predictor)                       
+
+### create response
+control_response <- rpois(n = n/2, lambda = central_control)
+treatment_response <- rpois(n = n/2, lambda = central_treatment)
+response <- c(control_response, treatment_response) ## combine the two vectors
+
+
+## set up data frame
+dat <- data.frame(
+  response = response, # first column
+  predictor = predictor # second column
+)
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+```
+
+
+### Binary response 
+
+For responses where you have only two outcomes (e.g., true/false, 0/1, yes/no, etc), you can use the binomial distribution. The `binom` functions are usually framed as the number of "successses" in `size` trials (this can be a bit confusing, because `n` in the `rbinom` function is **not** the number of trials). So, if we set `size = 1`, we can only get 0 or 1. The `prob` parameter is the probability of a success and can be any value between 0 and 1. The closer to 1, the more likely a "success" (i.e., a 1). 
+
+For each level of the categorical predictor, you will set the respective probabilities.   
+
+
+```{r}
+## set up
+n <- 30 # sample size
+prob_control <- 0.5
+prob_treatment <- 0.2
+
+## simulate
+
+### create the predictor
+control_predictor <- rep("control", n/2)
+treatment_predictor <- rep("treatment", n/2)
+predictor <- c(control_predictor, treatment_predictor)                       
+
+### create response
+control_response <- rbinom(n = n/2, size = 1, prob = prob_control)
+treatment_response <- rbinom(n = n/2, size = 1, prob = prob_treatment)
+response <- c(control_response, treatment_response) ## combine the two vectors
+
+
+## set up data frame
+dat <- data.frame(
+  response = response, # first column
+  predictor = predictor # second column
+)
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+```
+
+
+
+## Numeric predictor 
+
+For these examples, we will use a numeric predictor. To get our response variable, we will need to use the formula for a line, $y = mx + b$. I'll use a predictor that has a normal distribution, but the predictor can have any distribution. 
+
+
+For a bit more information, see the [supplementary info](data_sim_supp.html). 
+
+
+### Continuous response (with negatives and 0s)
+
+
+```{r}
+## set up
+n <- 50 # sample size
+intercept <- 30 # the value of y (response) when x (predictor) is at 0. 
+slope <- 2 # the increase in y (response) for every increase of 1 in x (predictor)
+sigma <- 1 # used to introduce error in the simulation
+
+## simulate
+### create the predictor
+predictor <- rnorm(n, mean = 42, sd = 3) # simulates predictor values
+mu <- intercept + (slope * predictor) # y ~ b + mx (linear relationship, no error)
+
+response <- rnorm(n = n, mean = mu, sd = sigma)# simulates response with error
+
+## set up data frame
+dat <- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+```
+
+
+
+### Continuous response (no negatives and 0s)
+
+
+
+
+### Integer response
+
+For a more detailed explanation, see "link functions in [the supplementary info](data_sim_supp.html). 
+
+```{r}
+## set up
+n <- 50 # sample size
+intercept <- 1 # the value of y (response) when x (predictor) is at 0. 
+slope <- 1 # the increase in y (response) for every increase of 1 in x (predictor)
+
+
+## simulate
+### create the predictor
+predictor <- rnorm(n, mean = 0, sd = 1) # simulates predictor values
+lambda <- intercept + (slope * predictor) # y ~ b + mx (linear relationship, no error)
+lambda <- exp(lambda)
+response <- rpois(n = n, lambda = lambda)# simulates response with error
+
+## set up data frame
+dat <- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+```
+
+### Binary response
+
+```{r}
+inv_logit <- function(p){
+  exp(p)/ (1 + exp(p))
+}
+```
+
+
+```{r}
+## set up
+n <- 50 # sample size
+intercept <- 0 # the value of y (response) when x (predictor) is at 0. 
+slope <- 1 # the increase in y (response) for every increase of 1 in x (predictor)
+
+
+## simulate
+### create the predictor
+predictor <- rnorm(n, mean = 0, sd = 1) # simulates predictor values
+p <- intercept + (slope * predictor) # y ~ b + mx (linear relationship, no error)
+p <- inv_logit(p)
+response <- rbinom(n = n, size = 1, p = p)# simulates response with error
+
+## set up data frame
+dat <- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+```
+
+
+
+## Multiple predictors 
+
+Once we've used the linear model formula for a single predictor, we can easily extend this to multiple predictors. We just have to add terms to the model formula. For one predictor, we have $y = b + mx$ or $y = intercept + slope \times x$. We'll replace "b" or "intercept" with $\beta_0$ and we'll replace "m" or "slope" with $\beta_1$: $y = \beta_0 + \beta_1 x_1$. To add another predictor, we just add another "slope" times "x" term: $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2$. For three predictors: $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3$. And so on ($y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + ... \beta_k x_k$ where $k$ is the number of predictors). 
+
+### Continuous predictors
+
+```{r}
+## set up
+n <- 50 # sample size
+intercept <- 30 # the value of y (response) when x (predictor) is at 0. 
+slope1 <- 1 # the increase in y (response) for every increase of 1 in x (predictor)
+slope2 <- 3
+slope3 <- -2
+slope4 <- 0
+
+sigma <- 1 # used to introduce error in the simulation
+
+## simulate
+### create the predictor
+predictor1 <- rnorm(n, mean = -1, sd = 2) # simulates predictor 1 values
+predictor2 <- runif(n, min = 0, max = 10) # simulates predictor 2 values
+predictor3 <- rpois(n, lambda = 2) # simulates predictor 3 values
+predictor4 <- rnorm(n, mean = 42, sd = 3) # simulates predictor 4 values
+
+mu <- intercept + # y ~ b + 
+  (slope1 * predictor1) + # mx
+  (slope2 * predictor2) + # mx
+  (slope3 * predictor3) + # mx
+  (slope4 * predictor4)   # mx
+
+response <- rnorm(n = n, mean = mu, sd = sigma)# simulates response with error
+
+## set up data frame
+dat <- data.frame(
+  response = response, # column 1
+  predictor1 = predictor1, # column 2
+  predictor2 = predictor2, # column 3
+  predictor3 = predictor3, # column 4
+  predictor4 = predictor4 # column 5
+  )
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+```
+
+
+
+If you need another response distribution, the linear model part is the same as with a normal distribution. The rest is the same as above in the single predictor situation. 
+
+```{r}
+## set up
+n <- 50 # sample size
+intercept <- 30 # the value of y (response) when x (predictor) is at 0. 
+slope1 <- 1 # the increase in y (response) for every increase of 1 in x (predictor)
+slope2 <- 3
+slope3 <- -2
+slope4 <- 0
+
+## simulate
+### create the predictor
+predictor1 <- rnorm(n, mean = -1, sd = 2) # simulates predictor 1 values
+predictor2 <- runif(n, min = 0, max = 10) # simulates predictor 2 values
+predictor3 <- rpois(n, lambda = 2) # simulates predictor 3 values
+predictor4 <- rnorm(n, mean = 42, sd = 3) # simulates predictor 4 values
+
+lambda <- intercept + # y ~ b + 
+  (slope1 * predictor1) + # mx
+  (slope2 * predictor2) + # mx
+  (slope3 * predictor3) + # mx
+  (slope4 * predictor4)   # mx
+
+lambda <- exp(lambda)
+response <- rpois(n = n, lambda = lambda)# simulates response with error
+
+## set up data frame
+dat <- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+```
+
+
+
+
+### Categorical predictor revisited
+
+Now that we've learned to use the linear model formula in data simulation, we can actually apply this to categorical predictors. This gives us more flexibility to add more levels to our categorical predictor. First, let's repeat the example from earlier using our linear model formulation. 
+
+Remember that in a linear model (see the document on [linear regression](https://dancmann.github.io/methods-in-cognitive-bio-website/linear_regression.html)) the intercept is the value of $y$ when all of the predictors are set to 0. If there is a categorical predictor, the function `lm` will use set one level as a "reference", so it is essentially 0 in the linear model. So, the intercept is the estimate for the reference group (if there are multiple predictors, the estimate for the reference group when all other predictors are also at 0). 
+
+The slope is then the difference between the reference group and the other group (in the case of two groups). 
+
+
+```{r}
+## set up
+n <- 30 # sample size
+
+intercept <- 35 # control mean
+slope <- -8 # difference between the control and treatment levels
+
+sigma <- 5
+
+## simulate
+### create the predictor
+predictor <- sample(c("control", "treatment"), size = n, replace = TRUE) # simulates predictor values
+
+#### convert to 0 and 1.
+dummy_predictor <- ifelse(predictor == "control", 0, 1) # replaces all of the values that match "control" with 0 and those that don't with 1.
+
+#### the slope
+mu <- intercept + (slope * dummy_predictor) # y ~ b + mx (linear relationship, no error)
+
+response <- rnorm(n = n, mean = mu, sd = sigma)# simulates response with error
+
+## set up data frame
+dat <- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+```
+
+
+For the reference group $x = 0$ so the slope multiplied by 0 is 0 and you are left with just the intercept. We can extend this to add more levels/groups to the categorical variable. For every additional level you add, you will add a slope and a dummy predictor. So, if you have 5 levels to your categorical variable, you will have 4 slopes and 4 (dummy) predictors in the model. Each of the slopes will be the difference between that level and the reference level. The dummy predictors will all be 0s and 1: 1 if the observation belongs to that level/group and 0 if not. 
+
+
+```{r}
+## set up
+n <- 50 # sample size
+
+intercept <- 35 # control mean
+slopeGroup2 <- -8 # difference between group 1 and group 2
+slopeGroup3 <- 8 # difference between group 1 and group 3
+slopeGroup4 <- -2 # difference between group 1 and group 4
+slopeGroup5 <- 0 # difference between group 1 and group 5
+
+sigma <- 2
+
+## simulate
+### create the predictor
+predictor <- sample(c("group1", "group2", "group3", "group4", "group5"), size = n, replace = TRUE) # simulates predictor values
+
+
+# predictor values
+
+### here we'll turn the single predictor variable into four "dummy" variables. Why only two? Because group 1 is the intercept. 
+dummy_group2 <- ifelse(predictor == "group2", 1, 0)
+dummy_group3 <- ifelse(predictor == "group3", 1, 0)
+dummy_group4 <- ifelse(predictor == "group4", 1, 0)
+dummy_group5 <- ifelse(predictor == "group5", 1, 0)
+
+
+mu <- 
+  intercept + 
+  (slopeGroup2 * dummy_group2) +
+  (slopeGroup3 * dummy_group3) +
+  (slopeGroup4 * dummy_group4) +
+  (slopeGroup5 * dummy_group5) 
+
+response <- rnorm(n, mean = mu, sd = sigma) # simulates response with error
+
+## Organize data frame
+
+dat <- data.frame(
+  response = response,
+  predictor = predictor # the predictor in the data frame can stil be a single column. 
+  )
+
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+
+```
+
+Again, this works because of 0 multiplication. For example, if an observation belongs to group 3, it will expand to the following: 
+
+
+$$
+\begin{align}
+y & = intercept + slope_{g2}\times x_{g2} + slope_{g3}\times x_{g3} + slope_{g4}\times x_{g4} + slope_{g5}\times x_{g5} \\
+& = 35 + (-8 \times 0) + (8 \times 1) + (-2 \times 0) + (0 \times 0) \\
+& = 35 + 0 + 8 + 0 + 0 \\
+& = 43
+
+\end{align}
+$$
+
+### Categorical and continuous predictors
+
+If you want to add continuous predictors to a model with a categorical predictor, just add the term in the model.  
+
+
+```{r}
+## set up
+n <- 50 # sample size
+
+intercept <- 35 # control mean
+slopeGroup2 <- -8 # difference between group 1 and group 2
+slopeGroup3 <- 8 # difference between group 1 and group 3
+slopeGroup4 <- -2 # difference between group 1 and group 4
+slopeGroup5 <- 0 # difference between group 1 and group 5
+
+slopeContinuous <- 4
+
+sigma <- 2
+
+## simulate
+### create the predictor
+predictor <- sample(c("group1", "group2", "group3", "group4", "group5"), size = n, replace = TRUE) # simulates predictor values
+
+
+# predictor values
+
+### here we'll turn the single predictor variable into four "dummy" variables. Why only two? Because group 1 is the intercept. 
+dummy_group2 <- ifelse(predictor == "group2", 1, 0)
+dummy_group3 <- ifelse(predictor == "group3", 1, 0)
+dummy_group4 <- ifelse(predictor == "group4", 1, 0)
+dummy_group5 <- ifelse(predictor == "group5", 1, 0)
+
+continuous_predictor <- rnorm(n = n, mean = 5, sd = 2)
+
+mu <- 
+  intercept + 
+  (slopeGroup2 * dummy_group2) +
+  (slopeGroup3 * dummy_group3) +
+  (slopeGroup4 * dummy_group4) +
+  (slopeGroup5 * dummy_group5) +
+  (slopeContinuous * continuous_predictor)
+
+response <- rnorm(n, mean = mu, sd = sigma) # simulates response with error
+
+## Organize data frame
+
+dat <- data.frame(
+  response = response,
+  categorical_predictor = predictor, # the predictor in the data frame can still be a single column. 
+  continuous_predictor = continuous_predictor
+  )
+
+
+## Save data
+filename <- "output/data.csv"
+write.csv(dat, file = filename)
+
+```
+
+
+```{r include=FALSE}
+date <- "2022-11-08"
+```
+```{r, child="_session-info.Rmd"}
+```

@@ -1,0 +1,163 @@
+---
+title: "Supplementary data simulation information"
+output: html_document
+---
+
+
+```{r}
+library(ggplot2)
+```
+
+
+## Model error 
+
+
+In the examples, we simulated data by building a linear model and then using the resulting vector as input to the distribution parameters.   
+
+```{r}
+## set up
+n <- 30 # sample size
+intercept <- 30 # the value of y (response) when x (predictor) is at 0. 
+slope <- 2 # the increase in y (response) for every increase of 1 in x (predictor)
+sigma <- 1 # used to introduce error in the simulation
+
+## simulate
+### create the predictor
+predictor <- rnorm(n, mean = 42, sd = 3) # simulates predictor values
+mu <- intercept + (slope * predictor) # y ~ b + mx (linear relationship, no error)
+
+response <- rnorm(n = n, mean = mu, sd = sigma)# simulates response with error
+```
+
+
+This form of simulating is a bit confusing. We create the linear relationship and then put it as the mean in the `rnorm` function. If you just had the variable `mu` the model would be a perfect fit. 
+
+```{r}
+## set up data frame
+dat <- data.frame(
+  response = mu, # column 1
+  predictor = predictor # column 2
+)
+```
+
+```{r}
+ggplot(dat, aes(x = predictor, y = response))+
+  geom_point()
+```
+
+But, isn't the variable `mu` a vector of values? Yes, we can confirm that by printing out the variable contents. 
+
+```{r}
+mu
+```
+
+You can actually pass more than just a single value for the `mean=` in `rnorm`. If you have `rnorm(n = 2, mean = c(1, 100), sd = 1)`, then R is going to return 2 values, one that is sampled from a normal distribution with a mean of 1, the second from a normal distribution with a mean of 100. 
+
+```{r}
+rnorm(n = 2, mean = c(1, 100), sd = 1)
+```
+
+In our example above, we can use this to maintain the relationship between the response and the predictor. Each value of `mu` has the linear relationship that we defined. But we need a way to introduce error. Remember, if we re-ran an experiment, the individuals that we sample would not be the same even if the linear relationship remained.    
+
+Here's an example of how this works. Our predictor is an integer variable and we'll use the integers 0 through 4. Our intercept will be 0 and our slope will be 2. So, if our $x$ value is 0, our $y$ should be 0. (remember, $y = b + mx$, where $b$ is the intercept and $m$ is the slope, $b=0, m = 2, x = 0$. So, $0 + 2\times 0$). If $x$ is 4, $y$ should be 8 ($b=0, m = 2, x = 4$. So, $0 + 2\times 4$). Because there is random variation, we don't expect to always get 8 if $x = 4$, but we would expect that if we repeated the sampling over and over, we would get lots of values close to 8 with values above and below 8 being less common the further they are from 8. In this example, we have done that:  
+
+```{r}
+
+## set up
+n <- 10000 # sample size
+intercept <- 0 # the value of y (response) when x (predictor) is at 0. 
+slope <- 2 # the increase in y (response) for every increase of 1 in x (predictor)
+sigma <- 2 # used to introduce error in the simulation
+
+## simulate
+### create the predictor
+predictor <- rep(0:4, length.out = n) # simulates predictor values
+mu <- intercept + (slope * predictor) # y ~ b + mx (linear relationship, no error)
+
+response <- rnorm(n = n, mean = mu, sd = sigma)# simulates response with error
+
+## set up data frame
+dat <- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+ggplot(dat, aes(x = predictor, y = response))+
+  ggdist::stat_halfeye(alpha = 0.2, width = 0.5, fill = 'red')+
+  geom_point(alpha = 0.025)+
+  geom_abline(slope = slope, intercept = intercept, color = 'blue')+
+  scale_x_continuous(breaks = c(0:9))+
+  scale_y_continuous(breaks = seq(-6, to = 26, by = 2))
+```
+
+The predictor variable is a vector of 10000 values with the numbers 0 - 4 repeating. 
+
+```{r}
+head(predictor, n = 20)
+```
+
+Each of these "$x$" values goes into the linear model, because there is no error in this model the values in `mu` are also repeating: 
+
+```{r}
+head(mu, n = 20)
+```
+
+By using `rnorm()` (or other random functions) we get random variation. This is what we see in the plot above. 
+
+## Link functions
+
+At their core, "generalized" linear models (or glms) are based on normal linear models but are useful when you expect that your response comes from a non-normal distribution. For example, counts typically have a Poisson distribution (they can only be integers, can't have negative values, so a normal distribution is a poor fit). These models still use the linear formula, but then need a "link function" to put the linear fit on the appropriate scale. That is, they "link" the linear model to the appropriate distribution. 
+
+To illustrate, if you try to put a negative value into the `mu` parameter for `rnorm`, you will have no problems. But, if you try this with `rpois`, you will get an NA and a warning. 
+```{r}
+rnorm(n = 1, mean = -1)
+```
+
+```{r}
+rpois(n = 1, lambda = -1)
+```
+
+So, we have to find a way to get the linear model outcome onto a positive scale. One way we can do this is to exponentiate the values. 
+
+```{r}
+exp(-2)
+```
+
+```{r}
+n <- 50 # sample size
+intercept <- 0 # the value of y (response) when x (predictor) is at 0. 
+slope <- 1 # the increase in y (response) for every increase of 1 in x (predictor)
+
+## simulate
+### create the predictor
+predictor <- rnorm(n, mean = 0, sd = 1) # simulates predictor values
+lambda <- intercept + (slope * predictor) # linear model
+plot(lambda ~ predictor)
+title("Linear relationship")
+```
+
+```{r}
+plot(exp(lambda) ~ predictor)
+title("Exponentiated relationship")
+```
+
+These values can now be put into the `rpois` function and we get integer values returned. 
+
+```{r}
+# without exponentiation
+head(rpois(n = n, lambda = lambda))
+```
+```{r}
+# with exponentiation
+head(rpois(n = n, lambda = exp(lambda)))
+```
+
+For simulation, we think of putting the linear relationship onto an exponentiated scale, but we're working "backwards". The real world measurements that we are trying to simulate are on an integer scale. In order to apply a linear model we have to put the values onto the log scale, which is why this is called a "log" link. The inverse of taking the log is exponentiation.  
+
+
+
+```{r include=FALSE}
+date <- "2022-11-08"
+```
+```{r, child="_session-info.Rmd"}
+```
