@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Simulating data examples</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="custom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Methods in Cognitive Biology</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fab fa-r-project"></span>
+     
+    R tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="download_and_install.html">How to download and install R and R Studio</a>
+    </li>
+    <li>
+      <a href="prompt.html">The R prompt</a>
+    </li>
+    <li>
+      <a href="actions.html">R actions</a>
+    </li>
+    <li>
+      <a href="objects.html">R objects</a>
+    </li>
+    <li>
+      <a href="reading_data_into_R.html">Reading data into R</a>
+    </li>
+    <li>
+      <a href="collaboration.html">Sharing your work</a>
+    </li>
+    <li>
+      <a href="data_wrangling_dplyr.html">Data wrangling</a>
+    </li>
+    <li>
+      <a href="data_viz_ggplot.html">Data visualization</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-chart-area"></span>
+     
+    Stats tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="stats_intro.html">Introduction to statistics</a>
+    </li>
+    <li>
+      <a href="prob_distribution.html">Probability and distributions</a>
+    </li>
+    <li>
+      <a href="hypoth_test_mod_error.html">Models and hypothesis testing</a>
+    </li>
+    <li>
+      <a href="t_tests.html">T-tests</a>
+    </li>
+    <li>
+      <a href="correlation.html">Correlation</a>
+    </li>
+    <li>
+      <a href="linear_regression.html">Linear Regression</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-cogs"></span>
+     
+    Simulation tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="simulating_data_examples.html">Simulation templates</a>
+    </li>
+    <li>
+      <a href="data_sim_supp.html">Simulation supplement</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Simulating data examples</h1>
+
+</div>
+
+
+<div id="templates" class="section level1">
+<h1>Templates</h1>
+</div>
+<div id="single-predictor" class="section level1">
+<h1>Single predictor</h1>
+<p>In these examples, we are simulating a data set with one predictor
+(independent) variable.</p>
+<div id="categorical-predictor" class="section level2">
+<h2>Categorical predictor</h2>
+<p>Here, the predictor is categorical with two levels. This is useful
+for when you want to compare two groups, in particular when you have a
+treatment condition and a control condition.</p>
+<p>You will want to set some measure of the central tendency for both
+levels. Depending on the type of response you expect, you will also need
+to set the variance for each group.</p>
+<div id="continuous-response-with-negatives-and-0s"
+class="section level3">
+<h3>Continuous response (with negatives and 0s)</h3>
+<p>Now, we’ll deal with the response (aka dependent, outcome) variable.
+In the following example, our response is continuous and can have
+negatives and 0s. In these cases, the most natural distribution is the
+normal (aka Gaussian) distribution.</p>
+<p>For the normal distribution, the central tendency parameter is the
+mean and you have a variance parameter.</p>
+<pre class="r"><code>## set up
+n &lt;- 30 # sample size
+mean_control &lt;- 35
+mean_treatment &lt;- 27
+
+sd_control &lt;- 5
+sd_treatment &lt;- 5
+
+## simulate
+
+### create the predictor
+control_predictor &lt;- rep(&quot;control&quot;, n/2)
+treatment_predictor &lt;- rep(&quot;treatment&quot;, n/2)
+predictor &lt;- c(control_predictor, treatment_predictor)                       
+
+### create response
+control_response &lt;- rnorm(n = n/2, mean = mean_control, sd = sd_control)
+treatment_response &lt;- rnorm(n = n/2, mean = mean_treatment, sd = sd_treatment)
+response &lt;- c(control_response, treatment_response) ## combine the two vectors
+
+
+## set up data frame
+dat &lt;- data.frame(
+  response = response, # first column
+  predictor = predictor # second column
+)
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+</div>
+<div id="continuous-response-no-negatives-and-0s"
+class="section level3">
+<h3>Continuous response (no negatives and 0s)</h3>
+<p>If you have a continuous response, but you cannot have negatives or
+zeros (like distance or duration), the gamma distribution is the
+distribution you will need.</p>
+<pre class="r"><code>## set up
+n &lt;- 30 # sample size
+central_control &lt;- 3
+central_treatment &lt;-2
+
+## simulate
+
+### create the predictor
+control_predictor &lt;- rep(&quot;control&quot;, n/2)
+treatment_predictor &lt;- rep(&quot;treatment&quot;, n/2)
+predictor &lt;- c(control_predictor, treatment_predictor)                       
+
+### create response
+control_response &lt;- rgamma(n = n/2, shape = central_control)
+treatment_response &lt;- rgamma(n = n/2, shape = central_treatment)
+response &lt;- c(control_response, treatment_response) ## combine the two vectors
+
+
+## set up data frame
+dat &lt;- data.frame(
+  response = response, # first column
+  predictor = predictor # second column
+)
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+</div>
+<div id="integer-response-no-negatives-and-0s" class="section level3">
+<h3>Integer response (no negatives and 0s)</h3>
+<p>For count data, you will use a Poisson distribution.</p>
+<pre class="r"><code>## set up
+n &lt;- 30 # sample size
+central_control &lt;- 5
+central_treatment &lt;-2
+
+## simulate
+
+### create the predictor
+control_predictor &lt;- rep(&quot;control&quot;, n/2)
+treatment_predictor &lt;- rep(&quot;treatment&quot;, n/2)
+predictor &lt;- c(control_predictor, treatment_predictor)                       
+
+### create response
+control_response &lt;- rpois(n = n/2, lambda = central_control)
+treatment_response &lt;- rpois(n = n/2, lambda = central_treatment)
+response &lt;- c(control_response, treatment_response) ## combine the two vectors
+
+
+## set up data frame
+dat &lt;- data.frame(
+  response = response, # first column
+  predictor = predictor # second column
+)
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+</div>
+<div id="binary-response" class="section level3">
+<h3>Binary response</h3>
+<p>For responses where you have only two outcomes (e.g., true/false,
+0/1, yes/no, etc), you can use the binomial distribution. The
+<code>binom</code> functions are usually framed as the number of
+“successses” in <code>size</code> trials (this can be a bit confusing,
+because <code>n</code> in the <code>rbinom</code> function is
+<strong>not</strong> the number of trials). So, if we set
+<code>size = 1</code>, we can only get 0 or 1. The <code>prob</code>
+parameter is the probability of a success and can be any value between 0
+and 1. The closer to 1, the more likely a “success” (i.e., a 1).</p>
+<p>For each level of the categorical predictor, you will set the
+respective probabilities.</p>
+<pre class="r"><code>## set up
+n &lt;- 30 # sample size
+prob_control &lt;- 0.5
+prob_treatment &lt;- 0.2
+
+## simulate
+
+### create the predictor
+control_predictor &lt;- rep(&quot;control&quot;, n/2)
+treatment_predictor &lt;- rep(&quot;treatment&quot;, n/2)
+predictor &lt;- c(control_predictor, treatment_predictor)                       
+
+### create response
+control_response &lt;- rbinom(n = n/2, size = 1, prob = prob_control)
+treatment_response &lt;- rbinom(n = n/2, size = 1, prob = prob_treatment)
+response &lt;- c(control_response, treatment_response) ## combine the two vectors
+
+
+## set up data frame
+dat &lt;- data.frame(
+  response = response, # first column
+  predictor = predictor # second column
+)
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+</div>
+</div>
+<div id="numeric-predictor" class="section level2">
+<h2>Numeric predictor</h2>
+<p>For these examples, we will use a numeric predictor. To get our
+response variable, we will need to use the formula for a line, <span
+class="math inline">\(y = mx + b\)</span>. I’ll use a predictor that has
+a normal distribution, but the predictor can have any distribution.</p>
+<p>For a bit more information, see the <a
+href="data_sim_supp.html">supplementary info</a>.</p>
+<div id="continuous-response-with-negatives-and-0s-1"
+class="section level3">
+<h3>Continuous response (with negatives and 0s)</h3>
+<pre class="r"><code>## set up
+n &lt;- 50 # sample size
+intercept &lt;- 30 # the value of y (response) when x (predictor) is at 0. 
+slope &lt;- 2 # the increase in y (response) for every increase of 1 in x (predictor)
+sigma &lt;- 1 # used to introduce error in the simulation
+
+## simulate
+### create the predictor
+predictor &lt;- rnorm(n, mean = 42, sd = 3) # simulates predictor values
+mu &lt;- intercept + (slope * predictor) # y ~ b + mx (linear relationship, no error)
+
+response &lt;- rnorm(n = n, mean = mu, sd = sigma)# simulates response with error
+
+## set up data frame
+dat &lt;- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+</div>
+<div id="continuous-response-no-negatives-and-0s-1"
+class="section level3">
+<h3>Continuous response (no negatives and 0s)</h3>
+</div>
+<div id="integer-response" class="section level3">
+<h3>Integer response</h3>
+<p>For a more detailed explanation, see “link functions in <a
+href="data_sim_supp.html">the supplementary info</a>.</p>
+<pre class="r"><code>## set up
+n &lt;- 50 # sample size
+intercept &lt;- 1 # the value of y (response) when x (predictor) is at 0. 
+slope &lt;- 1 # the increase in y (response) for every increase of 1 in x (predictor)
+
+
+## simulate
+### create the predictor
+predictor &lt;- rnorm(n, mean = 0, sd = 1) # simulates predictor values
+lambda &lt;- intercept + (slope * predictor) # y ~ b + mx (linear relationship, no error)
+lambda &lt;- exp(lambda)
+response &lt;- rpois(n = n, lambda = lambda)# simulates response with error
+
+## set up data frame
+dat &lt;- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+</div>
+<div id="binary-response-1" class="section level3">
+<h3>Binary response</h3>
+<pre class="r"><code>inv_logit &lt;- function(p){
+  exp(p)/ (1 + exp(p))
+}</code></pre>
+<pre class="r"><code>## set up
+n &lt;- 50 # sample size
+intercept &lt;- 0 # the value of y (response) when x (predictor) is at 0. 
+slope &lt;- 1 # the increase in y (response) for every increase of 1 in x (predictor)
+
+
+## simulate
+### create the predictor
+predictor &lt;- rnorm(n, mean = 0, sd = 1) # simulates predictor values
+p &lt;- intercept + (slope * predictor) # y ~ b + mx (linear relationship, no error)
+p &lt;- inv_logit(p)
+response &lt;- rbinom(n = n, size = 1, p = p)# simulates response with error
+
+## set up data frame
+dat &lt;- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+</div>
+</div>
+<div id="multiple-predictors" class="section level2">
+<h2>Multiple predictors</h2>
+<p>Once we’ve used the linear model formula for a single predictor, we
+can easily extend this to multiple predictors. We just have to add terms
+to the model formula. For one predictor, we have <span
+class="math inline">\(y = b + mx\)</span> or <span
+class="math inline">\(y = intercept + slope \times x\)</span>. We’ll
+replace “b” or “intercept” with <span
+class="math inline">\(\beta_0\)</span> and we’ll replace “m” or “slope”
+with <span class="math inline">\(\beta_1\)</span>: <span
+class="math inline">\(y = \beta_0 + \beta_1 x_1\)</span>. To add another
+predictor, we just add another “slope” times “x” term: <span
+class="math inline">\(y = \beta_0 + \beta_1 x_1 + \beta_2 x_2\)</span>.
+For three predictors: <span class="math inline">\(y = \beta_0 + \beta_1
+x_1 + \beta_2 x_2 + \beta_3 x_3\)</span>. And so on (<span
+class="math inline">\(y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3
+x_3 + ... \beta_k x_k\)</span> where <span
+class="math inline">\(k\)</span> is the number of predictors).</p>
+<div id="continuous-predictors" class="section level3">
+<h3>Continuous predictors</h3>
+<pre class="r"><code>## set up
+n &lt;- 50 # sample size
+intercept &lt;- 30 # the value of y (response) when x (predictor) is at 0. 
+slope1 &lt;- 1 # the increase in y (response) for every increase of 1 in x (predictor)
+slope2 &lt;- 3
+slope3 &lt;- -2
+slope4 &lt;- 0
+
+sigma &lt;- 1 # used to introduce error in the simulation
+
+## simulate
+### create the predictor
+predictor1 &lt;- rnorm(n, mean = -1, sd = 2) # simulates predictor 1 values
+predictor2 &lt;- runif(n, min = 0, max = 10) # simulates predictor 2 values
+predictor3 &lt;- rpois(n, lambda = 2) # simulates predictor 3 values
+predictor4 &lt;- rnorm(n, mean = 42, sd = 3) # simulates predictor 4 values
+
+mu &lt;- intercept + # y ~ b + 
+  (slope1 * predictor1) + # mx
+  (slope2 * predictor2) + # mx
+  (slope3 * predictor3) + # mx
+  (slope4 * predictor4)   # mx
+
+response &lt;- rnorm(n = n, mean = mu, sd = sigma)# simulates response with error
+
+## set up data frame
+dat &lt;- data.frame(
+  response = response, # column 1
+  predictor1 = predictor1, # column 2
+  predictor2 = predictor2, # column 3
+  predictor3 = predictor3, # column 4
+  predictor4 = predictor4 # column 5
+  )
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+<p>If you need another response distribution, the linear model part is
+the same as with a normal distribution. The rest is the same as above in
+the single predictor situation.</p>
+<pre class="r"><code>## set up
+n &lt;- 50 # sample size
+intercept &lt;- 30 # the value of y (response) when x (predictor) is at 0. 
+slope1 &lt;- 1 # the increase in y (response) for every increase of 1 in x (predictor)
+slope2 &lt;- 3
+slope3 &lt;- -2
+slope4 &lt;- 0
+
+## simulate
+### create the predictor
+predictor1 &lt;- rnorm(n, mean = -1, sd = 2) # simulates predictor 1 values
+predictor2 &lt;- runif(n, min = 0, max = 10) # simulates predictor 2 values
+predictor3 &lt;- rpois(n, lambda = 2) # simulates predictor 3 values
+predictor4 &lt;- rnorm(n, mean = 42, sd = 3) # simulates predictor 4 values
+
+lambda &lt;- intercept + # y ~ b + 
+  (slope1 * predictor1) + # mx
+  (slope2 * predictor2) + # mx
+  (slope3 * predictor3) + # mx
+  (slope4 * predictor4)   # mx
+
+lambda &lt;- exp(lambda)
+response &lt;- rpois(n = n, lambda = lambda)# simulates response with error
+
+## set up data frame
+dat &lt;- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+</div>
+<div id="categorical-predictor-revisited" class="section level3">
+<h3>Categorical predictor revisited</h3>
+<p>Now that we’ve learned to use the linear model formula in data
+simulation, we can actually apply this to categorical predictors. This
+gives us more flexibility to add more levels to our categorical
+predictor. First, let’s repeat the example from earlier using our linear
+model formulation.</p>
+<p>Remember that in a linear model (see the document on <a
+href="https://dancmann.github.io/methods-in-cognitive-bio-website/linear_regression.html">linear
+regression</a>) the intercept is the value of <span
+class="math inline">\(y\)</span> when all of the predictors are set to
+0. If there is a categorical predictor, the function <code>lm</code>
+will use set one level as a “reference”, so it is essentially 0 in the
+linear model. So, the intercept is the estimate for the reference group
+(if there are multiple predictors, the estimate for the reference group
+when all other predictors are also at 0).</p>
+<p>The slope is then the difference between the reference group and the
+other group (in the case of two groups).</p>
+<pre class="r"><code>## set up
+n &lt;- 30 # sample size
+
+intercept &lt;- 35 # control mean
+slope &lt;- -8 # difference between the control and treatment levels
+
+sigma &lt;- 5
+
+## simulate
+### create the predictor
+predictor &lt;- sample(c(&quot;control&quot;, &quot;treatment&quot;), size = n, replace = TRUE) # simulates predictor values
+
+#### convert to 0 and 1.
+dummy_predictor &lt;- ifelse(predictor == &quot;control&quot;, 0, 1) # replaces all of the values that match &quot;control&quot; with 0 and those that don&#39;t with 1.
+
+#### the slope
+mu &lt;- intercept + (slope * dummy_predictor) # y ~ b + mx (linear relationship, no error)
+
+response &lt;- rnorm(n = n, mean = mu, sd = sigma)# simulates response with error
+
+## set up data frame
+dat &lt;- data.frame(
+  response = response, # column 1
+  predictor = predictor # column 2
+)
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+<p>For the reference group <span class="math inline">\(x = 0\)</span> so
+the slope multiplied by 0 is 0 and you are left with just the intercept.
+We can extend this to add more levels/groups to the categorical
+variable. For every additional level you add, you will add a slope and a
+dummy predictor. So, if you have 5 levels to your categorical variable,
+you will have 4 slopes and 4 (dummy) predictors in the model. Each of
+the slopes will be the difference between that level and the reference
+level. The dummy predictors will all be 0s and 1: 1 if the observation
+belongs to that level/group and 0 if not.</p>
+<pre class="r"><code>## set up
+n &lt;- 50 # sample size
+
+intercept &lt;- 35 # control mean
+slopeGroup2 &lt;- -8 # difference between group 1 and group 2
+slopeGroup3 &lt;- 8 # difference between group 1 and group 3
+slopeGroup4 &lt;- -2 # difference between group 1 and group 4
+slopeGroup5 &lt;- 0 # difference between group 1 and group 5
+
+sigma &lt;- 2
+
+## simulate
+### create the predictor
+predictor &lt;- sample(c(&quot;group1&quot;, &quot;group2&quot;, &quot;group3&quot;, &quot;group4&quot;, &quot;group5&quot;), size = n, replace = TRUE) # simulates predictor values
+
+
+# predictor values
+
+### here we&#39;ll turn the single predictor variable into four &quot;dummy&quot; variables. Why only two? Because group 1 is the intercept. 
+dummy_group2 &lt;- ifelse(predictor == &quot;group2&quot;, 1, 0)
+dummy_group3 &lt;- ifelse(predictor == &quot;group3&quot;, 1, 0)
+dummy_group4 &lt;- ifelse(predictor == &quot;group4&quot;, 1, 0)
+dummy_group5 &lt;- ifelse(predictor == &quot;group5&quot;, 1, 0)
+
+
+mu &lt;- 
+  intercept + 
+  (slopeGroup2 * dummy_group2) +
+  (slopeGroup3 * dummy_group3) +
+  (slopeGroup4 * dummy_group4) +
+  (slopeGroup5 * dummy_group5) 
+
+response &lt;- rnorm(n, mean = mu, sd = sigma) # simulates response with error
+
+## Organize data frame
+
+dat &lt;- data.frame(
+  response = response,
+  predictor = predictor # the predictor in the data frame can stil be a single column. 
+  )
+
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+<p>Again, this works because of 0 multiplication. For example, if an
+observation belongs to group 3, it will expand to the following:</p>
+<p>$$ <span class="math display">\[\begin{align}
+y &amp; = intercept + slope_{g2}\times x_{g2} + slope_{g3}\times x_{g3}
++ slope_{g4}\times x_{g4} + slope_{g5}\times x_{g5} \\
+&amp; = 35 + (-8 \times 0) + (8 \times 1) + (-2 \times 0) + (0 \times 0)
+\\
+&amp; = 35 + 0 + 8 + 0 + 0 \\
+&amp; = 43
+
+\end{align}\]</span> $$</p>
+</div>
+<div id="categorical-and-continuous-predictors" class="section level3">
+<h3>Categorical and continuous predictors</h3>
+<p>If you want to add continuous predictors to a model with a
+categorical predictor, just add the term in the model.</p>
+<pre class="r"><code>## set up
+n &lt;- 50 # sample size
+
+intercept &lt;- 35 # control mean
+slopeGroup2 &lt;- -8 # difference between group 1 and group 2
+slopeGroup3 &lt;- 8 # difference between group 1 and group 3
+slopeGroup4 &lt;- -2 # difference between group 1 and group 4
+slopeGroup5 &lt;- 0 # difference between group 1 and group 5
+
+slopeContinuous &lt;- 4
+
+sigma &lt;- 2
+
+## simulate
+### create the predictor
+predictor &lt;- sample(c(&quot;group1&quot;, &quot;group2&quot;, &quot;group3&quot;, &quot;group4&quot;, &quot;group5&quot;), size = n, replace = TRUE) # simulates predictor values
+
+
+# predictor values
+
+### here we&#39;ll turn the single predictor variable into four &quot;dummy&quot; variables. Why only two? Because group 1 is the intercept. 
+dummy_group2 &lt;- ifelse(predictor == &quot;group2&quot;, 1, 0)
+dummy_group3 &lt;- ifelse(predictor == &quot;group3&quot;, 1, 0)
+dummy_group4 &lt;- ifelse(predictor == &quot;group4&quot;, 1, 0)
+dummy_group5 &lt;- ifelse(predictor == &quot;group5&quot;, 1, 0)
+
+continuous_predictor &lt;- rnorm(n = n, mean = 5, sd = 2)
+
+mu &lt;- 
+  intercept + 
+  (slopeGroup2 * dummy_group2) +
+  (slopeGroup3 * dummy_group3) +
+  (slopeGroup4 * dummy_group4) +
+  (slopeGroup5 * dummy_group5) +
+  (slopeContinuous * continuous_predictor)
+
+response &lt;- rnorm(n, mean = mu, sd = sigma) # simulates response with error
+
+## Organize data frame
+
+dat &lt;- data.frame(
+  response = response,
+  categorical_predictor = predictor, # the predictor in the data frame can still be a single column. 
+  continuous_predictor = continuous_predictor
+  )
+
+
+## Save data
+filename &lt;- &quot;output/data.csv&quot;
+write.csv(dat, file = filename)</code></pre>
+<p>================================================================================</p>
+</div>
+<div id="session-information" class="section level3">
+<h3>Session information:</h3>
+<p>Last update on 2022-11-08</p>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.2.1 (2022-06-23)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 20.04.5 LTS
+## 
+## Matrix products: default
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=de_AT.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=de_AT.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=de_AT.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=de_AT.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## loaded via a namespace (and not attached):
+##  [1] digest_0.6.29   R6_2.5.1        jsonlite_1.8.0  magrittr_2.0.3 
+##  [5] evaluate_0.16   stringi_1.7.8   cachem_1.0.6    rlang_1.0.5    
+##  [9] cli_3.3.0       rstudioapi_0.14 jquerylib_0.1.4 bslib_0.4.0    
+## [13] rmarkdown_2.16  tools_4.2.1     stringr_1.4.1   xfun_0.32      
+## [17] yaml_2.3.5      fastmap_1.1.0   compiler_4.2.1  htmltools_0.5.3
+## [21] knitr_1.40      sass_0.4.2</code></pre>
+<p>================================================================================</p>
+</div>
+</div>
+</div>
+
+<p>Copyright &copy; 2022 Dan C. Mann. All rights reserved.</p>
+  
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
