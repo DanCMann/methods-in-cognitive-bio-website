@@ -20,3 +20,7 @@ title: "Methods in Cognitive Biology"
 - [T-tests](t_tests.html)
 - [Correlation](correlation.html)
 - [Linear Regression](linear_regression.html)
+
+# Simulation Tutorials
+- [Simulating templates](simulating_data_examples.html)
+- [Simulation supplement](data_sim_supp.html)

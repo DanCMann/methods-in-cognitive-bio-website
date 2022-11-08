@@ -41,6 +41,13 @@ navbar:
           href: correlation.html
         - text: "Linear Regression"
           href: linear_regression.html
+    - text: "Simulation tutorials"
+      icon: "fas fa-cogs"
+      menu:
+        - text: "Simulation templates"
+          href: simulating_data_examples.html
+        - text: "Simulation supplement"
+          href: data_sim_supp.html
 new_session: true
 output:
   html_document:
