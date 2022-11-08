@@ -13,8 +13,8 @@
 
 <title>Correlation</title>
 
-<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="custom.css" type="text/css" />
 
 
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -140,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -235,7 +243,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -251,7 +259,7 @@ $(document).ready(function () {
   <a href="about.html">About</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fab fa-r-project"></span>
      
     R tutorials
@@ -286,7 +294,7 @@ $(document).ready(function () {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fas fa-chart-area"></span>
      
     Stats tutorials
@@ -311,6 +319,23 @@ $(document).ready(function () {
     </li>
     <li>
       <a href="linear_regression.html">Linear Regression</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-cogs"></span>
+     
+    Simulation tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="simulating_data_examples.html">Simulation templates</a>
+    </li>
+    <li>
+      <a href="data_sim_supp.html">Simulation supplement</a>
     </li>
   </ul>
 </li>
@@ -344,8 +369,20 @@ library(dplyr)</code></pre>
 ##     intersect, setdiff, setequal, union</code></pre>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>Generally speaking, we tend to have a pretty good idea of what correlation is. But what does it really tell us? And how can we calculate correlation? This lesson may be a bit dense, but I hope it will help you understand and appreciate a test that we often take for granted.</p>
-<p><strong>Correlation</strong> quantifies the strength and direction of association between two numeric variables. If two variables are correlated, when we see an increase in one we should see an increase in the other. If they are negatively correlated, when one increase we should see a decrease in the other. <strong>Association</strong> means that knowing values of one variable gives you knowledge of the possible values of the other variable. Correlation (the type that we’ll deal with) quantifies how closely the association between two variables approximates a straight line.</p>
+<p>Generally speaking, we tend to have a pretty good idea of what
+correlation is. But what does it really tell us? And how can we
+calculate correlation? This lesson may be a bit dense, but I hope it
+will help you understand and appreciate a test that we often take for
+granted.</p>
+<p><strong>Correlation</strong> quantifies the strength and direction of
+association between two numeric variables. If two variables are
+correlated, when we see an increase in one we should see an increase in
+the other. If they are negatively correlated, when one increase we
+should see a decrease in the other. <strong>Association</strong> means
+that knowing values of one variable gives you knowledge of the possible
+values of the other variable. Correlation (the type that we’ll deal
+with) quantifies how closely the association between two variables
+approximates a straight line.</p>
 <p>It’s often easy to see this in plot form:</p>
 <pre class="r"><code>x &lt;- rnorm(100, mean = 100, sd = 3)
 y &lt;- rnorm(100, mean = 100, sd = 3)
@@ -371,7 +408,11 @@ ggplot(xx, aes(x = x, y = y)) +
 <p><img src="correlation_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <p>But how do we measure this?</p>
 <p>Let’s walk through an example.</p>
-<p>Let’s say that we’re interested in whether the number of films per year that actor Nicolas Cage appears is associated with the number of female editors on the Harvard Law Review (this is real <a href="http://tylervigen.com/view_correlation?id=9224">correlation</a>, btw. It’s also real ridiculous.)</p>
+<p>Let’s say that we’re interested in whether the number of films per
+year that actor Nicolas Cage appears is associated with the number of
+female editors on the Harvard Law Review (this is real <a
+href="http://tylervigen.com/view_correlation?id=9224">correlation</a>,
+btw. It’s also real ridiculous.)</p>
 <pre class="r"><code>sp_cor &lt;- data.frame(year = factor(2005:2009),
                         cage_films = c(2, 3, 4, 1, 4),
                         fem_editors = c(9, 14, 19, 12, 19))
@@ -388,11 +429,17 @@ head(sp_cor)</code></pre>
 ##  $ year       : Factor w/ 5 levels &quot;2005&quot;,&quot;2006&quot;,..: 1 2 3 4 5
 ##  $ cage_films : num  2 3 4 1 4
 ##  $ fem_editors: num  9 14 19 12 19</code></pre>
-<p>OK, so we don’t have too many data points, but from what we have, it looks like the more female editors at Harvard Law Review, the more Nicolas Cage films there are (or vice versa).</p>
+<p>OK, so we don’t have too many data points, but from what we have, it
+looks like the more female editors at Harvard Law Review, the more
+Nicolas Cage films there are (or vice versa).</p>
 <pre class="r"><code>ggplot(sp_cor, aes(x = cage_films, y = fem_editors))+
         geom_jitter()</code></pre>
 <p><img src="correlation_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>From the other examples and tests that we’ve looked at, we know that variables…, well…, vary. So, if there is a relationship between two variables, we should expect that if one deviates from its mean, the other should as well. So, one way to measure association between two variables is to look at the <strong>covariance</strong>.</p>
+<p>From the other examples and tests that we’ve looked at, we know that
+variables…, well…, vary. So, if there is a relationship between two
+variables, we should expect that if one deviates from its mean, the
+other should as well. So, one way to measure association between two
+variables is to look at the <strong>covariance</strong>.</p>
 <pre class="r"><code># don&#39;t worry too much about these next two chunks, but if you do want to reproduce it you will need the &quot;tidyr&quot; package. 
 sp_cor_long &lt;- gather(sp_cor, 
              key = variable, 
@@ -454,38 +501,89 @@ ggplot(data = sp_cor_long) +
         ) + annotate(geom = &quot;text&quot;, 
                  x = 4, y = 7, label = &quot;mean N. Cage films&quot;)</code></pre>
 <p><img src="correlation_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<div style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
-<p>To walk through the calculation of covariance “by hand”, go to the supplement.</p>
+<div
+style="background: lightblue; border: dotted; padding-left: 25px; padding-top: 25px; padding-bottom: 25px; padding-right: 25px">
+<p>To walk through the calculation of covariance “by hand”, go to the
+supplement.</p>
 </div>
-<p>For four years, the number of films and number of editors deviates from the mean in the same direction.</p>
-<p>To calculate variance for one variable, we squared (and then summed) the deviance from the mean. Why did we square? So that positive and negative values wouldn’t cancel each other out. With two variables, we can just multiple the deviance for one variable by the second variable’s corresponding deviance. Values with the same sign will end up positive while those with different signs will be negative. This is perfect because now we have values that tell us how the deviance relate between variables and not just how they relate to their respective means.</p>
-<p>We then take the sum and divide by <span class="math inline">\(N - 1\)</span>. In this case, <span class="math inline">\(N = 5\)</span>.</p>
-<p>Covariance has a problem, however; the value is dependent on the original scales. If we change the scale, we will get different values, even if the association is the same. For instance, here’s age and height (in cm) in NBA star Anthony Davis.</p>
+<p>For four years, the number of films and number of editors deviates
+from the mean in the same direction.</p>
+<p>To calculate variance for one variable, we squared (and then summed)
+the deviance from the mean. Why did we square? So that positive and
+negative values wouldn’t cancel each other out. With two variables, we
+can just multiple the deviance for one variable by the second variable’s
+corresponding deviance. Values with the same sign will end up positive
+while those with different signs will be negative. This is perfect
+because now we have values that tell us how the deviance relate between
+variables and not just how they relate to their respective means.</p>
+<p>We then take the sum and divide by <span class="math inline">\(N -
+1\)</span>. In this case, <span class="math inline">\(N =
+5\)</span>.</p>
+<p>Covariance has a problem, however; the value is dependent on the
+original scales. If we change the scale, we will get different values,
+even if the association is the same. For instance, here’s age and height
+(in cm) in NBA star Anthony Davis.</p>
 <pre class="r"><code># cm
 age &lt;- c(14, 15, 17, 19)
 height &lt;- c(180, 188, 200, 208)
 cov(age, height)</code></pre>
 <pre><code>## [1] 27.33333</code></pre>
-<p>That height and age would correlate for people under 20 isn’t too surprising. But what if we use meters instead of centimeters?</p>
+<p>That height and age would correlate for people under 20 isn’t too
+surprising. But what if we use meters instead of centimeters?</p>
 <pre class="r"><code># in meters
 height_m &lt;- height/100
 cov(age, height_m)</code></pre>
 <pre><code>## [1] 0.2733333</code></pre>
-<p>Those covariance scores makes sense, but they clearly aren’t standardized.</p>
-<p>To standardize covariance we multiply the standard deviations of the two variables and then divide the covariance value by the multiplied standard deviations. That’s a bit of a mouthful. The important thing to note is that we can get a standardized value and it’s called the <strong>correlation coefficient</strong>; more specifically, the <strong>Pearson product-moment correlation coefficient</strong>. The correlation coefficient is a single value that quantifies the straight-line association and is typically represented by they symbol <span class="math inline">\(r\)</span>. Because <span class="math inline">\(r\)</span> is a standardized scale and it ranges from -1 to 1. -1 is a perfect negative correlation, 1 is a perfect positive correlation, and 0 is no correlation at all.</p>
-<p>So what is our correlation coefficient for the number of female editors and Nicolas Cage films? We can use the function <code>cor()</code> to find out.</p>
+<p>Those covariance scores makes sense, but they clearly aren’t
+standardized.</p>
+<p>To standardize covariance we multiply the standard deviations of the
+two variables and then divide the covariance value by the multiplied
+standard deviations. That’s a bit of a mouthful. The important thing to
+note is that we can get a standardized value and it’s called the
+<strong>correlation coefficient</strong>; more specifically, the
+<strong>Pearson product-moment correlation coefficient</strong>. The
+correlation coefficient is a single value that quantifies the
+straight-line association and is typically represented by they symbol
+<span class="math inline">\(r\)</span>. Because <span
+class="math inline">\(r\)</span> is a standardized scale and it ranges
+from -1 to 1. -1 is a perfect negative correlation, 1 is a perfect
+positive correlation, and 0 is no correlation at all.</p>
+<p>So what is our correlation coefficient for the number of female
+editors and Nicolas Cage films? We can use the function
+<code>cor()</code> to find out.</p>
 <pre class="r"><code>cor(sp_cor$fem_editors, sp_cor$cage_films)</code></pre>
 <pre><code>## [1] 0.8554467</code></pre>
 </div>
-<div id="hypothesis-testing-with-correlation-coefficient" class="section level2">
+<div id="hypothesis-testing-with-correlation-coefficient"
+class="section level2">
 <h2>Hypothesis testing with correlation coefficient</h2>
 <div id="running-the-test" class="section level3">
 <h3>Running the test</h3>
-<p>But what, if anything, does our <span class="math inline">\(r\)</span> tell us? It tells us about the strength and direction (positive or negative) of two variables in our sample data. But, generally, we want to draw inferences from our data. With the what we’ve seen so far, we can’t do that yet.</p>
-<p>Luckily, we can convert the <span class="math inline">\(r\)</span> value into a <span class="math inline">\(t\)</span>-value. What’s even better, you don’t have to convert it by hand! The function <code>cor.test()</code> will do it for you. But once you do calculate the <span class="math inline">\(t\)</span>-score, you can interpret like other <span class="math inline">\(t\)</span>-scores. And you can use the score to calculate your p-value.</p>
-<p>Before we do that, though. Let’s define our hypothesis test. Because, what would our p-value really tell us in this case?</p>
-<p>H0: The true correlation between the number of female editors at the <span class="math inline">\(Harvard \ Law \ Review\)</span> and the number of Nicolas Cage films is 0 (<span class="math inline">\(r\)</span> = 0) HA: The true correlation between the number of female editors at the <span class="math inline">\(Harvard \ Law \ Review\)</span> and the number of Nicolas Cage films is not 0 (<span class="math inline">\(r \ne\)</span> 0)</p>
-<p>Note that the formulation is the same as with the t-tests. Now, however, we are using the correlation coefficient instead of the mean to calculate our test statistic (the <span class="math inline">\(t\)</span>-score)</p>
+<p>But what, if anything, does our <span
+class="math inline">\(r\)</span> tell us? It tells us about the strength
+and direction (positive or negative) of two variables in our sample
+data. But, generally, we want to draw inferences from our data. With the
+what we’ve seen so far, we can’t do that yet.</p>
+<p>Luckily, we can convert the <span class="math inline">\(r\)</span>
+value into a <span class="math inline">\(t\)</span>-value. What’s even
+better, you don’t have to convert it by hand! The function
+<code>cor.test()</code> will do it for you. But once you do calculate
+the <span class="math inline">\(t\)</span>-score, you can interpret like
+other <span class="math inline">\(t\)</span>-scores. And you can use the
+score to calculate your p-value.</p>
+<p>Before we do that, though. Let’s define our hypothesis test. Because,
+what would our p-value really tell us in this case?</p>
+<p>H0: The true correlation between the number of female editors at the
+<span class="math inline">\(Harvard \ Law \ Review\)</span> and the
+number of Nicolas Cage films is 0 (<span
+class="math inline">\(r\)</span> = 0) HA: The true correlation between
+the number of female editors at the <span class="math inline">\(Harvard
+\ Law \ Review\)</span> and the number of Nicolas Cage films is not 0
+(<span class="math inline">\(r \ne\)</span> 0)</p>
+<p>Note that the formulation is the same as with the t-tests. Now,
+however, we are using the correlation coefficient instead of the mean to
+calculate our test statistic (the <span
+class="math inline">\(t\)</span>-score)</p>
 <p>Let’s run the test:</p>
 </div>
 <div id="output-of-cor.test" class="section level3">
@@ -502,21 +600,79 @@ cov(age, height_m)</code></pre>
 ## sample estimates:
 ##       cor 
 ## 0.8554467</code></pre>
-<p>The output is pretty similar to the output of different t-tests that we ran. We get our t-score, degrees of freedom, p-value, 95% confidence intervals, and sample estimates. Again, the sample estimate is not the mean in this case, but rather the correlation coefficient.</p>
+<p>The output is pretty similar to the output of different t-tests that
+we ran. We get our t-score, degrees of freedom, p-value, 95% confidence
+intervals, and sample estimates. Again, the sample estimate is not the
+mean in this case, but rather the correlation coefficient.</p>
 <p>So, what is the interpretation of the p-value here?</p>
-<p>Assuming that the true correlation of N. Cage films and female HLR editors is 0, we expect to see a correlation at least as extreme as 0.855 (-0.855 as well, it was a two-tailed test) roughly 6.4% of the time.</p>
-<p>This is, well, good news, I guess? Granted, we took some assumptions for granted in our testing but that p-value is pretty low and if we had had a less strict criteria (e.g., <span class="math inline">\(\alpha = 0.1\)</span>), we would say it’s statistically significant. Still, it seems pretty unlikely that this correlation is anything but noise. I doubt that Nicolas Cage is basing his movie making decisions on the editorial board of the <span class="math inline">\(Harvard \  Law \ Review\)</span>; or vice versa.</p>
-<p>It’s worth reiterating what our p-value means. One in ten or one in twenty chances are not the same as 0% chance. This is why we do <strong>corrections for multiple comparisons</strong> (e.g., Bonferroni correction, Benjamani-Hochberg procedure) if you run multiple tests on the same data. If you go through a data set and look for correlations or search for statistically significance, you will undoubtedly find significance, even if the null is true. If you perform 100 tests, we should expect 5 of those tests to yield p-values that are equal to or less than 0.05, even if the null is true in every single test.</p>
-<p>The website where I got this example from (<a href="http://tylervigen.com/">Spurious Correlations</a>) tries to make this point abundantly clear by demonstrating tons of ridiculous examples. If we looked at a larger sample of years, we would likely find that the number of HLR female editors and Nic Cage movies is not nearly as closely correlated. But that’s not as fun.</p>
+<p>Assuming that the true correlation of N. Cage films and female HLR
+editors is 0, we expect to see a correlation at least as extreme as
+0.855 (-0.855 as well, it was a two-tailed test) roughly 6.4% of the
+time.</p>
+<p>This is, well, good news, I guess? Granted, we took some assumptions
+for granted in our testing but that p-value is pretty low and if we had
+had a less strict criteria (e.g., <span class="math inline">\(\alpha =
+0.1\)</span>), we would say it’s statistically significant. Still, it
+seems pretty unlikely that this correlation is anything but noise. I
+doubt that Nicolas Cage is basing his movie making decisions on the
+editorial board of the <span class="math inline">\(Harvard \  Law \
+Review\)</span>; or vice versa.</p>
+<p>It’s worth reiterating what our p-value means. One in ten or one in
+twenty chances are not the same as 0% chance. This is why we do
+<strong>corrections for multiple comparisons</strong> (e.g., Bonferroni
+correction, Benjamani-Hochberg procedure) if you run multiple tests on
+the same data. If you go through a data set and look for correlations or
+search for statistically significance, you will undoubtedly find
+significance, even if the null is true. If you perform 100 tests, we
+should expect 5 of those tests to yield p-values that are equal to or
+less than 0.05, even if the null is true in every single test.</p>
+<p>The website where I got this example from (<a
+href="http://tylervigen.com/">Spurious Correlations</a>) tries to make
+this point abundantly clear by demonstrating tons of ridiculous
+examples. If we looked at a larger sample of years, we would likely find
+that the number of HLR female editors and Nic Cage movies is not nearly
+as closely correlated. But that’s not as fun.</p>
 <p>Let’s also dive deeper into what correlations in general tell us.</p>
 </div>
 </div>
 <div id="what-correlation-is-and-isnt" class="section level2">
 <h2>What correlation is… and isn’t</h2>
-<p>You have likely heard the phrase, “correlation does not equal causation”. The correlation coefficient cannot tell us if <span class="math inline">\(y\)</span> is caused by <span class="math inline">\(x\)</span> because it cannot rule out 3rd party effects (things that affect both <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>). The famous example is the correlation between murder rate and ice cream sales; in many US cities both increase during the summer, yet it is improbable that ice cream makes people want to kill (or that killing makes people want to eat ice cream). Likewise, even if we had found a statistically significant correlation between Nic Cage movies and female HLR editors, we would not be able to establish a causal relationship. For instance, both could be affected by economic factors.</p>
-<p>Still, even if we could rule out 3rd party effects, correlation could not tell us which variable affects the other. Correlation tells us about the direction of the association, whether the correlation is negative or positive, but correlation does not tell us about the direction of <em>causality</em>. For instance, if we find a strong positive correlation between height and amount of time playing organized basketball, correlation does not allow us to <em>statistically</em> rule out the possibility that playing basketball makes you taller (even if logic and biology allow us to rule out that hypothesis).</p>
-<p>The correlation coefficient tells us about the strength of association but it does not tell us how “steep” the relationship is. That is, two data sets can have similar <span class="math inline">\(r\)</span> values, yet very different slopes. For instance, let’s say we found a strong correlation in American university students between the number of ads heard per week in podcasts and the amount of time shopping online. We then looked at Austrian university students and found the exact same correlation coefficient. This doesn’t necessarily mean that Americans and Austrians spent the same amount of time shopping online per ad heard.</p>
-<p>To vastly oversimplify, let’s say both have an <span class="math inline">\(r\)</span> of 1. We could make the online shopping hours:ad heard ratio 1:1 for Austrians and 5:1 for Americans. The correlation coefficient would not give us this information.</p>
+<p>You have likely heard the phrase, “correlation does not equal
+causation”. The correlation coefficient cannot tell us if <span
+class="math inline">\(y\)</span> is caused by <span
+class="math inline">\(x\)</span> because it cannot rule out 3rd party
+effects (things that affect both <span class="math inline">\(x\)</span>
+and <span class="math inline">\(y\)</span>). The famous example is the
+correlation between murder rate and ice cream sales; in many US cities
+both increase during the summer, yet it is improbable that ice cream
+makes people want to kill (or that killing makes people want to eat ice
+cream). Likewise, even if we had found a statistically significant
+correlation between Nic Cage movies and female HLR editors, we would not
+be able to establish a causal relationship. For instance, both could be
+affected by economic factors.</p>
+<p>Still, even if we could rule out 3rd party effects, correlation could
+not tell us which variable affects the other. Correlation tells us about
+the direction of the association, whether the correlation is negative or
+positive, but correlation does not tell us about the direction of
+<em>causality</em>. For instance, if we find a strong positive
+correlation between height and amount of time playing organized
+basketball, correlation does not allow us to <em>statistically</em> rule
+out the possibility that playing basketball makes you taller (even if
+logic and biology allow us to rule out that hypothesis).</p>
+<p>The correlation coefficient tells us about the strength of
+association but it does not tell us how “steep” the relationship is.
+That is, two data sets can have similar <span
+class="math inline">\(r\)</span> values, yet very different slopes. For
+instance, let’s say we found a strong correlation in American university
+students between the number of ads heard per week in podcasts and the
+amount of time shopping online. We then looked at Austrian university
+students and found the exact same correlation coefficient. This doesn’t
+necessarily mean that Americans and Austrians spent the same amount of
+time shopping online per ad heard.</p>
+<p>To vastly oversimplify, let’s say both have an <span
+class="math inline">\(r\)</span> of 1. We could make the online shopping
+hours:ad heard ratio 1:1 for Austrians and 5:1 for Americans. The
+correlation coefficient would not give us this information.</p>
 <pre class="r"><code>x &lt;- 1:100
 y &lt;- x * 1
 y2 &lt;- x * 5
@@ -534,8 +690,17 @@ ggplot(xx, aes(ads_heard, hrs_shopping, color = country))+
 </div>
 <div id="assumptions" class="section level2">
 <h2>Assumptions</h2>
-<p>To use the Pearson’s correlation test there are a few assumptions that we need to consider. Most are similar to the assumptions for the other tests that we’ve covered. The data should be independent, the variables should be numeric (on an interval or ratio scale), and the sampling distribution of the variables should be normally distributed.</p>
-<p>An assumption that we haven’t yet covered is linearity. Because the correlation coefficient describes how closely an association tend to a straight-line, the relationship is assumed to be linear. So, it’s a good idea to plot your data to make sure that some non-linear relationship would better describe your data.</p>
+<p>To use the Pearson’s correlation test there are a few assumptions
+that we need to consider. Most are similar to the assumptions for the
+other tests that we’ve covered. The data should be independent, the
+variables should be numeric (on an interval or ratio scale), and the
+sampling distribution of the variables should be normally
+distributed.</p>
+<p>An assumption that we haven’t yet covered is linearity. Because the
+correlation coefficient describes how closely an association tend to a
+straight-line, the relationship is assumed to be linear. So, it’s a good
+idea to plot your data to make sure that some non-linear relationship
+would better describe your data.</p>
 </div>
 <div id="supplement" class="section level2">
 <h2>Supplement</h2>
@@ -563,7 +728,10 @@ sp_cor_long &lt;- gather(sp_cor,
              key = variable, 
              value = measurement, 
              cage_films:fem_editors)</code></pre>
-<p>Get the deviances by subtracting the mean from each measurement. <code>group_by()</code> ensures that the films mean is used on the films measurements and that the editor mean is used for the editor measurements.</p>
+<p>Get the deviances by subtracting the mean from each measurement.
+<code>group_by()</code> ensures that the films mean is used on the films
+measurements and that the editor mean is used for the editor
+measurements.</p>
 <pre class="r"><code>sp_cor_long &lt;- sp_cor_long %&gt;% 
         group_by(variable) %&gt;% 
         mutate(deviation = measurement - mean(measurement))</code></pre>
@@ -603,7 +771,8 @@ cor_byhand</code></pre>
 <pre><code>## [1] 0.8554467</code></pre>
 <pre class="r"><code>cor(sp_cor$fem_editors, sp_cor$cage_films)</code></pre>
 <pre><code>## [1] 0.8554467</code></pre>
-<p>Now, let’s convert <span class="math inline">\(r\)</span> to a t score.</p>
+<p>Now, let’s convert <span class="math inline">\(r\)</span> to a t
+score.</p>
 <pre class="r"><code>r &lt;- cor_byhand
 tscore &lt;- (r * sqrt(5 - 2))/(sqrt(1 - r^2))
 tscore</code></pre>
@@ -622,9 +791,9 @@ abline(v = tscore)</code></pre>
 <h3>Session information:</h3>
 <p>Last update on 2020-11-16</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.1.2 (2021-11-01)
+<pre><code>## R version 4.2.1 (2022-06-23)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.04.3 LTS
+## Running under: Ubuntu 20.04.5 LTS
 ## 
 ## Matrix products: default
 ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
@@ -642,25 +811,26 @@ abline(v = tscore)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] dplyr_1.0.7   tidyr_1.1.4   ggplot2_3.3.5
+## [1] dplyr_1.0.10  tidyr_1.2.0   ggplot2_3.3.6
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] highr_0.9         bslib_0.2.5.1     compiler_4.1.2    pillar_1.6.4     
-##  [5] jquerylib_0.1.4   tools_4.1.2       digest_0.6.28     jsonlite_1.7.2   
-##  [9] evaluate_0.14     lifecycle_1.0.1   tibble_3.1.5      gtable_0.3.0     
-## [13] pkgconfig_2.0.3   rlang_0.4.12      DBI_1.1.1         yaml_2.2.1       
-## [17] xfun_0.27         withr_2.4.2       stringr_1.4.0     knitr_1.36       
-## [21] generics_0.1.1    sass_0.4.0        vctrs_0.3.8       grid_4.1.2       
-## [25] tidyselect_1.1.1  glue_1.4.2        R6_2.5.1          fansi_0.5.0      
-## [29] rmarkdown_2.9     farver_2.1.0      purrr_0.3.4       magrittr_2.0.1   
-## [33] scales_1.1.1      ellipsis_0.3.2    htmltools_0.5.1.1 assertthat_0.2.1 
-## [37] colorspace_2.0-2  labeling_0.4.2    utf8_1.2.2        stringi_1.7.5    
-## [41] munsell_0.5.0     crayon_1.4.2</code></pre>
+##  [1] highr_0.9        bslib_0.4.0      compiler_4.2.1   pillar_1.8.1    
+##  [5] jquerylib_0.1.4  tools_4.2.1      digest_0.6.29    jsonlite_1.8.0  
+##  [9] evaluate_0.16    lifecycle_1.0.1  tibble_3.1.8     gtable_0.3.0    
+## [13] pkgconfig_2.0.3  rlang_1.0.5      DBI_1.1.2        cli_3.3.0       
+## [17] rstudioapi_0.14  yaml_2.3.5       xfun_0.32        fastmap_1.1.0   
+## [21] withr_2.5.0      stringr_1.4.1    knitr_1.40       generics_0.1.3  
+## [25] sass_0.4.2       vctrs_0.4.1      tidyselect_1.1.2 grid_4.2.1      
+## [29] glue_1.6.2       R6_2.5.1         fansi_1.0.3      rmarkdown_2.16  
+## [33] farver_2.1.0     purrr_0.3.4      magrittr_2.0.3   ellipsis_0.3.2  
+## [37] scales_1.2.0     htmltools_0.5.3  assertthat_0.2.1 colorspace_2.0-3
+## [41] labeling_0.4.2   utf8_1.2.2       stringi_1.7.8    munsell_0.5.0   
+## [45] cachem_1.0.6</code></pre>
 <p>================================================================================</p>
 </div>
 </div>
 
-<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+<p>Copyright &copy; 2022 Dan C. Mann. All rights reserved.</p>
   
 
 

@@ -13,8 +13,8 @@
 
 <title>Simple statistical tests</title>
 
-<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="custom.css" type="text/css" />
 
 
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -140,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -235,7 +243,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -251,7 +259,7 @@ $(document).ready(function () {
   <a href="about.html">About</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fab fa-r-project"></span>
      
     R tutorials
@@ -286,7 +294,7 @@ $(document).ready(function () {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fas fa-chart-area"></span>
      
     Stats tutorials
@@ -311,6 +319,23 @@ $(document).ready(function () {
     </li>
     <li>
       <a href="linear_regression.html">Linear Regression</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-cogs"></span>
+     
+    Simulation tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="simulating_data_examples.html">Simulation templates</a>
+    </li>
+    <li>
+      <a href="data_sim_supp.html">Simulation supplement</a>
     </li>
   </ul>
 </li>
@@ -352,7 +377,11 @@ library(dplyr)</code></pre>
 </div>
 <div id="t-test" class="section level1">
 <h1>T-test</h1>
-<p>T-tests are used when the response is a numeric, continuous variable. You can use a t-test for hypotheses related to whether a sample differs from a known or hypothetical population mean; whether two group differ from one another; or whether within-subject responses differ. T-tests are often used to compare the means of (no more than) two groups.</p>
+<p>T-tests are used when the response is a numeric, continuous variable.
+You can use a t-test for hypotheses related to whether a sample differs
+from a known or hypothetical population mean; whether two group differ
+from one another; or whether within-subject responses differ. T-tests
+are often used to compare the means of (no more than) two groups.</p>
 <ul>
 <li>One-sample t-test</li>
 <li>Two-sample t-test</li>
@@ -360,7 +389,15 @@ library(dplyr)</code></pre>
 </ul>
 <div id="the-t-distribution" class="section level2">
 <h2>The T-distribution</h2>
-<p>Like the normal distribution, The t-distribution is symmetrical and center around the mean. However, the tails (values further away from the mean) are “fatter” in the t-distribution. This is to account for the fact that the true population standard deviation is unknown. The t-distribution uses the sample standard deviation, but adjusts the probability density function by adding in “degrees of freedom” which is the number of observations minus 1. The more observations, the higher the degrees of freedom, and the more normal the t-distribution looks.</p>
+<p>Like the normal distribution, The t-distribution is symmetrical and
+center around the mean. However, the tails (values further away from the
+mean) are “fatter” in the t-distribution. This is to account for the
+fact that the true population standard deviation is unknown. The
+t-distribution uses the sample standard deviation, but adjusts the
+probability density function by adding in “degrees of freedom” which is
+the number of observations minus 1. The more observations, the higher
+the degrees of freedom, and the more normal the t-distribution
+looks.</p>
 <pre class="r"><code>x  &lt;- seq(from = -4, to = 4, length = 100)
 data &lt;- data.frame(x = x,
                    y = c(dnorm(x, mean = 0, sd = 1), dt(x, df = 3), dt(x, df = 15)),
@@ -395,11 +432,13 @@ ggplot(data) +
 <tr class="even">
 <td><code>y = NULL</code></td>
 <td>vector of numeric data (response of a second group)</td>
-<td>two-sample t-test (both Welch’s and Student’s), paired samples t-test,</td>
+<td>two-sample t-test (both Welch’s and Student’s), paired samples
+t-test,</td>
 </tr>
 <tr class="odd">
 <td><code>alternative = c('two-sided', 'less', 'greater')</code></td>
-<td>one (and only one) of the strings ‘two-sided’, ‘less’, or ‘greater’. Choose depending on your hypothesis. Default is ‘two-sided’.</td>
+<td>one (and only one) of the strings ‘two-sided’, ‘less’, or ‘greater’.
+Choose depending on your hypothesis. Default is ‘two-sided’.</td>
 <td>all t-tests.</td>
 </tr>
 <tr class="even">
@@ -409,12 +448,14 @@ ggplot(data) +
 </tr>
 <tr class="odd">
 <td><code>paired = FALSE</code></td>
-<td>Whether the data points should be paired or not (within subject). Default is false.</td>
+<td>Whether the data points should be paired or not (within subject).
+Default is false.</td>
 <td>Paired samples t-test</td>
 </tr>
 <tr class="even">
 <td><code>var.equal = FALSE</code></td>
-<td>Whether the two groups being tested have the same standard deviation. Default is false.</td>
+<td>Whether the two groups being tested have the same standard
+deviation. Default is false.</td>
 <td>TRUE: Student’s t-test; FALSE: Welch’s t-test.</td>
 </tr>
 </tbody>
@@ -422,14 +463,26 @@ ggplot(data) +
 </div>
 <div id="one-sample-t-test" class="section level2">
 <h2>One-sample t-test</h2>
-<p>In the one-sample t-test, you test whether your sample data differ from a population with a known or hypothetical mean. Often the hypothetical mean is 0.</p>
+<p>In the one-sample t-test, you test whether your sample data differ
+from a population with a known or hypothetical mean. Often the
+hypothetical mean is 0.</p>
 <div id="hypothesis-testing" class="section level3">
 <h3>Hypothesis testing</h3>
-<p>Grad school is hard. It’s a lot of work, you may be working multiple jobs, you still want to have a social life, there’s often not enough time in the day to get everything done. The first thing that may suffer is sleep. Lack of sleep can have negative physical and mental effects, so you decide to see if grad students are getting an average of 8 hours of sleep. (Get enough sleep! And make sure you have a proper work life balance!). You randomly survey 50 graduate students throughout Austria asking them to estimate how many of hours of sleep per night they get.</p>
+<p>Grad school is hard. It’s a lot of work, you may be working multiple
+jobs, you still want to have a social life, there’s often not enough
+time in the day to get everything done. The first thing that may suffer
+is sleep. Lack of sleep can have negative physical and mental effects,
+so you decide to see if grad students are getting an average of 8 hours
+of sleep. (Get enough sleep! And make sure you have a proper work life
+balance!). You randomly survey 50 graduate students throughout Austria
+asking them to estimate how many of hours of sleep per night they
+get.</p>
 <p>Population: Graduate Students in Austria.<br />
 Sample: Randomly sampled Graduate Students.</p>
-<p>H0: Austrian graduate students get an average of 8 hours of sleep per night.<br />
-HA: Austrian graduate students do not get an average of 8 hours of sleep per night.</p>
+<p>H0: Austrian graduate students get an average of 8 hours of sleep per
+night.<br />
+HA: Austrian graduate students do not get an average of 8 hours of sleep
+per night.</p>
 <p>Let’s simulate the sleep survey data</p>
 <pre class="r"><code>## The set.seed() function helps make your data reproducible. Use this anytime there is a random process in your analysis. Your data will likely still be different from mine. 
 set.seed(123)
@@ -438,15 +491,24 @@ grad_sleep &lt;- sample(hour_sleep, 50, replace = T, dnorm(hour_sleep, mean = 7.
 </div>
 <div id="checking-assumptions" class="section level3">
 <h3>Checking assumptions</h3>
-<p><strong>Independence</strong>: Our observations were randomly selected from different graduate institutions throughout Austria.</p>
-<p><strong>Normality</strong>: Our sample size is greater than ~ 30, because of the central limit theorem, we can assume our sampling distribution is normal.</p>
+<p><strong>Independence</strong>: Our observations were randomly
+selected from different graduate institutions throughout Austria.</p>
+<p><strong>Normality</strong>: Our sample size is greater than ~ 30,
+because of the central limit theorem, we can assume our sampling
+distribution is normal.</p>
 </div>
 <div id="running-the-test" class="section level3">
 <h3>Running the test</h3>
 <ul>
-<li><code>x = grad_sleep</code> : We want our numeric response here. In this case, our response is stored as a numeric vector.</li>
-<li><code>mu = 8</code> : “mu” is a Greek letter, <span class="math inline">\(\mu\)</span>. In statistics, it is used to represent the population mean. Our hypothetical population mean in this case is 8.</li>
-<li><code>alternative = 'two-sided'</code> : We hypothesize that Austrian grad students do not get an average of 8 hours of sleep per night. Maybe they get more. Maybe less. But it’s not 8.</li>
+<li><code>x = grad_sleep</code> : We want our numeric response here. In
+this case, our response is stored as a numeric vector.</li>
+<li><code>mu = 8</code> : “mu” is a Greek letter, <span
+class="math inline">\(\mu\)</span>. In statistics, it is used to
+represent the population mean. Our hypothetical population mean in this
+case is 8.</li>
+<li><code>alternative = 'two-sided'</code> : We hypothesize that
+Austrian grad students do not get an average of 8 hours of sleep per
+night. Maybe they get more. Maybe less. But it’s not 8.</li>
 </ul>
 <pre class="r"><code>t_output &lt;- t.test(x = grad_sleep, mu = 8, alternative = &#39;two.sided&#39;)
 t_output</code></pre>
@@ -461,39 +523,87 @@ t_output</code></pre>
 ## sample estimates:
 ## mean of x 
 ##     7.585</code></pre>
-<p>What is this information telling us? Do we accept the alternative hypothesis? Or the null hypothesis?</p>
+<p>What is this information telling us? Do we accept the alternative
+hypothesis? Or the null hypothesis?</p>
 </div>
 <div id="t-test-output" class="section level3">
 <h3>T test output</h3>
 <p>Let’s go into detail about what all of this is telling you.</p>
-<p><strong>data:</strong> : 1st line in <code>t.test()</code> output.</p>
+<p><strong>data:</strong> : 1st line in <code>t.test()</code>
+output.</p>
 <p>This tells you what went into the <code>x =</code> argument.</p>
-<p><strong>t = </strong> : 2nd line, 1st value in <code>t.test()</code> output.</p>
+<p><strong>t = </strong> : 2nd line, 1st value in <code>t.test()</code>
+output.</p>
 <pre class="r"><code>t_output$statistic</code></pre>
 <pre><code>##         t 
 ## -2.007498</code></pre>
-<p>This is your t-score. You may have heard of a z-score, the t-score is similar. Both are standardized scores that tell you how far a data point is from the mean. Technically, how many standard deviations from the mean. In the one-sample t-test the t-score tells you how many standard deviations the sample mean is from the population (possibly hypothetical) mean.</p>
-<p><strong>df = </strong> : 2nd line, 2nd value in <code>t.test()</code> output.</p>
+<p>This is your t-score. You may have heard of a z-score, the t-score is
+similar. Both are standardized scores that tell you how far a data point
+is from the mean. Technically, how many standard deviations from the
+mean. In the one-sample t-test the t-score tells you how many standard
+deviations the sample mean is from the population (possibly
+hypothetical) mean.</p>
+<p><strong>df = </strong> : 2nd line, 2nd value in <code>t.test()</code>
+output.</p>
 <pre class="r"><code>t_output$parameter</code></pre>
 <pre><code>## df 
 ## 49</code></pre>
-<p>The degrees of freedom. The number of independent observations minus 1. The t distribution uses degrees of freedom to adjust the probability density values at the ends of the distribution curve.</p>
-<p>Degrees of freedom is the number of values that can vary when calculating a statistic. That’s probably a bit unclear, but an example might help. If you have a mean of 10 and you have 3 numbers, there are an infinite number of possibilities. YOu could have: (10, 10, 10) or (11, 10, 9) or (0.5, 19.25, 10.25) or (45, -15, 0) etc. Even if you know one of the numbers, there are still infinite possibilities: 12 , (8, 10), (5, 13), (-13, 31), etc. However, if you know two numbers, then you cannot vary the final number: 12, 14, (4). In this example, no other number works other than 4. Out of the three numbers, only two can vary freely; thus <span class="math inline">\(n - 1\)</span>.</p>
-<p><strong>p-value</strong> : 2nd line, 3rd value in <code>t.test()</code> output.</p>
+<p>The degrees of freedom. The number of independent observations minus
+1. The t distribution uses degrees of freedom to adjust the probability
+density values at the ends of the distribution curve.</p>
+<p>Degrees of freedom is the number of values that can vary when
+calculating a statistic. That’s probably a bit unclear, but an example
+might help. If you have a mean of 10 and you have 3 numbers, there are
+an infinite number of possibilities. YOu could have: (10, 10, 10) or
+(11, 10, 9) or (0.5, 19.25, 10.25) or (45, -15, 0) etc. Even if you know
+one of the numbers, there are still infinite possibilities: 12 , (8,
+10), (5, 13), (-13, 31), etc. However, if you know two numbers, then you
+cannot vary the final number: 12, 14, (4). In this example, no other
+number works other than 4. Out of the three numbers, only two can vary
+freely; thus <span class="math inline">\(n - 1\)</span>.</p>
+<p><strong>p-value</strong> : 2nd line, 3rd value in
+<code>t.test()</code> output.</p>
 <pre class="r"><code>t_output$p.value</code></pre>
 <pre><code>## [1] 0.0502281</code></pre>
-<p>Probably the most abused and misunderstood part of statistics. The p-value does not tell you that you did a good experiment, or that your results are true, or even that your results are false. Perhaps the best simplistic interpretation of a p-value is the following: Are your data weird if we assume the null hypothesis to be true?</p>
-<p>P-values tell you about the probability of your results or more extreme results. What does the “more extreme” part mean? Well, a p-value has a big assumption and that assumption is that the null hypothesis is true. So, a more technical definition is the "probability of getting a value at least as extreme as the observed value under the assumption that the null hypothesis is true.</p>
-<p>In the example above, you’ll notice that p = 0.0502281. So, if we assume that graduate students actually get 8 hours of sleep, we assume that we will see a sample mean of <code>t_output$estimate</code> or more extreme around 5% of the time.</p>
-<p><strong>alternative hypothesis</strong> : 3rd line in <code>t.test()</code> output.</p>
-<p>This restates your alternative hypothesis. It is not a statement about whether you should accept the alternative hypothesis. In a one-sample t-test this will tell you that “true mean is not equal to <span class="math inline">\(\mu\)</span>” for a two-sided test, “true mean is greater than <span class="math inline">\(\mu\)</span>” for a one-sided test where you predict the population mean to be greater than the null hypothesis and “true mean is less than <span class="math inline">\(\mu\)</span>” for a one-sided test where you predict the population mean to be less than the null hypothesis.</p>
-<p><strong>95 percent confidence interval:</strong> : 4th and 5th line in <code>t.test()</code> output.</p>
+<p>Probably the most abused and misunderstood part of statistics. The
+p-value does not tell you that you did a good experiment, or that your
+results are true, or even that your results are false. Perhaps the best
+simplistic interpretation of a p-value is the following: Are your data
+weird if we assume the null hypothesis to be true?</p>
+<p>P-values tell you about the probability of your results or more
+extreme results. What does the “more extreme” part mean? Well, a p-value
+has a big assumption and that assumption is that the null hypothesis is
+true. So, a more technical definition is the “probability of getting a
+value at least as extreme as the observed value under the assumption
+that the null hypothesis is true.</p>
+<p>In the example above, you’ll notice that p = 0.0502281. So, if we
+assume that graduate students actually get 8 hours of sleep, we assume
+that we will see a sample mean of <code>t_output$estimate</code> or more
+extreme around 5% of the time.</p>
+<p><strong>alternative hypothesis</strong> : 3rd line in
+<code>t.test()</code> output.</p>
+<p>This restates your alternative hypothesis. It is not a statement
+about whether you should accept the alternative hypothesis. In a
+one-sample t-test this will tell you that “true mean is not equal to
+<span class="math inline">\(\mu\)</span>” for a two-sided test, “true
+mean is greater than <span class="math inline">\(\mu\)</span>” for a
+one-sided test where you predict the population mean to be greater than
+the null hypothesis and “true mean is less than <span
+class="math inline">\(\mu\)</span>” for a one-sided test where you
+predict the population mean to be less than the null hypothesis.</p>
+<p><strong>95 percent confidence interval:</strong> : 4th and 5th line
+in <code>t.test()</code> output.</p>
 <pre class="r"><code>t_output$conf.int</code></pre>
 <pre><code>## [1] 7.169571 8.000429
 ## attr(,&quot;conf.level&quot;)
 ## [1] 0.95</code></pre>
-<p>95% probability that the true population mean will be between these two values. This is giving you a range of the population parameter (the true population mean) based on the sample parameters (sample mean and sample standard deviation). Does the confidence interval range overlap with the null hypothesis?</p>
-<p><strong>sample estimates</strong>: 6th and 7th line in <code>t.test()</code> output.</p>
+<p>95% probability that the true population mean will be between these
+two values. This is giving you a range of the population parameter (the
+true population mean) based on the sample parameters (sample mean and
+sample standard deviation). Does the confidence interval range overlap
+with the null hypothesis?</p>
+<p><strong>sample estimates</strong>: 6th and 7th line in
+<code>t.test()</code> output.</p>
 <pre class="r"><code>t_output$estimate</code></pre>
 <pre><code>## mean of x 
 ##     7.585</code></pre>
@@ -502,11 +612,21 @@ t_output</code></pre>
 </div>
 <div id="two-sample-t-test" class="section level2">
 <h2>Two-sample t-test</h2>
-<p>The two-sample t-test is useful for comparing two groups with each other. It’s usually used to test whether the sample means differ between the two groups.</p>
-<p>There are two types of two-sample t-tests: the student’s t-test and Welch’s t-test. The first assumes that the variance is equal between the two groups. The second does not make this assumption. The default for the <code>t.test()</code> function is the Welch’s t-test (<code>var.equal = FALSE</code>).</p>
+<p>The two-sample t-test is useful for comparing two groups with each
+other. It’s usually used to test whether the sample means differ between
+the two groups.</p>
+<p>There are two types of two-sample t-tests: the student’s t-test and
+Welch’s t-test. The first assumes that the variance is equal between the
+two groups. The second does not make this assumption. The default for
+the <code>t.test()</code> function is the Welch’s t-test
+(<code>var.equal = FALSE</code>).</p>
 <div id="hypothesis-testing-1" class="section level3">
 <h3>Hypothesis testing</h3>
-<p>Wugs love veggie burgers. Some love burgers made from mushrooms; others love burgers made from soybeans. Wugs aren’t good at flying but they can flap their wings and hover in the air for a few seconds. There are some anecdotal claims that soybean burger loving can hang in the air for longer than the mushroom burger lovers. Let’s test this claim!</p>
+<p>Wugs love veggie burgers. Some love burgers made from mushrooms;
+others love burgers made from soybeans. Wugs aren’t good at flying but
+they can flap their wings and hover in the air for a few seconds. There
+are some anecdotal claims that soybean burger loving can hang in the air
+for longer than the mushroom burger lovers. Let’s test this claim!</p>
 <pre class="r"><code>set.seed(123)
 wug_flight &lt;- data.frame(food_pref = rep(c(&quot;soybean&quot;, &quot;mushroom&quot;), each = 35),
                          hang_time = c(rnorm(35, mean = 9.25, sd = 0.8),
@@ -526,25 +646,44 @@ str(wug_flight)</code></pre>
 ## 5   soybean  9.353430
 ## 6   soybean 10.622052</code></pre>
 <p>H0: The true mean hang time is equal between the two groups.<br />
-HA: The true mean hang time in mushroom loving wugs is less than the true mean hang time in soybean loving wugs.</p>
+HA: The true mean hang time in mushroom loving wugs is less than the
+true mean hang time in soybean loving wugs.</p>
 </div>
 <div id="checking-assumptions-1" class="section level3">
 <h3>Checking assumptions</h3>
 <p><strong>Independence</strong>: Our wugs were randomly selected.</p>
-<p><strong>Normality</strong>: Our sample size (for both groups) is greater than ~ 30, because of the central limit theorem, we can assume our sampling distribution is normal.</p>
-<p><strong>Homogeneity of variance</strong> : AKA “homoscedasticity”. Standard deviation is the same in both groups. If they aren’t you can use <code>var.equal = False</code>. We’ll discuss this in more detail later.</p>
+<p><strong>Normality</strong>: Our sample size (for both groups) is
+greater than ~ 30, because of the central limit theorem, we can assume
+our sampling distribution is normal.</p>
+<p><strong>Homogeneity of variance</strong> : AKA “homoscedasticity”.
+Standard deviation is the same in both groups. If they aren’t you can
+use <code>var.equal = False</code>. We’ll discuss this in more detail
+later.</p>
 </div>
 <div id="running-the-test-1" class="section level3">
 <h3>Running the test</h3>
 <ul>
-<li><code>formula = hang_time ~ food_pref</code> : We’ve done things a little different here. We’ve used a formula. To the left of the <code>~</code> we have the response and to the right we have the predictor variable, i.e., the groups we want to compare. If you don’t include the <code>$</code> operator, then we have to include the <code>data =</code> argument with the appropriate data frame.<br />
+<li><code>formula = hang_time ~ food_pref</code> : We’ve done things a
+little different here. We’ve used a formula. To the left of the
+<code>~</code> we have the response and to the right we have the
+predictor variable, i.e., the groups we want to compare. If you don’t
+include the <code>$</code> operator, then we have to include the
+<code>data =</code> argument with the appropriate data frame.<br />
 </li>
-<li><code>alternative = 'less'</code> : The difference between the groups is less than zero. This can be a bit confusing because how do you know if you should choose ‘greater’ or ‘less’? You have to figure out which group R treats as the “reference” group. We think mean hang time is greater for soybean wugs, so, if soybean is 1st then you would choose ‘greater’ (9 - 8 = 1). If soybean wugs are second, then it should be ‘less’ (8 - 9 = -1). R usually orders factors by alphabetical order, but you can check by using <code>levels()</code>.</li>
+<li><code>alternative = 'less'</code> : The difference between the
+groups is less than zero. This can be a bit confusing because how do you
+know if you should choose ‘greater’ or ‘less’? You have to figure out
+which group R treats as the “reference” group. We think mean hang time
+is greater for soybean wugs, so, if soybean is 1st then you would choose
+‘greater’ (9 - 8 = 1). If soybean wugs are second, then it should be
+‘less’ (8 - 9 = -1). R usually orders factors by alphabetical order, but
+you can check by using <code>levels()</code>.</li>
 </ul>
 <pre class="r"><code>levels(wug_flight$food_pref)</code></pre>
 <pre><code>## NULL</code></pre>
 <ul>
-<li><code>var.equal = False</code> : We won’t assume equal variances.</li>
+<li><code>var.equal = False</code> : We won’t assume equal
+variances.</li>
 </ul>
 </div>
 <div id="t-test-output-1" class="section level3">
@@ -565,20 +704,52 @@ t_output</code></pre>
 ## sample estimates:
 ## mean in group mushroom  mean in group soybean 
 ##               8.140543               9.280014</code></pre>
-<p>The output is pretty much the same as the one-sample t-test. You’ll notice that <code>data:</code> makes it clear what is being evaluated by stating response “by” predictor. The confidence intervals go to <code>-Inf</code> on the low end. Since our hypothesis is that the true mean is less than 0, anything on the lower range isn’t important for us. You’ll also see that there are two sample estimates: the mean for each group.</p>
-<p>So, what numbers does the two-sample t-test use? In the one-sample, we compared the “true population” mean with the sample mean. Now that we have two sample means what do we use? We use the difference between the two means. Take a look at the confidence intervals. Using the data from the two samples R calculates a 95% confidence interval for the true <em>difference</em> between the two group means. So, what is the difference in the sample mean?</p>
+<p>The output is pretty much the same as the one-sample t-test. You’ll
+notice that <code>data:</code> makes it clear what is being evaluated by
+stating response “by” predictor. The confidence intervals go to
+<code>-Inf</code> on the low end. Since our hypothesis is that the true
+mean is less than 0, anything on the lower range isn’t important for us.
+You’ll also see that there are two sample estimates: the mean for each
+group.</p>
+<p>So, what numbers does the two-sample t-test use? In the one-sample,
+we compared the “true population” mean with the sample mean. Now that we
+have two sample means what do we use? We use the difference between the
+two means. Take a look at the confidence intervals. Using the data from
+the two samples R calculates a 95% confidence interval for the true
+<em>difference</em> between the two group means. So, what is the
+difference in the sample mean?</p>
 <pre class="r"><code>as.numeric(t_output$estimate[1] - t_output$estimate[2])</code></pre>
 <pre><code>## [1] -1.139471</code></pre>
-<p>So, our test evaluates the likelihood of seeing a difference of -1.1394709 (or less) if the difference in the true population means is actually 0.</p>
-<p>The two-sample t-test uses each groups’ standard deviation to calculate the standard error used to calculate a t-score.</p>
+<p>So, our test evaluates the likelihood of seeing a difference of
+-1.1394709 (or less) if the difference in the true population means is
+actually 0.</p>
+<p>The two-sample t-test uses each groups’ standard deviation to
+calculate the standard error used to calculate a t-score.</p>
 </div>
 </div>
 <div id="paired-sample-t-test" class="section level2">
 <h2>Paired sample t-test</h2>
-<p>Let’s say that we want to test the whether dogs that go to the river on a walk eat more than dogs that go to the dog park. The problem is that we have a huge amount of variation in the sizes of dogs (therefore how much they eat). So, we decide to test the same dog in each condition. We randomly select 50 dogs and measure the amount of food they eat after a river walk and then on another day we test how much they eat after going to the dog park. We have 50 subjects and two experimental conditions, so 100 observations.</p>
-<p>Do we run a one-sample t-test? Well we have two conditions so that doesn’t seem intuitive. What about a two-sample? Well, our observations are not independent from each other which violates one of the most important assumptions in statistical testing (independence of observations). But, our set up is a common experimental design so we have to have some way to deal with these type of data, right?</p>
-<p>This where the paired sample t-test comes in! You can use a paired sample t-test when you have two conditions and each subject is measured in both conditions.</p>
-<p>If you’re nervous about learning the details of a completely new type of test, you’re in luck! You basically already know how to do the paired sample t-test! The paired sample t-test is essentially a one-sample t-test. But how can that be!? Let’s see.</p>
+<p>Let’s say that we want to test the whether dogs that go to the river
+on a walk eat more than dogs that go to the dog park. The problem is
+that we have a huge amount of variation in the sizes of dogs (therefore
+how much they eat). So, we decide to test the same dog in each
+condition. We randomly select 50 dogs and measure the amount of food
+they eat after a river walk and then on another day we test how much
+they eat after going to the dog park. We have 50 subjects and two
+experimental conditions, so 100 observations.</p>
+<p>Do we run a one-sample t-test? Well we have two conditions so that
+doesn’t seem intuitive. What about a two-sample? Well, our observations
+are not independent from each other which violates one of the most
+important assumptions in statistical testing (independence of
+observations). But, our set up is a common experimental design so we
+have to have some way to deal with these type of data, right?</p>
+<p>This where the paired sample t-test comes in! You can use a paired
+sample t-test when you have two conditions and each subject is measured
+in both conditions.</p>
+<p>If you’re nervous about learning the details of a completely new type
+of test, you’re in luck! You basically already know how to do the paired
+sample t-test! The paired sample t-test is essentially a one-sample
+t-test. But how can that be!? Let’s see.</p>
 <pre class="r"><code>set.seed(123)
 
 river &lt;- rnorm(50, mean = 35, sd = 10)
@@ -610,12 +781,12 @@ pairt_output</code></pre>
 ## 
 ## data:  food_eaten by condition
 ## t = 5.0481, df = 49, p-value = 6.558e-06
-## alternative hypothesis: true difference in means is not equal to 0
+## alternative hypothesis: true mean difference is not equal to 0
 ## 95 percent confidence interval:
 ##  0.1945415 0.4518668
 ## sample estimates:
-## mean of the differences 
-##               0.3232041</code></pre>
+## mean difference 
+##       0.3232041</code></pre>
 <pre class="r"><code># This uses a base R way of subsetting the data frame by the condition. 
 food_dif &lt;- dog_food$food_eaten[which(dog_food$condition == &#39;dog_park&#39;)] - dog_food$food_eaten[which(dog_food$condition == &#39;river&#39;)]</code></pre>
 <pre class="r"><code>onet_output &lt;- t.test(food_dif, mu = 0, paried = F)
@@ -631,26 +802,39 @@ onet_output</code></pre>
 ## sample estimates:
 ## mean of x 
 ## 0.3232041</code></pre>
-<p>A paired t-test performs a one-sample t-test by finding the between condition difference for each individual. The two outputs have a few differences: the heading telling you the test performed, the “data:” line, and the sample estimate description. All of the calculated values, however, are exactly the same. You should also see that the sample estimate for the paired t-test states “mean of the differences”, which is exactly what we calculated when we created the vector to use in the one sample t-test.</p>
+<p>A paired t-test performs a one-sample t-test by finding the between
+condition difference for each individual. The two outputs have a few
+differences: the heading telling you the test performed, the “data:”
+line, and the sample estimate description. All of the calculated values,
+however, are exactly the same. You should also see that the sample
+estimate for the paired t-test states “mean of the differences”, which
+is exactly what we calculated when we created the vector to use in the
+one sample t-test.</p>
 </div>
 </div>
 <div id="supplmentary-info" class="section level1">
 <h1>Supplmentary info</h1>
 <div id="the-one-sample-t-test-by-hand" class="section level3">
 <h3>The one-sample t-test by hand</h3>
-<p>Our null hypothesis is that average hours per night of sleep is 8. We have a sample size of 50 observations.</p>
+<p>Our null hypothesis is that average hours per night of sleep is 8. We
+have a sample size of 50 observations.</p>
 <pre class="r"><code>h_null &lt;- 8
 n &lt;- 50</code></pre>
 <p>Our sample mean and sample standard deviation.</p>
 <pre class="r"><code>sample_mean &lt;- mean(grad_sleep)
 sample_sd &lt;- sd(grad_sleep)</code></pre>
-<p>Calculate the standard error of the mean by dividing the sample standard deviation by the square root of the</p>
+<p>Calculate the standard error of the mean by dividing the sample
+standard deviation by the square root of the</p>
 <pre class="r"><code>st_err_mean &lt;- sample_sd / sqrt(n)</code></pre>
-<p>Calculate a t-score by subtracting the hypothesized population mean from the sample mean. Divide by the standard error of the mean. Does our t-score match?</p>
+<p>Calculate a t-score by subtracting the hypothesized population mean
+from the sample mean. Divide by the standard error of the mean. Does our
+t-score match?</p>
 <pre class="r"><code>t &lt;- (sample_mean - h_null) / st_err_mean
 t</code></pre>
 <pre><code>## [1] -2.007498</code></pre>
-<p>Use the <code>pt()</code> function to calculate the probability of getting this t-score (or a more extreme t-score) assuming the null hypothesis is true. This function is a bit more complicated. ???</p>
+<p>Use the <code>pt()</code> function to calculate the probability of
+getting this t-score (or a more extreme t-score) assuming the null
+hypothesis is true. This function is a bit more complicated. ???</p>
 <pre class="r"><code>pt(-abs(t), df = n-1, lower.tail = T)*2</code></pre>
 <pre><code>## [1] 0.0502281</code></pre>
 <p>Confidence interval</p>
@@ -665,9 +849,9 @@ sample_mean - (abs(qt((1-conf_level)/2, df = n - 1) * st_err_mean))</code></pre>
 <h3>Session information:</h3>
 <p>Last update on 2020-11-10</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.1.2 (2021-11-01)
+<pre><code>## R version 4.2.1 (2022-06-23)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.04.3 LTS
+## Running under: Ubuntu 20.04.5 LTS
 ## 
 ## Matrix products: default
 ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
@@ -685,25 +869,25 @@ sample_mean - (abs(qt((1-conf_level)/2, df = n - 1) * st_err_mean))</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] dplyr_1.0.7   ggplot2_3.3.5
+## [1] dplyr_1.0.10  ggplot2_3.3.6
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] highr_0.9         bslib_0.2.5.1     compiler_4.1.2    pillar_1.6.4     
-##  [5] jquerylib_0.1.4   tools_4.1.2       digest_0.6.28     jsonlite_1.7.2   
-##  [9] evaluate_0.14     lifecycle_1.0.1   tibble_3.1.5      gtable_0.3.0     
-## [13] pkgconfig_2.0.3   rlang_0.4.12      DBI_1.1.1         yaml_2.2.1       
-## [17] xfun_0.27         withr_2.4.2       stringr_1.4.0     knitr_1.36       
-## [21] generics_0.1.1    sass_0.4.0        vctrs_0.3.8       grid_4.1.2       
-## [25] tidyselect_1.1.1  glue_1.4.2        R6_2.5.1          fansi_0.5.0      
-## [29] rmarkdown_2.9     farver_2.1.0      purrr_0.3.4       magrittr_2.0.1   
-## [33] scales_1.1.1      ellipsis_0.3.2    htmltools_0.5.1.1 assertthat_0.2.1 
-## [37] colorspace_2.0-2  labeling_0.4.2    utf8_1.2.2        stringi_1.7.5    
-## [41] munsell_0.5.0     crayon_1.4.2</code></pre>
+##  [1] highr_0.9        bslib_0.4.0      compiler_4.2.1   pillar_1.8.1    
+##  [5] jquerylib_0.1.4  tools_4.2.1      digest_0.6.29    jsonlite_1.8.0  
+##  [9] evaluate_0.16    lifecycle_1.0.1  tibble_3.1.8     gtable_0.3.0    
+## [13] pkgconfig_2.0.3  rlang_1.0.5      DBI_1.1.2        cli_3.3.0       
+## [17] rstudioapi_0.14  yaml_2.3.5       xfun_0.32        fastmap_1.1.0   
+## [21] withr_2.5.0      stringr_1.4.1    knitr_1.40       generics_0.1.3  
+## [25] sass_0.4.2       vctrs_0.4.1      tidyselect_1.1.2 grid_4.2.1      
+## [29] glue_1.6.2       R6_2.5.1         fansi_1.0.3      rmarkdown_2.16  
+## [33] farver_2.1.0     purrr_0.3.4      magrittr_2.0.3   scales_1.2.0    
+## [37] htmltools_0.5.3  assertthat_0.2.1 colorspace_2.0-3 labeling_0.4.2  
+## [41] utf8_1.2.2       stringi_1.7.8    munsell_0.5.0    cachem_1.0.6</code></pre>
 <p>================================================================================</p>
 </div>
 </div>
 
-<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+<p>Copyright &copy; 2022 Dan C. Mann. All rights reserved.</p>
   
 
 

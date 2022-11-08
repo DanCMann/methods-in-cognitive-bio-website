@@ -13,8 +13,8 @@
 
 <title>Basic Statistics</title>
 
-<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="custom.css" type="text/css" />
 
 
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -140,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -235,7 +243,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -251,7 +259,7 @@ $(document).ready(function () {
   <a href="about.html">About</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fab fa-r-project"></span>
      
     R tutorials
@@ -286,7 +294,7 @@ $(document).ready(function () {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fas fa-chart-area"></span>
      
     Stats tutorials
@@ -314,6 +322,23 @@ $(document).ready(function () {
     </li>
   </ul>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-cogs"></span>
+     
+    Simulation tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="simulating_data_examples.html">Simulation templates</a>
+    </li>
+    <li>
+      <a href="data_sim_supp.html">Simulation supplement</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -333,9 +358,12 @@ $(document).ready(function () {
 
 <div id="statistics-introduction" class="section level1">
 <h1>Statistics introduction</h1>
-<p>Note: This is a work in progress, please let me know if you notice any mistakes or anything unclear.</p>
-<p>Let’s create a population of a new species, the <a href="https://jeanberkogleason.com/the-wug-test-now-available/">wug</a></p>
-<p>We’ll set the population size to 10,000. These are all of the (adult) wugs in the world.</p>
+<p>Note: This is a work in progress, please let me know if you notice
+any mistakes or anything unclear.</p>
+<p>Let’s create a population of a new species, the <a
+href="https://jeanberkogleason.com/the-wug-test-now-available/">wug</a></p>
+<p>We’ll set the population size to 10,000. These are all of the (adult)
+wugs in the world.</p>
 <pre class="r"><code>pop_size &lt;- 10000
 weight_mean &lt;- 30
 weight_sd &lt;- 4
@@ -347,16 +375,29 @@ population &lt;- data.frame(
 <pre class="r"><code>hist(population$weight)</code></pre>
 <p><img src="stats_intro_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <pre class="r"><code>mean(population$weight)</code></pre>
-<pre><code>## [1] 29.97843</code></pre>
+<pre><code>## [1] 29.9875</code></pre>
 <pre class="r"><code>sd(population$weight)</code></pre>
-<pre><code>## [1] 4.023985</code></pre>
+<pre><code>## [1] 3.99682</code></pre>
 <pre class="r"><code>range(population$weight)</code></pre>
-<pre><code>## [1] 13.93255 46.12094</code></pre>
-<p>However, when you collect data, you normally don’t have access to an entire population, <a href="https://www.nature.com/articles/nature19103">Hawaiian Crows notwithstanding</a>. So, what do we do? Sample!</p>
-<p>Sampling is fundamental to understanding statistics. Because we can’t gather data on the whole population, we have to take samples from the population and make <em>inferences</em> based on the sample statistics.</p>
-<p>How do we know how many individuals we need? This is not a trivial issue, in fact, it’s probably the most important question you will face as a researcher. It’s also one of the most difficult to answer. We’ll address this question several times during the course. (Lisa will also discuss sampling in the Experimental Design class).</p>
-<p>But let’s try to get an intuitive notion of sampling theory. Because we generated the wug data, we know the true population mean: 29.9784349.</p>
-<p>Let’s sample one individual. To do this, let’s use the <code>sample_n()</code> function in the <code>dplyr</code> package</p>
+<pre><code>## [1] 14.62250 44.59862</code></pre>
+<p>However, when you collect data, you normally don’t have access to an
+entire population, <a
+href="https://www.nature.com/articles/nature19103">Hawaiian Crows
+notwithstanding</a>. So, what do we do? Sample!</p>
+<p>Sampling is fundamental to understanding statistics. Because we can’t
+gather data on the whole population, we have to take samples from the
+population and make <em>inferences</em> based on the sample
+statistics.</p>
+<p>How do we know how many individuals we need? This is not a trivial
+issue, in fact, it’s probably the most important question you will face
+as a researcher. It’s also one of the most difficult to answer. We’ll
+address this question several times during the course. (Lisa will also
+discuss sampling in the Experimental Design class).</p>
+<p>But let’s try to get an intuitive notion of sampling theory. Because
+we generated the wug data, we know the true population mean:
+29.9875002.</p>
+<p>Let’s sample one individual. To do this, let’s use the
+<code>sample_n()</code> function in the <code>dplyr</code> package</p>
 <pre class="r"><code>library(dplyr)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;dplyr&#39;</code></pre>
@@ -368,38 +409,49 @@ population &lt;- data.frame(
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>population %&gt;% 
         sample_n(1)</code></pre>
-<pre><code>##   wug_id  weight
-## 1   2452 24.1785</code></pre>
-<p>Note: If you haven’t installed <code>dplyr</code> yet, you can use the <code>sample()</code> function in “base” R.</p>
+<pre><code>##   wug_id   weight
+## 1   2678 37.97742</code></pre>
+<p>Note: If you haven’t installed <code>dplyr</code> yet, you can use
+the <code>sample()</code> function in “base” R.</p>
 <pre class="r"><code>index &lt;- sample(x = 1:nrow(population), size = 1)
 population[index, ]</code></pre>
 <pre><code>##      wug_id   weight
-## 1234   1234 33.92373</code></pre>
-<p>Does your individual weigh the same as the mean? There is some randomness with sampling, most of you probably got something around 29.9784349, but anything from 13.9325505 to 46.1209407 is possible.</p>
-<p>What happens if we take a lot of individuals? And then we take the mean of their weights?</p>
+## 2129   2129 29.10427</code></pre>
+<p>Does your individual weigh the same as the mean? There is some
+randomness with sampling, most of you probably got something around
+29.9875002, but anything from 14.6225032 to 44.5986158 is possible.</p>
+<p>What happens if we take a lot of individuals? And then we take the
+mean of their weights?</p>
 <pre class="r"><code>sample_size &lt;- 10
 
 wug_sample &lt;- population %&gt;% 
         sample_n(sample_size)
 mean(wug_sample$weight)</code></pre>
-<pre><code>## [1] 30.9797</code></pre>
+<pre><code>## [1] 29.9335</code></pre>
 <pre class="r"><code># or 
 #index &lt;- sample(x = 1:nrow(population), size = sample_size)
 #wug_sample &lt;- population[index, ]</code></pre>
-<p>More than likely, you got a value that was pretty close to the true population mean. This is the <em>sample mean</em>.</p>
-<p>If we increase the population size even further, we will most likely get a sample mean that is even closer to the population mean.</p>
+<p>More than likely, you got a value that was pretty close to the true
+population mean. This is the <em>sample mean</em>.</p>
+<p>If we increase the population size even further, we will most likely
+get a sample mean that is even closer to the population mean.</p>
 <pre class="r"><code>sample_size &lt;- 1000
 
 wug_sample &lt;- population %&gt;% 
         sample_n(sample_size)
 mean(wug_sample$weight)</code></pre>
-<pre><code>## [1] 29.88522</code></pre>
+<pre><code>## [1] 29.95616</code></pre>
 <pre class="r"><code># or 
 #index &lt;- sample(x = 1:nrow(population), size = sample_size)
 #wug_sample &lt;- population[index, ]</code></pre>
-<p>To illustrate this, I’ve written some code that will repeat this sampling method 100 times. Larger sample sizes should be, on average, closer to the true mean.</p>
+<p>To illustrate this, I’ve written some code that will repeat this
+sampling method 100 times. Larger sample sizes should be, on average,
+closer to the true mean.</p>
 <div>
-<p>The code in this less will get quite a bit more difficult. Don’t worry about being able to reproduce this, even after we finish all three lessons. (It was also done in a hurry, so the next version of this code will be more thought out.)</p>
+<p>The code in this less will get quite a bit more difficult. Don’t
+worry about being able to reproduce this, even after we finish all three
+lessons. (It was also done in a hurry, so the next version of this code
+will be more thought out.)</p>
 </div>
 <pre class="r"><code>library(ggplot2)
 
@@ -438,9 +490,20 @@ ggplot(data = samp_comp, aes(weight,
         scale_color_discrete(name = &#39;sample size&#39;)</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="stats_intro_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p>As your sample size increases, there is less variance in the sample means. If you repeat data collection 100 times and each time you have a sample size of 10, you will see the sample means from ~ 28 to 33. If you sample sizes are 1000, sample means stay within 0.5 kg of the true mean.</p>
-<p>Of course in reality, you will likely never see sample sizes of 1000, you will collect data only once, and you won’t know the true population statistics. So, how do you figure out the true population mean? Well, you use the sample size calculated from your data as the <em>estimate of the population mean</em></p>
-<p>How do you know if you can trust that estimate? More than likely, the estimate of the population mean will not be the same as the true population mean, but we can use our sample mean and sample standard deviation to calculate a 95% confidence interval for the mean.</p>
+<p>As your sample size increases, there is less variance in the sample
+means. If you repeat data collection 100 times and each time you have a
+sample size of 10, you will see the sample means from ~ 28 to 33. If you
+sample sizes are 1000, sample means stay within 0.5 kg of the true
+mean.</p>
+<p>Of course in reality, you will likely never see sample sizes of 1000,
+you will collect data only once, and you won’t know the true population
+statistics. So, how do you figure out the true population mean? Well,
+you use the sample size calculated from your data as the <em>estimate of
+the population mean</em></p>
+<p>How do you know if you can trust that estimate? More than likely, the
+estimate of the population mean will not be the same as the true
+population mean, but we can use our sample mean and sample standard
+deviation to calculate a 95% confidence interval for the mean.</p>
 <pre class="r"><code>confint_int &lt;- function(x, n, level = .95){
         percentile &lt;- 1 - (1 - level)/2
         degree_of_freedom &lt;- n - 1
@@ -461,8 +524,9 @@ index &lt;- sample(x = 1:nrow(population),
 wug_sample &lt;- population[index, ]
 ci &lt;- confint_int(x = wug_sample$weight, n = sample_size)
 ci</code></pre>
-<pre><code>## [1] 26.22517 31.87568</code></pre>
-<p>There is a 95% chance that the true mean lies between 26.225171 and 31.8756763.</p>
+<pre><code>## [1] 28.00904 32.54592</code></pre>
+<p>There is a 95% chance that the true mean lies between 28.009043 and
+32.5459172.</p>
 <pre class="r"><code>ci_plot &lt;- function(sample_size) {
         ci_data &lt;- data.frame(
                 &#39;sample_mean&#39; = numeric(),
@@ -512,15 +576,23 @@ ci</code></pre>
 <p><img src="stats_intro_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <pre class="r"><code>ci_plot(sample_size = 100)</code></pre>
 <p><img src="stats_intro_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p>So far, we’ve glossed over quite a few details. Don’t worry, understanding statistics will take time and practice. But notice a few functions we used: <code>rnorm()</code>, <code>qt()</code>. What in the world are these? In the first, the “norm” in the function name refers to “normal”, that is, the <em>normal distribution</em>. The “t” in the second function name refers to the <em>t distribution</em>. A distribution is usually data organized from the smallest value to the largest. We’ll discuss distributions and probability in the next lesson.</p>
+<p>So far, we’ve glossed over quite a few details. Don’t worry,
+understanding statistics will take time and practice. But notice a few
+functions we used: <code>rnorm()</code>, <code>qt()</code>. What in the
+world are these? In the first, the “norm” in the function name refers to
+“normal”, that is, the <em>normal distribution</em>. The “t” in the
+second function name refers to the <em>t distribution</em>. A
+distribution is usually data organized from the smallest value to the
+largest. We’ll discuss distributions and probability in the next
+lesson.</p>
 <p>================================================================================</p>
 <div id="session-information" class="section level3">
 <h3>Session information:</h3>
 <p>Last update on 2020-10-19</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.1.2 (2021-11-01)
+<pre><code>## R version 4.2.1 (2022-06-23)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.04.3 LTS
+## Running under: Ubuntu 20.04.5 LTS
 ## 
 ## Matrix products: default
 ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
@@ -538,25 +610,25 @@ ci</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] ggplot2_3.3.5 dplyr_1.0.7  
+## [1] ggplot2_3.3.6 dplyr_1.0.10 
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] pillar_1.6.4      bslib_0.2.5.1     compiler_4.1.2    jquerylib_0.1.4  
-##  [5] highr_0.9         tools_4.1.2       digest_0.6.28     jsonlite_1.7.2   
-##  [9] evaluate_0.14     lifecycle_1.0.1   tibble_3.1.5      gtable_0.3.0     
-## [13] pkgconfig_2.0.3   rlang_0.4.12      DBI_1.1.1         yaml_2.2.1       
-## [17] xfun_0.27         withr_2.4.2       stringr_1.4.0     knitr_1.36       
-## [21] generics_0.1.1    vctrs_0.3.8       sass_0.4.0        grid_4.1.2       
-## [25] tidyselect_1.1.1  glue_1.4.2        R6_2.5.1          fansi_0.5.0      
-## [29] rmarkdown_2.9     farver_2.1.0      purrr_0.3.4       magrittr_2.0.1   
-## [33] scales_1.1.1      ellipsis_0.3.2    htmltools_0.5.1.1 assertthat_0.2.1 
-## [37] colorspace_2.0-2  labeling_0.4.2    utf8_1.2.2        stringi_1.7.5    
-## [41] munsell_0.5.0     crayon_1.4.2</code></pre>
+##  [1] pillar_1.8.1     bslib_0.4.0      compiler_4.2.1   jquerylib_0.1.4 
+##  [5] highr_0.9        tools_4.2.1      digest_0.6.29    jsonlite_1.8.0  
+##  [9] evaluate_0.16    lifecycle_1.0.1  tibble_3.1.8     gtable_0.3.0    
+## [13] pkgconfig_2.0.3  rlang_1.0.5      cli_3.3.0        DBI_1.1.2       
+## [17] rstudioapi_0.14  yaml_2.3.5       xfun_0.32        fastmap_1.1.0   
+## [21] withr_2.5.0      stringr_1.4.1    knitr_1.40       generics_0.1.3  
+## [25] vctrs_0.4.1      sass_0.4.2       grid_4.2.1       tidyselect_1.1.2
+## [29] glue_1.6.2       R6_2.5.1         fansi_1.0.3      rmarkdown_2.16  
+## [33] farver_2.1.0     purrr_0.3.4      magrittr_2.0.3   scales_1.2.0    
+## [37] htmltools_0.5.3  assertthat_0.2.1 colorspace_2.0-3 labeling_0.4.2  
+## [41] utf8_1.2.2       stringi_1.7.8    munsell_0.5.0    cachem_1.0.6</code></pre>
 <p>================================================================================</p>
 </div>
 </div>
 
-<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+<p>Copyright &copy; 2022 Dan C. Mann. All rights reserved.</p>
   
 
 

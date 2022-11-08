@@ -13,8 +13,8 @@
 
 <title>IntroR: Objects</title>
 
-<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="custom.css" type="text/css" />
 
 
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -140,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -235,7 +243,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -251,7 +259,7 @@ $(document).ready(function () {
   <a href="about.html">About</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fab fa-r-project"></span>
      
     R tutorials
@@ -286,7 +294,7 @@ $(document).ready(function () {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fas fa-chart-area"></span>
      
     Stats tutorials
@@ -314,6 +322,23 @@ $(document).ready(function () {
     </li>
   </ul>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-cogs"></span>
+     
+    Simulation tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="simulating_data_examples.html">Simulation templates</a>
+    </li>
+    <li>
+      <a href="data_sim_supp.html">Simulation supplement</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -333,32 +358,45 @@ $(document).ready(function () {
 
 <div id="iii.-objects" class="section level2">
 <h2>III. Objects</h2>
-<p>If you’ve worked in R you’ve probably received plenty of error messages that are super confusing. Sometimes those error messages occur because your data are stored as the wrong object type.</p>
-<p>Let’s look at two ways to store a range of numbers. In R, you can use the function <code>c()</code> to concatenate values. You can enter the numbers 1 through 10 by using two methods. A colon <code>:</code> is used for ranges with the first number being the smallest and the last the largest. You can also enter each value.</p>
+<p>If you’ve worked in R you’ve probably received plenty of error
+messages that are super confusing. Sometimes those error messages occur
+because your data are stored as the wrong object type.</p>
+<p>Let’s look at two ways to store a range of numbers. In R, you can use
+the function <code>c()</code> to concatenate values. You can enter the
+numbers 1 through 10 by using two methods. A colon <code>:</code> is
+used for ranges with the first number being the smallest and the last
+the largest. You can also enter each value.</p>
 <pre class="r"><code>x &lt;- c(1:10)
 y &lt;- c(1,2,3,4,5,6,7,8,9,10)
 x</code></pre>
 <pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
 <pre class="r"><code>y</code></pre>
 <pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
-<p>On the surface the objects <code>x</code> and <code>y</code> look the same. You can check if they are both numeric objects by using the function <code>is.numeric()</code></p>
+<p>On the surface the objects <code>x</code> and <code>y</code> look the
+same. You can check if they are both numeric objects by using the
+function <code>is.numeric()</code></p>
 <pre class="r"><code>is.numeric(x)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code>is.numeric(y)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
-<p>Both are numeric, however when you check if the two are exactly identical, we find that they are not!</p>
+<p>Both are numeric, however when you check if the two are exactly
+identical, we find that they are not!</p>
 <pre class="r"><code>identical(x^2, y^2)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code>identical(x + 0.5, y + 0.5)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code>identical(x, y)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
-<p>So what’s the deal? Well, the output of <code>:</code> is going to be an integer. Manually entering the numbers, however, gives you a floating point number (called a “double”)</p>
+<p>So what’s the deal? Well, the output of <code>:</code> is going to be
+an integer. Manually entering the numbers, however, gives you a floating
+point number (called a “double”)</p>
 <pre class="r"><code>typeof(x)</code></pre>
 <pre><code>## [1] &quot;integer&quot;</code></pre>
 <pre class="r"><code>typeof(y)</code></pre>
 <pre><code>## [1] &quot;double&quot;</code></pre>
-<p>For the most part, R is actually pretty good at dealing data being in the wrong format. However, it’s still not as good as a human and it will make mistakes.</p>
+<p>For the most part, R is actually pretty good at dealing data being in
+the wrong format. However, it’s still not as good as a human and it will
+make mistakes.</p>
 <p>So what are the different data types?</p>
 <ul>
 <li>1 dimensional data structure:
@@ -391,10 +429,15 @@ x</code></pre>
 </ul>
 <div id="a.-1d-structures" class="section level3">
 <h3>A. 1D structures</h3>
-<p>The one-dimensional structures are the basic building blocks which can be used to build the derived objects like data frames and matricies.</p>
+<p>The one-dimensional structures are the basic building blocks which
+can be used to build the derived objects like data frames and
+matricies.</p>
 <div id="i.-vectors" class="section level4">
 <h4>i. Vectors</h4>
-<p>This term can be a bit confusing, especially since R is used so much in statistics. The term does not have anything to do with the math term “vector”. Rather, in this context it essentially means a sequence of values. Contrast this with an “Null” object which has a length of 0.</p>
+<p>This term can be a bit confusing, especially since R is used so much
+in statistics. The term does not have anything to do with the math term
+“vector”. Rather, in this context it essentially means a sequence of
+values. Contrast this with an “Null” object which has a length of 0.</p>
 <pre class="r"><code>x &lt;- 1
 length(x)</code></pre>
 <pre><code>## [1] 1</code></pre>
@@ -423,8 +466,15 @@ length(x)</code></pre>
 </div>
 <div id="ii.-atomic-vectors-and-lists" class="section level4">
 <h4>ii. Atomic vectors and lists</h4>
-<p>There are two types of vectors: lists and atomic vectors. The main difference between these two object types is that atomic vectors are sequences of data which are all the same type. Lists can contain multiple types of data.</p>
-<p>There are four types of atomic vectors: logical, integer, double, and character. Logical are either <code>TRUE</code> or <code>FALSE</code> or <code>NA</code>. These are most often used in comparisons. Integer and double are both numeric, with the former containing integer data and the latter sequences of real numbers.</p>
+<p>There are two types of vectors: lists and atomic vectors. The main
+difference between these two object types is that atomic vectors are
+sequences of data which are all the same type. Lists can contain
+multiple types of data.</p>
+<p>There are four types of atomic vectors: logical, integer, double, and
+character. Logical are either <code>TRUE</code> or <code>FALSE</code> or
+<code>NA</code>. These are most often used in comparisons. Integer and
+double are both numeric, with the former containing integer data and the
+latter sequences of real numbers.</p>
 <pre class="r"><code>logical_vector &lt;- c(TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE)
 is.logical(logical_vector)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
@@ -443,7 +493,12 @@ x[1]</code></pre>
 </div>
 <div id="b.-2d-data-structures" class="section level3">
 <h3>B. 2D data structures</h3>
-<p>If you think about an excel data sheet, vectors would be one column of values. The number of rows is variable but you only have one column. Dataframes and matrices, however, are more similar to the excel datasheet in that they have columns as well. Dataframes are like lists in that they can have multiple data types (though each column can only be of one type). Matricies must have homogeneous data.</p>
+<p>If you think about an excel data sheet, vectors would be one column
+of values. The number of rows is variable but you only have one column.
+Dataframes and matrices, however, are more similar to the excel
+datasheet in that they have columns as well. Dataframes are like lists
+in that they can have multiple data types (though each column can only
+be of one type). Matricies must have homogeneous data.</p>
 <pre class="r"><code>df &lt;- data.frame(
   categorical = sample(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), size = 300, replace = T),
   double = rnorm(300, mean=200, sd=30),
@@ -453,21 +508,21 @@ x[1]</code></pre>
 
 head(df)</code></pre>
 <pre><code>##   categorical   double integer logical
-## 1           a 238.5850     116   FALSE
-## 2           c 127.6790     120    TRUE
-## 3           a 250.8613     103   FALSE
-## 4           c 198.4604     127    TRUE
-## 5           a 177.7706     115   FALSE
-## 6           a 171.9403     124    TRUE</code></pre>
+## 1           a 257.4975     139   FALSE
+## 2           a 236.6566     151    TRUE
+## 3           c 216.6820      99   FALSE
+## 4           b 229.8264     119   FALSE
+## 5           c 164.2863      92    TRUE
+## 6           b 188.1514     135    TRUE</code></pre>
 <p>================================================================================</p>
 </div>
 <div id="session-information" class="section level3">
 <h3>Session information:</h3>
 <p>Last update on 2020-10-14</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.1.2 (2021-11-01)
+<pre><code>## R version 4.2.1 (2022-06-23)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.04.3 LTS
+## Running under: Ubuntu 20.04.5 LTS
 ## 
 ## Matrix products: default
 ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
@@ -485,16 +540,17 @@ head(df)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] digest_0.6.28     R6_2.5.1          jsonlite_1.7.2    magrittr_2.0.1   
-##  [5] evaluate_0.14     rlang_0.4.12      stringi_1.7.5     jquerylib_0.1.4  
-##  [9] bslib_0.2.5.1     rmarkdown_2.9     tools_4.1.2       stringr_1.4.0    
-## [13] xfun_0.27         yaml_2.2.1        compiler_4.1.2    htmltools_0.5.1.1
-## [17] knitr_1.36        sass_0.4.0</code></pre>
+##  [1] digest_0.6.29   R6_2.5.1        jsonlite_1.8.0  magrittr_2.0.3 
+##  [5] evaluate_0.16   stringi_1.7.8   cachem_1.0.6    rlang_1.0.5    
+##  [9] cli_3.3.0       rstudioapi_0.14 jquerylib_0.1.4 bslib_0.4.0    
+## [13] rmarkdown_2.16  tools_4.2.1     stringr_1.4.1   xfun_0.32      
+## [17] yaml_2.3.5      fastmap_1.1.0   compiler_4.2.1  htmltools_0.5.3
+## [21] knitr_1.40      sass_0.4.2</code></pre>
 <p>================================================================================</p>
 </div>
 </div>
 
-<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+<p>Copyright &copy; 2022 Dan C. Mann. All rights reserved.</p>
   
 
 

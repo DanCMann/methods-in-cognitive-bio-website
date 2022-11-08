@@ -13,8 +13,8 @@
 
 <title>Sharing your work</title>
 
-<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -59,6 +59,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="custom.css" type="text/css" />
 
 
@@ -83,6 +84,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -140,11 +144,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -235,7 +243,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -251,7 +259,7 @@ $(document).ready(function () {
   <a href="about.html">About</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fab fa-r-project"></span>
      
     R tutorials
@@ -286,7 +294,7 @@ $(document).ready(function () {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fas fa-chart-area"></span>
      
     Stats tutorials
@@ -314,6 +322,23 @@ $(document).ready(function () {
     </li>
   </ul>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-cogs"></span>
+     
+    Simulation tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="simulating_data_examples.html">Simulation templates</a>
+    </li>
+    <li>
+      <a href="data_sim_supp.html">Simulation supplement</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -331,46 +356,90 @@ $(document).ready(function () {
 </div>
 
 
-<div id="collaboration-and-reproducible-research" class="section level1">
+<div id="collaboration-and-reproducible-research"
+class="section level1">
 <h1>Collaboration and reproducible research</h1>
-<p>In science, you will rarely work alone on a project (at least you shouldn’t). This is true whether you are an early career scientist or a senior researcher. Ideally, your collaborators will be present at every stage of project; this includes the data analysis stage. However, it’s often difficult to share what you are working on. A script is easy enough to share, but what good does it do without data? How can you get instructions that you wrote for your computer to work on someone else’s?</p>
+<p>In science, you will rarely work alone on a project (at least you
+shouldn’t). This is true whether you are an early career scientist or a
+senior researcher. Ideally, your collaborators will be present at every
+stage of project; this includes the data analysis stage. However, it’s
+often difficult to share what you are working on. A script is easy
+enough to share, but what good does it do without data? How can you get
+instructions that you wrote for your computer to work on someone
+else’s?</p>
 <div id="making-your-project-reproducible" class="section level2">
 <h2>Making your project reproducible</h2>
 <div id="r-projects" class="section level3">
 <h3>R projects</h3>
-<p>Since we’ve already covered this, I won’t discuss this topic so much.</p>
+<p>Since we’ve already covered this, I won’t discuss this topic so
+much.</p>
 <p>A few key reminders:</p>
 <ul>
-<li>The .Rproj file can serve as a shortcut to opening the project into R Studio</li>
-<li>R projects can help you organize the project structure (they’re not necessary to do this, though)</li>
-<li>R projects store settings - do you want to save your environment when closing? - do you want to start a session with a clean environment?</li>
+<li>The .Rproj file can serve as a shortcut to opening the project into
+R Studio</li>
+<li>R projects can help you organize the project structure (they’re not
+necessary to do this, though)</li>
+<li>R projects store settings - do you want to save your environment
+when closing? - do you want to start a session with a clean
+environment?</li>
 <li>Relative, not absolute, paths!!!</li>
 </ul>
 </div>
 <div id="set.seed" class="section level3">
 <h3><code>set.seed()</code></h3>
-<p>In short, the <code>set.seed()</code> function makes your code reproducible. So, if you include a seed in your code, any random process will produce the same output every time you run your script. And it should produce the same output on other computers, as well.</p>
-<p>You should include <code>set.seed()</code> if your script includes any random processes. What are some examples of random processes?</p>
+<p>In short, the <code>set.seed()</code> function makes your code
+reproducible. So, if you include a seed in your code, any random process
+will produce the same output every time you run your script. And it
+should produce the same output on other computers, as well.</p>
+<p>You should include <code>set.seed()</code> if your script includes
+any random processes. What are some examples of random processes?</p>
 <ul>
-<li><code>rnorm()</code>, <code>runif()</code>, <code>rpois()</code>, etc.</li>
+<li><code>rnorm()</code>, <code>runif()</code>, <code>rpois()</code>,
+etc.</li>
 <li><code>sample()</code></li>
 <li><code>subset()</code></li>
 </ul>
-<p>If you are unsure whether you should include <code>set.seed()</code> in your script, include it.</p>
+<p>If you are unsure whether you should include <code>set.seed()</code>
+in your script, include it.</p>
 <div class="tmi">
-<p><strong>TMI</strong>: Randomness is a tricky concept. True randomness is difficult to find. Most things that we think of as random are actually “pseudo-random”, i.e., fake random. In reality, these processes are “deterministic” - which means that they will produce the same result if given the same input. We think of them as random because we lack knowledge about the inputs.</p>
-<p>Computers are definitely deterministic. So, how do we get a deterministic machine to produce randomness? Well, we don’t. We get it to produce pseudo-randomness. They use complex algorithms to produce outputs that seem to be random. In reality, they are completely deterministic. The “seed” serves as the starting point.</p>
+<p><strong>TMI</strong>: Randomness is a tricky concept. True randomness
+is difficult to find. Most things that we think of as random are
+actually “pseudo-random”, i.e., fake random. In reality, these processes
+are “deterministic” - which means that they will produce the same result
+if given the same input. We think of them as random because we lack
+knowledge about the inputs.</p>
+<p>Computers are definitely deterministic. So, how do we get a
+deterministic machine to produce randomness? Well, we don’t. We get it
+to produce pseudo-randomness. They use complex algorithms to produce
+outputs that seem to be random. In reality, they are completely
+deterministic. The “seed” serves as the starting point.</p>
 </div>
 </div>
 <div id="commenting-your-code" class="section level3">
 <h3>Commenting your code</h3>
-<p>Comments are lines of code that are not evaluated by the computer but can be read by humans. You can use them to leave notes or explanations for anyone who reads your code (including future you). When you should write a comment is not an exact science (and some programmers don’t like them unless absolutely necessary). Essentially, you should leave a comment anytime you think something might be confusing or unclear. Ideally, they should be clear and concise - but this is a bit of a <a href="https://www.reddit.com/r/funny/comments/eccj2/how_to_draw_an_owl/">drawing the owl</a> recommendation. Commenting probably won’t be intuitive early on, but at this stage I would lean towards over-commenting rather than under-commenting (just don’t comment every line :) )</p>
-<p>In R, the computer doesn’t evaluate anything on a line that comes after the <code>#</code> symbol.</p>
+<p>Comments are lines of code that are not evaluated by the computer but
+can be read by humans. You can use them to leave notes or explanations
+for anyone who reads your code (including future you). When you should
+write a comment is not an exact science (and some programmers don’t like
+them unless absolutely necessary). Essentially, you should leave a
+comment anytime you think something might be confusing or unclear.
+Ideally, they should be clear and concise - but this is a bit of a <a
+href="https://www.reddit.com/r/funny/comments/eccj2/how_to_draw_an_owl/">drawing
+the owl</a> recommendation. Commenting probably won’t be intuitive early
+on, but at this stage I would lean towards over-commenting rather than
+under-commenting (just don’t comment every line :) )</p>
+<p>In R, the computer doesn’t evaluate anything on a line that comes
+after the <code>#</code> symbol.</p>
 </div>
 </div>
 <div id="saving-your-workspace" class="section level2">
 <h2>Saving your workspace</h2>
-<p>It is possible to save the objects that you create in your environment by using the function <code>save.image()</code>. Use the extension .RData in your file name and then you can easily reload your objects. You can set up R Studio to always save your workspace when it closes and then load the workspace/environment when you open the project (or even just R Studio).</p>
+<p>It is possible to save the objects that you create in your
+environment by using the function <code>save.image()</code>. Use the
+extension .RData in your file name and then you can easily reload your
+objects. You can set up R Studio to always save your workspace when it
+closes and then load the workspace/environment when you open the project
+(or even just R Studio).</p>
 <pre class="r"><code>x &lt;- &#39;some_variable&#39;
 variable_in_workspace &lt;- 6
 
@@ -383,19 +452,45 @@ rm(list=ls()) # remove all objects</code></pre>
 <pre class="r"><code>load(&quot;../data/workspace.RData&quot;)
 ls()</code></pre>
 <pre><code>## [1] &quot;variable_in_workspace&quot; &quot;x&quot;</code></pre>
-<p><em>NOTE</em>: I would recommend against saving your workspace unless you have a clear purpose for doing so. Early on in your R career you are likely to create a lot of objects that are not what you want or expect. People often don’t clean their environment and then save the workspace leading to messy environments that take up a ton of storage space. Also, a lot of early R users rely too much on previously created objects, oftentimes at the expense of scripts. If you don’t write everything in a script you can run into the problem of having an object where you have no idea how you created it. Maybe you can go back through your .Rhistory log, but this is tedious and time consuming.</p>
-<p>Even if you do write your code in a script, you will always make changes. Let’s say you decide to delete a line of code that creates an objects that you now realize is superfluous. If you save everything in a script and don’t save the workspace, then you don’t have to worry about that object ever again. If, however, you save and load the workspace every session, the object is still there. Maybe this isn’t a big deal and only has the effect of taking up a small amount of memory space. BUT you run the risk of getting weird errors that are hard to track down.</p>
-<p>For example, let’s say that you accidentally use that variable name somewhere in the script. Small typos happen like this all the time. If that object is still in your workspace, R will use it. If you are lucky, something weird will happen that makes you go back through your code. If you are not lucky, you may end up never catching the mistake and producing false results.</p>
+<p><em>NOTE</em>: I would recommend against saving your workspace unless
+you have a clear purpose for doing so. Early on in your R career you are
+likely to create a lot of objects that are not what you want or expect.
+People often don’t clean their environment and then save the workspace
+leading to messy environments that take up a ton of storage space. Also,
+a lot of early R users rely too much on previously created objects,
+oftentimes at the expense of scripts. If you don’t write everything in a
+script you can run into the problem of having an object where you have
+no idea how you created it. Maybe you can go back through your .Rhistory
+log, but this is tedious and time consuming.</p>
+<p>Even if you do write your code in a script, you will always make
+changes. Let’s say you decide to delete a line of code that creates an
+objects that you now realize is superfluous. If you save everything in a
+script and don’t save the workspace, then you don’t have to worry about
+that object ever again. If, however, you save and load the workspace
+every session, the object is still there. Maybe this isn’t a big deal
+and only has the effect of taking up a small amount of memory space. BUT
+you run the risk of getting weird errors that are hard to track
+down.</p>
+<p>For example, let’s say that you accidentally use that variable name
+somewhere in the script. Small typos happen like this all the time. If
+that object is still in your workspace, R will use it. If you are lucky,
+something weird will happen that makes you go back through your code. If
+you are not lucky, you may end up never catching the mistake and
+producing false results.</p>
 <pre class="r"><code>## line of code in previous version of script
 pop_usa &lt;- c(4, 3, 4, 2, 3, 1)</code></pre>
-<p>Workspace loaded on start up. Object <code>pop_usa</code> is still in environment. During your R career, you will make typos and you will use the wrong variable names.</p>
+<p>Workspace loaded on start up. Object <code>pop_usa</code> is still in
+environment. During your R career, you will make typos and you will use
+the wrong variable names.</p>
 <pre class="r"><code>pop_aus &lt;- c(8, 7, 9, 3, 5, 8)
 
 ## typo using old variable name
 mean_aus &lt;- mean(pop_usa)
 mean_aus</code></pre>
 <pre><code>## [1] 2.833333</code></pre>
-<p>But, if the variable doesn’t exist, R will help you out and throw you an error message. That’s a pretty easy mistake to track down and correct.</p>
+<p>But, if the variable doesn’t exist, R will help you out and throw you
+an error message. That’s a pretty easy mistake to track down and
+correct.</p>
 <p>Clean workspace</p>
 <pre class="r"><code>rm(pop_usa, mean_aus, pop_aus)</code></pre>
 <pre class="r"><code>pop_aus &lt;- c(8, 7, 9, 3, 5, 8)
@@ -405,99 +500,214 @@ mean_aus &lt;- mean(pop_usa)</code></pre>
 <pre><code>## Error in mean(pop_usa): object &#39;pop_usa&#39; not found</code></pre>
 <pre class="r"><code>mean_aus</code></pre>
 <pre><code>## Error in eval(expr, envir, enclos): object &#39;mean_aus&#39; not found</code></pre>
-<p>You never like to see an error message, but it’s preferable to having an error and not seeing one.</p>
-<p>Furthermore, it’s entirely possible that you may reuse the variable name. If everything goes according to plan then, great! But what if your new line of code doesn’t work?</p>
+<p>You never like to see an error message, but it’s preferable to having
+an error and not seeing one.</p>
+<p>Furthermore, it’s entirely possible that you may reuse the variable
+name. If everything goes according to plan then, great! But what if your
+new line of code doesn’t work?</p>
 <pre class="r"><code>## line of code in previous version of script
 pop_usa &lt;- c(4, 3, 4, 2, 3, 1)</code></pre>
-<p>Workspace loaded on start up. Object <code>pop_usa</code> is still in environment.</p>
+<p>Workspace loaded on start up. Object <code>pop_usa</code> is still in
+environment.</p>
 <pre class="r"><code>## reusing variable name with typo
 pop_usa &lt;- c(4, 3, 4, 2, , 4)</code></pre>
 <pre><code>## Error in c(4, 3, 4, 2, , 4): argument 5 is empty</code></pre>
 <pre class="r"><code>mean(pop_usa)</code></pre>
 <pre><code>## [1] 2.833333</code></pre>
-<p>Because there was an error, the previous data was not overridden in the <code>pop_usa</code> object. Because we only have a few lines of code, it’s clear that there is an error. But most scripts will be much longer and complex. With multiple warnings and messages it’s easy to overlook the important error message. If the object doesn’t exist, however, the script will fail allowing you to more easily diagnose the problem.</p>
+<p>Because there was an error, the previous data was not overridden in
+the <code>pop_usa</code> object. Because we only have a few lines of
+code, it’s clear that there is an error. But most scripts will be much
+longer and complex. With multiple warnings and messages it’s easy to
+overlook the important error message. If the object doesn’t exist,
+however, the script will fail allowing you to more easily diagnose the
+problem.</p>
 <p>When should you save your workspace?</p>
-<p>The clearest case is when you have a process that takes a lot of time. For example, some complex models may take days to run. You definitely don’t want to re-run the model. So, there is a benefit to saving.</p>
-<p>It’s also useful once you’ve completed a project or completed an important stage of the project. So, maybe you have a script that processes raw data into a well-organized data frame or data frames. In next step you will analyze the data but re-running the data processing part every time you open the project is a bit annoying. Essentially, you want to save the output of code that you don’t plan on modifying again. Of course, this doesn’t mean that you can’t modify it at some point (and more than likely, you will still have modify the code at some point), but you should think of it as a clear and well-defined stage in the project process rather than something habitual. This means that you should include the <code>save.image()</code> and <code>load()</code> functions as part of the script.</p>
-<p>You can also save the workspace to make collaborating or getting feedback easier. If you have a question about a component of your project, it may be easier to include an .RData file that has your workspace and then the small bit of code that you are interested in.</p>
+<p>The clearest case is when you have a process that takes a lot of
+time. For example, some complex models may take days to run. You
+definitely don’t want to re-run the model. So, there is a benefit to
+saving.</p>
+<p>It’s also useful once you’ve completed a project or completed an
+important stage of the project. So, maybe you have a script that
+processes raw data into a well-organized data frame or data frames. In
+next step you will analyze the data but re-running the data processing
+part every time you open the project is a bit annoying. Essentially, you
+want to save the output of code that you don’t plan on modifying again.
+Of course, this doesn’t mean that you can’t modify it at some point (and
+more than likely, you will still have modify the code at some point),
+but you should think of it as a clear and well-defined stage in the
+project process rather than something habitual. This means that you
+should include the <code>save.image()</code> and <code>load()</code>
+functions as part of the script.</p>
+<p>You can also save the workspace to make collaborating or getting
+feedback easier. If you have a question about a component of your
+project, it may be easier to include an .RData file that has your
+workspace and then the small bit of code that you are interested in.</p>
 </div>
 <div id="sharing-with-collaborators" class="section level2">
 <h2>Sharing with collaborators</h2>
-<p>So, that brings us to the crucial question. How do you share your R projects, R scripts, data, etc with collaborators?</p>
+<p>So, that brings us to the crucial question. How do you share your R
+projects, R scripts, data, etc with collaborators?</p>
 <div id="email" class="section level3">
 <h3>Email</h3>
-<p>The easiest way is via email. If you are using an R project, find the folder where the .Rproj file is saved. Even if you aren’t using an R project, you should have a project folder with some organizational structure. Compress the main folder into a zip file. Both Windows and Macs allow you to compress folders by right clicking and selecting the compress option (for Windows 10 it’s Right click &gt; Send to &gt; Compressed (zipped) folder, on a Mac it’s Right click &gt; Compress).</p>
+<p>The easiest way is via email. If you are using an R project, find the
+folder where the .Rproj file is saved. Even if you aren’t using an R
+project, you should have a project folder with some organizational
+structure. Compress the main folder into a zip file. Both Windows and
+Macs allow you to compress folders by right clicking and selecting the
+compress option (for Windows 10 it’s Right click &gt; Send to &gt;
+Compressed (zipped) folder, on a Mac it’s Right click &gt;
+Compress).</p>
 <div class="figure">
 <img src="images/zipping_img.PNG" alt="" />
 <p class="caption"><em>Zipping a file in Windows 10.</em></p>
 </div>
-<p>Zipping will maintain the structure of your project folder. Your collaborator can then unzip the files and have access to your project code and data by opening the .Rproj file in R Studio. If they don’t use R Studio they will still have access to your scripts, data, and saved workspaces.</p>
+<p>Zipping will maintain the structure of your project folder. Your
+collaborator can then unzip the files and have access to your project
+code and data by opening the .Rproj file in R Studio. If they don’t use
+R Studio they will still have access to your scripts, data, and saved
+workspaces.</p>
 </div>
 <div id="file-storage" class="section level3">
 <h3>File storage</h3>
-<p>ucloud, Dropbox, Microsoft OneDrive, Google Drive, etc. allow you save and share your project documents.</p>
+<p>ucloud, Dropbox, Microsoft OneDrive, Google Drive, etc. allow you
+save and share your project documents.</p>
 </div>
 <div id="version-control" class="section level3">
 <h3>Version control</h3>
-<p>File hosting and sending links are helpful, but if multiple people are actively working on a project, you may run into file conflicts. You also often grow a large number of past version.</p>
+<p>File hosting and sending links are helpful, but if multiple people
+are actively working on a project, you may run into file conflicts. You
+also often grow a large number of past version.</p>
 <div class="figure">
 <img src="images/phd101212s.gif" alt="" />
-<p class="caption"><em>notFinal.doc from the web comic phdcomics</em></p>
+<p class="caption"><em>notFinal.doc from the web comic
+phdcomics</em></p>
 </div>
-<p>Programs like Git and hosting platforms like Github can streamline collaborative work and help researchers document project changes. We don’t have enough time to go into great detail, but I’ll introduce you to the core concepts.</p>
+<p>Programs like Git and hosting platforms like Github can streamline
+collaborative work and help researchers document project changes. We
+don’t have enough time to go into great detail, but I’ll introduce you
+to the core concepts.</p>
 <div id="git" class="section level4">
 <h4>Git</h4>
-<p><a href="https://git-scm.com">Git</a> is a version control system. A version control system tracks changes of a project across time. With Git you can always return to a previous version of the project so if something goes wrong, you can always return to a stable version. For collaborative research this is extremely helpful because it allows researchers to log changes to a project while maintaining clear organizational structure. Git also helps researchers work independently and test their ideas without disturbing the main documents in the project. Git keeps a log of changes to a project, who made changes, and when the changes were made. So, researchers can work simultaneously while minimizing redundancy.</p>
+<p><a href="https://git-scm.com">Git</a> is a version control system. A
+version control system tracks changes of a project across time. With Git
+you can always return to a previous version of the project so if
+something goes wrong, you can always return to a stable version. For
+collaborative research this is extremely helpful because it allows
+researchers to log changes to a project while maintaining clear
+organizational structure. Git also helps researchers work independently
+and test their ideas without disturbing the main documents in the
+project. Git keeps a log of changes to a project, who made changes, and
+when the changes were made. So, researchers can work simultaneously
+while minimizing redundancy.</p>
 <div class="figure">
 <img src="images/git.jpg" alt="" />
 <p class="caption"><em>Git branching. Image from Puia Zahedi</em></p>
 </div>
-<p>Git allows you to log changes by using <strong>commits</strong>. You can test ideas and make changes to the project just like normal, but they won’t become part of the project until you commit the changes (new files, modified files, deletions, etc). You can also create a <strong>branch</strong>. A branch creates a copy of the project at that time (almost like a parallel universe branch off). You can then work on that side branch without disturbing the main branch. If you decide to keep what you were working on, then you can <strong>merge</strong> the side branch and the main branch together. You can do all of this, even on a project that doesn’t have collaborators. In fact, Git deal with a project locally (on your computer). In order to work collaboratively with Git, you need someway to share your files.</p>
+<p>Git allows you to log changes by using <strong>commits</strong>. You
+can test ideas and make changes to the project just like normal, but
+they won’t become part of the project until you commit the changes (new
+files, modified files, deletions, etc). You can also create a
+<strong>branch</strong>. A branch creates a copy of the project at that
+time (almost like a parallel universe branch off). You can then work on
+that side branch without disturbing the main branch. If you decide to
+keep what you were working on, then you can <strong>merge</strong> the
+side branch and the main branch together. You can do all of this, even
+on a project that doesn’t have collaborators. In fact, Git deal with a
+project locally (on your computer). In order to work collaboratively
+with Git, you need someway to share your files.</p>
 </div>
 <div id="github" class="section level4">
 <h4>Github</h4>
-<p><a href="https://github.com">Github</a> is file hosting site that is built to work with Git. You can download projects, modify them on your computer, and request that the repository (the project) owner accept your changes.</p>
+<p><a href="https://github.com">Github</a> is file hosting site that is
+built to work with Git. You can download projects, modify them on your
+computer, and request that the repository (the project) owner accept
+your changes.</p>
 </div>
 </div>
 </div>
 <div id="r-markdown" class="section level2">
 <h2>R Markdown</h2>
-<p>R Markdown is a document format that allows you to combine code, the output of the code, and text. You can use R Markdown to create notebooks which allow you to run code. You can also compile the R Markdown document into a html, word, or pdf file so that you can show your code and code output, mathematical formulas, and text all in one place (without having to copy and paste).</p>
-<p>You can use R Markdown files to create a report for your collaborators, adviser, or lab that demonstrates each step in your analysis, the code you used, and your results.</p>
-<p>You can also use it as a notebook for yourself. An R script only has code and your comments. In the learning process you might want to try some functions and document what they do or how they behave under certain condition. You can put comments into an R script, but an R markdown file allows you to actually see the output of the code.</p>
-<p>If you are using R studio, you already have R Markdown installed. To create an R Markdown file go to: <code>File &gt; New File &gt; R Markdown...</code>. A dialog box will open where you can select your output format.</p>
+<p>R Markdown is a document format that allows you to combine code, the
+output of the code, and text. You can use R Markdown to create notebooks
+which allow you to run code. You can also compile the R Markdown
+document into a html, word, or pdf file so that you can show your code
+and code output, mathematical formulas, and text all in one place
+(without having to copy and paste).</p>
+<p>You can use R Markdown files to create a report for your
+collaborators, adviser, or lab that demonstrates each step in your
+analysis, the code you used, and your results.</p>
+<p>You can also use it as a notebook for yourself. An R script only has
+code and your comments. In the learning process you might want to try
+some functions and document what they do or how they behave under
+certain condition. You can put comments into an R script, but an R
+markdown file allows you to actually see the output of the code.</p>
+<p>If you are using R studio, you already have R Markdown installed. To
+create an R Markdown file go to:
+<code>File &gt; New File &gt; R Markdown...</code>. A dialog box will
+open where you can select your output format.</p>
 </div>
 <div id="asking-questions" class="section level2">
 <h2>Asking questions</h2>
-<p>You can always ask questions on forums like <a href="https://stackoverflow.com">Stack Overflow</a> and <a href="https://stats.stackexchange.com">Cross Validated</a>. Both are part of the <a href="https://stackexchange.com">Stack Exchange</a> network. These are open communities where users can ask and answer questions related to coding (Stack Overflow) or statistics (Cross Validated). Some members can be… um… a bit prickly, but if you adhere to the community guidelines you will be fine. For the most part, you will likely not even need to ask a question because it’s likely already been asked and answered. In fact, one reason that people get upset on these sites is if someone asks a question that has already been answered. If you do ask a question, make sure that you give the community enough information to be able to reproduce your problem. This is known as a <strong>minimal reproducible example (MRE)</strong>. An MRE includes:</p>
+<p>You can always ask questions on forums like <a
+href="https://stackoverflow.com">Stack Overflow</a> and <a
+href="https://stats.stackexchange.com">Cross Validated</a>. Both are
+part of the <a href="https://stackexchange.com">Stack Exchange</a>
+network. These are open communities where users can ask and answer
+questions related to coding (Stack Overflow) or statistics (Cross
+Validated). Some members can be… um… a bit prickly, but if you adhere to
+the community guidelines you will be fine. For the most part, you will
+likely not even need to ask a question because it’s likely already been
+asked and answered. In fact, one reason that people get upset on these
+sites is if someone asks a question that has already been answered. If
+you do ask a question, make sure that you give the community enough
+information to be able to reproduce your problem. This is known as a
+<strong>minimal reproducible example (MRE)</strong>. An MRE
+includes:</p>
 <ul>
-<li>data, preferably a small subset, that can be used to reproduce the error</li>
+<li>data, preferably a small subset, that can be used to reproduce the
+error</li>
 <li>script or bit of code that’s giving your problems</li>
-<li>information on the R version, any packages used, the operating system (mac, windows 10, etc.) + you can easily get this information by using the function <code>sessionInfo()</code></li>
+<li>information on the R version, any packages used, the operating
+system (mac, windows 10, etc.) + you can easily get this information by
+using the function <code>sessionInfo()</code></li>
 <li>value used in in set.seed() (if any)</li>
 </ul>
 <p>Websites for R:</p>
 <ul>
-<li>R-bloggers: <a href="https://www.r-bloggers.com" class="uri">https://www.r-bloggers.com</a></li>
-<li>Cookbook for R: <a href="http://www.cookbook-r.com" class="uri">http://www.cookbook-r.com</a></li>
-<li>Quick-R: <a href="https://www.statmethods.net" class="uri">https://www.statmethods.net</a></li>
-<li><strong>R for Data Science</strong> by Hadley Wickham &amp; Garret Grolemund: <a href="https://r4ds.had.co.nz" class="uri">https://r4ds.had.co.nz</a></li>
-<li><strong>Advanced R</strong> by Hadley Wickham: <a href="https://adv-r.hadley.nz" class="uri">https://adv-r.hadley.nz</a></li>
+<li>R-bloggers: <a href="https://www.r-bloggers.com"
+class="uri">https://www.r-bloggers.com</a></li>
+<li>Cookbook for R: <a href="http://www.cookbook-r.com"
+class="uri">http://www.cookbook-r.com</a></li>
+<li>Quick-R: <a href="https://www.statmethods.net"
+class="uri">https://www.statmethods.net</a></li>
+<li><strong>R for Data Science</strong> by Hadley Wickham &amp; Garret
+Grolemund: <a href="https://r4ds.had.co.nz"
+class="uri">https://r4ds.had.co.nz</a></li>
+<li><strong>Advanced R</strong> by Hadley Wickham: <a
+href="https://adv-r.hadley.nz"
+class="uri">https://adv-r.hadley.nz</a></li>
 </ul>
 <p>Websites for Stats:</p>
 <ul>
-<li><strong>Applied Statistics with R</strong> by David Dalpiaz: <a href="https://daviddalpiaz.github.io/appliedstats/" class="uri">https://daviddalpiaz.github.io/appliedstats/</a></li>
-<li>Visualizing Statistics, University of British Columbia: <a href="https://www.zoology.ubc.ca/~whitlock/Kingfisher/KFhomepage.htm" class="uri">https://www.zoology.ubc.ca/~whitlock/Kingfisher/KFhomepage.htm</a></li>
-<li><strong>Introduction to Statistics using R</strong> by Tom Booth, Anastasia Ushakova, &amp; Milan Valasek: <a href="https://bookdown.org/animestina/intro_stats_rms/" class="uri">https://bookdown.org/animestina/intro_stats_rms/</a></li>
+<li><strong>Applied Statistics with R</strong> by David Dalpiaz: <a
+href="https://daviddalpiaz.github.io/appliedstats/"
+class="uri">https://daviddalpiaz.github.io/appliedstats/</a></li>
+<li>Visualizing Statistics, University of British Columbia: <a
+href="https://www.zoology.ubc.ca/~whitlock/Kingfisher/KFhomepage.htm"
+class="uri">https://www.zoology.ubc.ca/~whitlock/Kingfisher/KFhomepage.htm</a></li>
+<li><strong>Introduction to Statistics using R</strong> by Tom Booth,
+Anastasia Ushakova, &amp; Milan Valasek: <a
+href="https://bookdown.org/animestina/intro_stats_rms/"
+class="uri">https://bookdown.org/animestina/intro_stats_rms/</a></li>
 </ul>
 <p>================================================================================</p>
 <div id="session-information" class="section level3">
 <h3>Session information:</h3>
 <p>Last update on 2021-01-09</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.1.2 (2021-11-01)
+<pre><code>## R version 4.2.1 (2022-06-23)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 20.04.3 LTS
+## Running under: Ubuntu 20.04.5 LTS
 ## 
 ## Matrix products: default
 ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
@@ -515,17 +725,18 @@ pop_usa &lt;- c(4, 3, 4, 2, , 4)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] digest_0.6.28     R6_2.5.1          jsonlite_1.7.2    magrittr_2.0.1   
-##  [5] evaluate_0.14     rlang_0.4.12      stringi_1.7.5     jquerylib_0.1.4  
-##  [9] bslib_0.2.5.1     rmarkdown_2.9     tools_4.1.2       stringr_1.4.0    
-## [13] xfun_0.27         yaml_2.2.1        compiler_4.1.2    htmltools_0.5.1.1
-## [17] knitr_1.36        sass_0.4.0</code></pre>
+##  [1] digest_0.6.29   R6_2.5.1        jsonlite_1.8.0  magrittr_2.0.3 
+##  [5] evaluate_0.16   stringi_1.7.8   cachem_1.0.6    rlang_1.0.5    
+##  [9] cli_3.3.0       rstudioapi_0.14 jquerylib_0.1.4 bslib_0.4.0    
+## [13] rmarkdown_2.16  tools_4.2.1     stringr_1.4.1   xfun_0.32      
+## [17] yaml_2.3.5      fastmap_1.1.0   compiler_4.2.1  htmltools_0.5.3
+## [21] knitr_1.40      sass_0.4.2</code></pre>
 <p>================================================================================</p>
 </div>
 </div>
 </div>
 
-<p>Copyright &copy; 2021 Dan C. Mann. All rights reserved.</p>
+<p>Copyright &copy; 2022 Dan C. Mann. All rights reserved.</p>
   
 
 
