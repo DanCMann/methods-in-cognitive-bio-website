@@ -362,7 +362,9 @@ $(document).ready(function () {
 class="section level2">
 <h2>Introduction: The importance of visualizing data</h2>
 <p>In this class, we’ll learn how to use the package
-<code>ggplot2</code> to visualize your data.</p>
+<code>ggplot2</code> to visualize your data. In addition to this
+document, there are a ton of resources to help you learn and understand
+ggplot. Some are linked in this document.</p>
 <pre class="r"><code>library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -671,13 +673,13 @@ parameter). <code>mapping</code> usually takes the function
 <code>aes</code> as an argument. “aes” is short for “aesthetic”; this
 function takes the variables you want to visualize.</p>
 <pre class="r"><code>ggplot(data = set1_data, mapping = aes(x = x, y = y))</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/anscombe.set1.plot.base-1.png" width="672" /></p>
 <p>To add the actual data points, you have to add another layer over the
 base layer. Functions that start with <code>geom_</code> are usually
 used to plot the data.</p>
 <pre class="r"><code>ggplot(data = set1_data, aes(x = x, y = y))+
   geom_point()</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/anscombe.set1.plot.points-1.png" width="672" /></p>
 <p>The data set that we passed to the <code>data</code> parameter
 doesn’t have the information on the model, so we have to add this
 information. For a linear model, we are most interested in the
@@ -757,7 +759,7 @@ call.</p>
 <pre class="r"><code>ggplot(data = set1_data, aes(x = x, y = y))+
   geom_point()+
   geom_abline(slope = slopex, intercept = intercept)</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/anscombe.set1.plot.regress-1.png" width="672" /></p>
 <p>This looks like a pretty decent fit.</p>
 <div class="tmi">
 <p><svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:3em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M476.8 126.3c-4.1 1.1-8.4 1.7-12.8 1.7c-26.5 0-48-21-48-47c0-5 1.8-11.3 4.6-18.1c.3-.7 .6-1.4 .9-2.1c9-20.2 26.5-44.9 36-57.5c3.2-4.4 9.6-4.4 12.8 0C483.4 20.6 512 61 512 81c0 21.7-14.9 39.8-35.2 45.3zM256 0c51.4 0 99.3 15.2 139.4 41.2c-1.5 3.1-3 6.2-4.3 9.3c-3.4 8-7.1 19-7.1 30.5c0 44.3 36.6 79 80 79c9.6 0 18.8-1.7 27.4-4.8c13.3 30.9 20.6 65 20.6 100.8c0 141.4-114.6 256-256 256S0 397.4 0 256S114.6 0 256 0zM383.8 317.8C345.3 329.4 301.9 336 256 336s-89.3-6.6-127.8-18.2c-12.3-3.7-24.3 7-19.2 18.7c24.5 56.9 81.1 96.7 147 96.7s122.5-39.8 147-96.7c5.1-11.8-6.9-22.4-19.2-18.7zm-166.2-89l0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C126.7 188.4 120 206.1 120 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0 0 0zm160 0l0 0 0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C286.7 188.4 280 206.1 280 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0z"/></svg>
@@ -867,12 +869,12 @@ suggested that they were the same.</p>
   geom_point() +
   facet_wrap(~set) # a ggplot2 function that allows multi-panel plots
 ans_plot</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/anscombe.plot.all-1.png" width="672" /></p>
 <p>These data look pretty distinct. If we add a regression line (slope
 and intercept), we see that the lines are the same.</p>
 <pre class="r"><code>ans_plot +
    geom_smooth(formula = y ~ x, method = &quot;lm&quot;, se = FALSE, data = anscombe) # ggplot2 even has some modelling functions; these are good for doing quick exploratory work but I wouldn&#39;t rely on them too much</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/anscombe.plot.all.regress-1.png" width="672" /></p>
 <p>You should always plot your data! Linear regression, the mean, the
 median, standard deviation, etc are all models and, as such, necessarily
 simplify your data. Plotting can help you better understand if that
@@ -994,7 +996,7 @@ argument for your data, <code>data =</code> and an aesthetic argument
 <code>aes()</code>. Within the <code>aes()</code> argument, you will
 specify the data that you want to visualize.</p>
 <pre class="r"><code>ggplot(data = starwars, aes(x = height, y = mass))</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/starwars.plot.base-1.png" width="672" /></p>
 <p>You’ll notice that there are axis labels and the ranges match with
 our data but the data doesn’t appear in the plot. If you subset the
 data, you’ll notice that the ranges change (the data still doesn’t
@@ -1004,7 +1006,7 @@ show).</p>
   filter(species == &quot;Human&quot;)
 
 ggplot(data = sw_human_data, aes(x = height, y = mass))</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhumans.plot_base-1.png" width="672" /></p>
 <p>The data does not appear because <code>ggplot2</code> does not assume
 the type of plot you want, so you must specify this information. You can
 do this by using the operator <code>+</code> and functions which usually
@@ -1014,16 +1016,16 @@ for a histogram <code>geom_histogram()</code>.</p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
   geom_point()</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.multiple-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_boxplot()</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-37-2.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.multiple-2.png" width="672" /></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height)) + 
   geom_histogram()</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-37-3.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.multiple-3.png" width="672" /></p>
 <p>(Note: There are NAs in this data set. <code>ggplot2</code> will
 remove them by default but produces a warning message - “removed n rows
 containing non-finite values”; “removed n rows containing missing
@@ -1041,21 +1043,21 @@ plots. Let’s start with some scatter plots.</p>
   geom_point() +
   labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.labels-1.png" width="672" /></p>
 <p>We can also modify how the points appear by adjusting the parameters
 in <code>geom_point()</code></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
   geom_point(size = 5, shape = 17, color = &quot;red&quot;) +
   labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhumans.plot.color-1.png" width="672" /></p>
 <p>What if we want to look at how height and mass break down by
 group?</p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
   geom_point(size = 5) +
   labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.color_group-1.png" width="672" /></p>
 <p>There are two important things to note about this plot.</p>
 <p>First, compare how we specified the point colors in this plot vs the
 one preceding it. In the first, color is specified in the
@@ -1075,13 +1077,13 @@ geom-data mapping.</p>
   geom_point(size = 5) +
   labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.shape_group-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass, size = eye_color)) + 
   geom_point() +
   labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Using size for a discrete variable is not advised.</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.size_group-1.png" width="672" /></p>
 <div class="question">
 <p><svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:3em;width:2.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M192 0c-41.8 0-77.4 26.7-90.5 64H64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H282.5C269.4 26.7 233.8 0 192 0zm0 128c-17.7 0-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32zM105.8 229.3c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L216 328.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V314.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H158.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 416c0 17.7-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32z"/></svg>
 <strong>Check your understanding</strong></p>
@@ -1099,7 +1101,7 @@ different in the geom layers.</p>
   geom_point(aes(color = eye_color), size = 5) +
   labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-43-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.point_layer_color-1.png" width="672" /></p>
 <p>The second thing you should note about the plot, is that it’s pretty
 confusing The colors in the plot don’t match the eye color. While this
 probably won’t be a problem you encounter often, specifying colors
@@ -1118,15 +1120,15 @@ class="uri">http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf</a>”</p>
 <strong>TMI</strong></p>
 <p>Note: No need to worry too much about ‘hexadecimal’. If you are
 interested, it is a base-16 numerical system. Each color is represented
-by a hashtag followed 6 characters; 2 for red, 2 for green, and 2 for
-blue. …</p>
+by a hashtag followed by 6 characters; 2 characters representing the
+amount of red, 2 for green, and 2 for blue.</p>
 </div>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
   geom_point(size = 5) +
   scale_color_manual(values = c(&quot;blue&quot;, &quot;lightblue&quot;, &quot;tan&quot;, &quot;tan4&quot;, &quot;forestgreen&quot;, &quot;yellow&quot;)) +
   labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.scale_color_manual-1.png" width="672" /></p>
 <p>You can also change the colors without specifying colors manually.
 This is useful if you don’t need to specify exactly which colors go with
 with group, but you need a different color palette than the default. By
@@ -1153,14 +1155,14 @@ palette is color-blind friendly or not.</p>
   scale_colour_brewer(palette = &quot;RdYlBu&quot;) +
   labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.scale_color_brewer-1.png" width="672" /></p>
 <p>What happens if you have an outlier?</p>
 <pre class="r"><code>ggplot(data = starwars, aes(x = height, y = mass)) + 
   geom_point(size = 2) +
   scale_colour_brewer(palette = &quot;RdYlBu&quot;) +
   labs(title = &quot;Height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 28 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/starwars.plot.outlier-1.png" width="672" /></p>
 <p>You can change the axes on your plot. However, be careful, some
 methods could have unintended consequences. Let’s look at an
 example:</p>
@@ -1171,7 +1173,7 @@ example:</p>
   ylim(c(0,200)) +
   xlim(c(0,250))</code></pre>
 <pre><code>## Warning: Removed 29 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/starwars.plot.xylim-1.png" width="672" /></p>
 <p>If we remove the really heavy individual, we can see the height-mass
 relationship a bit better. We can apply a data smoothing function that
 will give you a linear regression line with confidence intervals.</p>
@@ -1185,7 +1187,7 @@ will give you a linear regression line with confidence intervals.</p>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <pre><code>## Warning: Removed 29 rows containing non-finite values (stat_smooth).</code></pre>
 <pre><code>## Warning: Removed 29 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/starwars.plot.xylim_regress-1.png" width="672" /></p>
 <p>However, the model only applies the linear model calculation to the
 data points that actually appear. If we use
 <code>coord_cartesian()</code> around <code>xlim()</code> and
@@ -1200,7 +1202,7 @@ data points that actually appear. If we use
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <pre><code>## Warning: Removed 28 rows containing non-finite values (stat_smooth).</code></pre>
 <pre><code>## Warning: Removed 28 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/starwars.plot.xylim_coord_cartesian_regress-1.png" width="672" /></p>
 <p>Notice how the slope and intercept are different in the two plots and
 the grey area (the confidence interval) is much larger in the second
 plot. The function <code>coord_cartesian()</code> calculates based on
@@ -1219,7 +1221,7 @@ ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   annotate(&quot;text&quot;, x = 2, y = median_human_height_gender[&#39;feminine&#39;], label = &quot;median female height&quot;, angle = 345, hjust = 1, vjust = 5)+
   annotate(&quot;text&quot;, x = 1, y = median_human_height_gender[&#39;masculine&#39;], label = &quot;median male height&quot;, angle = 345, hjust = -0.5, vjust = 0)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.gender_height-1.png" width="672" /></p>
 <div class="tmi">
 <p><svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:3em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M476.8 126.3c-4.1 1.1-8.4 1.7-12.8 1.7c-26.5 0-48-21-48-47c0-5 1.8-11.3 4.6-18.1c.3-.7 .6-1.4 .9-2.1c9-20.2 26.5-44.9 36-57.5c3.2-4.4 9.6-4.4 12.8 0C483.4 20.6 512 61 512 81c0 21.7-14.9 39.8-35.2 45.3zM256 0c51.4 0 99.3 15.2 139.4 41.2c-1.5 3.1-3 6.2-4.3 9.3c-3.4 8-7.1 19-7.1 30.5c0 44.3 36.6 79 80 79c9.6 0 18.8-1.7 27.4-4.8c13.3 30.9 20.6 65 20.6 100.8c0 141.4-114.6 256-256 256S0 397.4 0 256S114.6 0 256 0zM383.8 317.8C345.3 329.4 301.9 336 256 336s-89.3-6.6-127.8-18.2c-12.3-3.7-24.3 7-19.2 18.7c24.5 56.9 81.1 96.7 147 96.7s122.5-39.8 147-96.7c5.1-11.8-6.9-22.4-19.2-18.7zm-166.2-89l0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C126.7 188.4 120 206.1 120 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0 0 0zm160 0l0 0 0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C286.7 188.4 280 206.1 280 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0z"/></svg>
 <strong>TMI</strong></p>
@@ -1271,7 +1273,7 @@ ggplot(data = starwars, aes(x = height, y = mass)) +
   theme_classic() # using pre-defined themes is a quick and simple way to improve the look of your plots</code></pre>
 <pre><code>## Warning: Removed 28 rows containing missing values (geom_point).</code></pre>
 <pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-52-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/starwars.plot.annotation-1.png" width="672" /></p>
 </div>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_boxplot() +
@@ -1288,7 +1290,7 @@ ggplot(data = starwars, aes(x = height, y = mass)) +
            label = &quot;median male height&quot;, angle = 345, hjust = -0.5, vjust = 0)+
   ylim(c(150, 190))</code></pre>
 <pre><code>## Warning: Removed 8 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-53-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.boxplot_xylim-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_boxplot() +
   labs(title = &quot;Human height and gender in the Star Wars universe&quot;, subtitle = &quot;x and y limits changed using coord_cartesian&quot;, x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)  +
@@ -1302,7 +1304,7 @@ ggplot(data = starwars, aes(x = height, y = mass)) +
            label = &quot;median male height&quot;, angle = 345, hjust = -0.5, vjust = 0)+
   coord_cartesian(ylim = c(150, 190))</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-54-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.boxplot_coordcart-1.png" width="672" /></p>
 <p>When we manually set the y axis limits without using
 <code>coord_cartesian</code>, the median height of masculine characters
 differs by about 3 cm.</p>
@@ -1313,7 +1315,7 @@ differs by about 3 cm.</p>
   geom_boxplot() +
   labs(title = &quot;Human height by gender in the Star Wars universe&quot;,x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-55-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.boxplot-1.png" width="672" /></p>
 <p>One of the benefits of ggplot2 is that you can easily (once you get
 used to the ggplot2 syntax) combine different types of visualizations.
 You can overlay a violin plot with box plots while plotting the
@@ -1326,7 +1328,7 @@ individual data points all in one plot</p>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_ydensity).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.violin_jitter-1.png" width="672" /></p>
 <p>You can continue to add more groups or variables for more complex
 plots.</p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
@@ -1337,7 +1339,7 @@ plots.</p>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_ydensity).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-57-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.group_color_home-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_violin() +
   geom_boxplot(width = 0.25) +
@@ -1346,7 +1348,7 @@ plots.</p>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_ydensity).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.color_group_mass-1.png" width="672" /></p>
 </div>
 <div id="histograms" class="section level3">
 <h3>Histograms</h3>
@@ -1354,7 +1356,7 @@ plots.</p>
   geom_histogram(binwidth = 10) +
   labs(title = &quot;Human height histogram in the Star Wars universe&quot;,x =  &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.hist.bin10-1.png" width="672" /></p>
 <p>Different binwidths have an effect on the shape of the histogram.</p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height)) + 
   geom_histogram(binwidth = 10) +
@@ -1362,7 +1364,7 @@ plots.</p>
   labs(title = &quot;Human height histogram in the Star Wars universe&quot;,x =  &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_bin).
 ## Removed 4 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-60-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swhuman.plot.hist.bin_comp-1.png" width="672" /></p>
 <pre class="r"><code>sw_nonhuman_data &lt;-
 starwars %&gt;%
   mutate(human = ifelse(species == &quot;Human&quot;, &quot;Human&quot;, &quot;Non-Human&quot;))
@@ -1372,7 +1374,7 @@ ggplot(data = sw_nonhuman_data, aes(x = height, fill = human)) +
   geom_histogram(binwidth = 10) +
   labs(title = &quot;Height histogram in the Star Wars universe&quot;, subtitle = &quot;Human vs Non-Human&quot;, x =  &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 6 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-61-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/swnonhuman.plot.human_comp-1.png" width="672" /></p>
 <p>In this final plot we’ll connect points and we’ll deal with object
 type problems.</p>
 <p>We’ll simulate data so that we have multiple measurements for an
@@ -1387,28 +1389,28 @@ glimpse(data)</code></pre>
 ## Columns: 3
 ## $ ID      &lt;chr&gt; &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;
 ## $ week    &lt;dbl&gt; 1, 1, 1, 1, 2, 2, 2, 2
-## $ measure &lt;dbl&gt; 3.674450, 8.890390, 8.712511, 4.498427, 7.234384, 11.702044, 6…</code></pre>
+## $ measure &lt;dbl&gt; 5.151549, 2.834430, 4.809382, 5.461834, 7.981721, 10.447433, 1…</code></pre>
 <p>First, let’s plot the data to see if there is a difference between
 weeks.</p>
 <pre class="r"><code>ggplot(data = data, aes(x = week, y = measure)) +
   geom_boxplot() +
   geom_point()</code></pre>
 <pre><code>## Warning: Continuous x aesthetic -- did you forget aes(group=...)?</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-63-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/simdat.plot.boxplot-1.png" width="672" /></p>
 <p>That seems wrong. What happened?</p>
 <p>R interprets “week” as a continuous variable. We want to treat it as
 a factor.</p>
 <pre class="r"><code>ggplot(data = data, aes(x = as.factor(week), y = measure)) +
   geom_boxplot() +
   geom_point()</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/simdat.plot.boxplot.as_factor-1.png" width="672" /></p>
 <p>That’s better!</p>
 <p>Now, let’s connect the points by subject ID.</p>
 <pre class="r"><code>ggplot(data = data, aes(x = as.factor(week), y = measure)) +
   geom_boxplot() +
   geom_point() +
   geom_path(aes(group = ID))</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-65-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/simdat.plot.boxplot.connected_point-1.png" width="672" /></p>
 </div>
 </div>
 <div id="check-your-understanding" class="section level2">
@@ -1489,7 +1491,7 @@ head(dat)</code></pre>
     panel.grid.major.x = element_blank(),
     plot.caption = element_text(hjust = 0)
     )</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-67-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/florida.plot-1.png" width="672" /></p>
 <ol style="list-style-type: upper-alpha">
 <li><p>Before looking in detail at the code or the plot, what are your
 initial impressions of the plot? What does it do well? What could be
@@ -1545,14 +1547,27 @@ the home worlds that have two or fewer characters.</p>
 <pre class="r"><code>worlds &lt;- starwars |&gt;
   group_by(homeworld) |&gt; 
   filter(n() &gt;= 3) |&gt; 
-  drop_na(homeworld) # drops the observations where the home world is NA</code></pre>
+  drop_na(homeworld) # drops the observations where the home world is NA
+head(worlds)</code></pre>
+<pre><code>## # A tibble: 6 × 11
+## # Groups:   homeworld [3]
+##   name         height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
+##   &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
+## 1 Luke Skywal…    172    77 blond   fair    blue       19   male  mascu… Tatooi…
+## 2 C-3PO           167    75 &lt;NA&gt;    gold    yellow    112   none  mascu… Tatooi…
+## 3 R2-D2            96    32 &lt;NA&gt;    white,… red        33   none  mascu… Naboo  
+## 4 Darth Vader     202   136 none    white   yellow     41.9 male  mascu… Tatooi…
+## 5 Leia Organa     150    49 brown   light   brown      19   fema… femin… Aldera…
+## 6 Owen Lars       178   120 brown,… light   blue       52   male  mascu… Tatooi…
+## # … with 1 more variable: species &lt;chr&gt;, and abbreviated variable names
+## #   ¹​hair_color, ²​skin_color, ³​eye_color, ⁴​birth_year, ⁵​homeworld</code></pre>
 <pre class="r"><code>ggplot(data = worlds, aes(x = homeworld, height))+
   geom_boxplot() +   
   labs(title = &quot;Height by home world in the Star Wars universe&quot;,
        y =  &quot;Height (cm)&quot;,
        x = &quot;Home world&quot;)+
   theme_bw() </code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-69-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/worlds.plot-1.png" width="672" /></p>
 <ol style="list-style-type: upper-alpha">
 <li>What information do box plots represent?</li>
 </ol>
@@ -1621,7 +1636,7 @@ glimpse(penguins)</code></pre>
   geom_point() +
    labs(x=&quot;Length (mm)&quot;, y=&quot;Depth (mm)&quot;, title=&quot;Penguin Bill Depth by Bill Length&quot;)+
   theme_bw()</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-74-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/penguins.plot-1.png" width="672" /></p>
 <ol style="list-style-type: upper-alpha">
 <li><p>Do you think there is a relationship between Penguin bill length
 and bill depth? If so, do you think it’s a positive or negative
@@ -1659,7 +1674,7 @@ with it, you’ll have a lot of fun creating beautiful plots!</p>
 <p>================================================================================</p>
 <div id="session-information" class="section level3">
 <h3>Session information:</h3>
-<p>Last update on 2022-01-02</p>
+<p>Last update on 2022-01-03</p>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.2.2 Patched (2022-11-10 r83330)
 ## Platform: x86_64-pc-linux-gnu (64-bit)

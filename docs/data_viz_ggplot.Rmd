@@ -9,7 +9,7 @@ title: 'Data visualization and ggplot2'
 
 In this class, we'll learn how to use the package `ggplot2` to visualize your data. In addition to this document, there are a ton of resources to help you learn and understand ggplot. Some are linked in this document. 
 
-```{r message=FALSE, warning=FALSE}
+```{r packages, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -31,7 +31,7 @@ One way that we can assess the usefulness of our numeric models is to visualize 
 Let's look at the "anscombe" data set that comes with the base R package `datasets`. 
 
 
-```{r message=FALSE, warning=FALSE}
+```{r anscombe.data, message=FALSE, warning=FALSE}
 data("anscombe")
 str(anscombe)
 head(anscombe)
@@ -39,7 +39,7 @@ head(anscombe)
 
 The anscombe data set has eight variables, each with 11 observations. We'll use `dplyr` to get summary statistics. But before, let's convert the data into a "long" format so that it's a bit easier to work with. We'll use the `tidyr` function `pivot_longer`. The argument `cols` selects the columns that you want to pivot. Since we only have numeric variables, we can pivot everything to a long format. To do that, we'll use `cols = everything()`.  The anscombe data contains 4 sets of $x$ and $y$ data. The argument `names_to` and `names_pattern` work in tandem to restructure the data. 
 
-```{r message=F, warning=F}
+```{r anscombe.clean, message=F, warning=F}
 anscombe <- anscombe |> 
   pivot_longer(cols = everything(), 
                           names_to = c(".value", "set"), 
@@ -49,7 +49,7 @@ head(anscombe)
 ```
 
 Now, we'll use `dplyr` functions to get summary statistics for `x` and `y` (for each set). 
-```{r message=F, warning=F}
+```{r anscombe.summary, message=F, warning=F}
 anscombe |> 
   group_by(set) |> 
   summarise(mean_x = mean(x),
@@ -72,7 +72,7 @@ For all four sets, the mean of x, mean of y, standard deviation of x, and standa
 
 Let's go further and fit a linear regression model to each of the four data sets. 
 
-```{r}
+```{r anscombe.fit}
 fit_by_set <- 
   by(data = anscombe, INDICES = anscombe$set, FUN = function(subset) {
       lm(y ~ x, data = subset)
@@ -95,37 +95,37 @@ The coefficient estimates are all (basically) the same. All have an intercept ar
 
 We can check other measures associated with linear models. In fact, when you fit a model I would suggest checking these values in addition to other diagnostic checks that I won't show here.  
 
-```{r}
+```{r anscombe.fit.summary}
 fit_summary_by_set <- lapply(fit_by_set, summary)
 ```
 
 Adjusted R-Square: 
-```{r}
+```{r anscombe.fit.rsq}
 cat("Adjusted R-Square:\n")
 lapply(fit_summary_by_set, FUN = function(i){ i$adj.r.squared })
 ```
 
 Residual standard error
-```{r}
+```{r anscombe.fit.rse}
 cat("Residual Standard Error:\n")
 lapply(fit_summary_by_set, FUN = function(i){ i$sigma })
 ```
 
 
 The F-Statistic
-```{r}
+```{r anscombe.fit.fstat}
 cat("F-Statistic (with degrees of freedom:\n")
 (fstat_by_set <- lapply(fit_summary_by_set, FUN = function(i){ i$fstatistic }))
 ```
 
 The f-statistic, along with two degree of freedom values, is used to calculate the significance of the overall model. We can use the function `pf`. (the `p` is the same `p` in the `pnorm`, `punif`, `pgamma`, etc functions; `f` stands for the F distribution). 
 
-```{r}
+```{r anscombe.fit.pval}
 cat("Overall model p-value: ")
 lapply(fstat_by_set, FUN = function(i) {pf(i['value'], i['numdf'], i['dendf'], lower.tail = FALSE)})
 ```
 
-```{r}
+```{r anscombe.fit.coef}
 cat("Coefficient values: ")
 lapply(fit_summary_by_set, FUN = function(i) {i$coefficients})
 ```
@@ -145,7 +145,7 @@ Let's plot the model with the data. Model outputs and tables are necessary and i
 
 Let's plot just the regression line for the first set. Most of the prior code is more complicated than you will need for this class ( and it's complicated because the data set we are using is pretty much 4 data sets that I've kept together because it's more concise to write). But for this example I'll extract out the data for set 1 so that it is easier to reproduce in your analyses. 
 
-```{r}
+```{r anscombe.set1}
 set1_data <- anscombe[which(anscombe$set == "1"), ]
 # or you could use the Dplyr way: 
 #set1_data <- filter(anscombe, set == "1")
@@ -154,20 +154,20 @@ head(set1_data)
 
 We'll refit the model, again so you will have a more reproducible example. The underlying processes are the same as earlier so the results won't change (at least not drastically) 
 
-```{r}
+```{r anscombe.set1.fit}
 (fit <- lm(y ~ x, data = set1_data)) # parentheses around an assignment expression allow you to assign and print at the same time
 ```
 
 `ggplot2` operates by using layers. This gives you the flexibility to add multiple layers so that you can overlay information on top of other information. To start, every plot has base layer that has no overlaid data but that does use your data set to initialize the axes (the ranges, labels, ticks, etc. can all be modified later). 
 
 To create this base layer you should specify the data set (using the `data` parameter) and the data within the data set that you will be mapping to the plot area (using the `mapping` parameter). `mapping` usually takes the function `aes` as an argument. "aes" is short for "aesthetic"; this function takes the variables you want to visualize. 
-```{r}
+```{r anscombe.set1.plot.base}
 ggplot(data = set1_data, mapping = aes(x = x, y = y))
 ```
 
 To add the actual data points, you have to add another layer over the base layer. Functions that start with `geom_` are usually used to plot the data.  
 
-```{r}
+```{r anscombe.set1.plot.points}
 ggplot(data = set1_data, aes(x = x, y = y))+
   geom_point()
 ```
@@ -175,19 +175,19 @@ ggplot(data = set1_data, aes(x = x, y = y))+
 
 The data set that we passed to the `data` parameter doesn't have the information on the model, so we have to add this information. For a linear model, we are most interested in the coefficients for the slope and the intercept. We can extract those estimates from our model fit by using the function `coef`. 
 
-```{r}
+```{r anscombe.set1.fit.coefs}
 coef(fit)
 ```
 
 The function `coef` returns a vector of numeric values. For this model, where we have a single predictor variable, we expect to have two coefficients: the intercept and the slope for "x". So, we should have a vector of length 2. 
 
-```{r}
+```{r anscombe.set1.fit.coef_len}
 length(coef(fit))
 ```
 
 Remember that you can get the `n`th value in a vector by using the square brackets and using the square brackets: 
 
-```{r}
+```{r indexing}
 vect <- c(54, 32, 94, 12) # vector of length 4
 vect[2] # get the 2nd element in the vector
 vect[4] # get the 4th element in the vector
@@ -195,7 +195,7 @@ vect[4] # get the 4th element in the vector
 
 We can do the same with the `coef` function: 
 
-```{r}
+```{r coef_indexing}
 coef_vector <- coef(fit)
 coef_vector[1] # the intercept
 coef_vector[2] # the slope for x
@@ -203,7 +203,7 @@ coef_vector[2] # the slope for x
 
 Because `coef()` returns a **named** vector, we can access its contents by using the actual names of the coefficients. Generally speaking, this is a much safer option. Let's go ahead and store the intercept and slope into separate variables. 
 
-```{r}
+```{r coef_named_indexing}
 (intercept <- coef_vector["(Intercept)"]) # parentheses around an assignment expression will perform assignment and then print the contents of the assigned object
 (slopex <- coef_vector["x"])
 ```
@@ -221,13 +221,13 @@ When you are trying to extract a value in a vector, a list, a matrix, a data fra
 **TMI**
 
 You can skip the intermediate step of creating the `coef_vector` object by indexing directly on the function call. 
-```{r}
+```{r anscombe.set1.fit.named_coef_indexing}
 (intercept <- coef(fit)["(Intercept)"])
 (slopex <- coef(fit)["x"])
 ```
 :::
 
-```{r}
+```{r anscombe.set1.plot.regress}
 ggplot(data = set1_data, aes(x = x, y = y))+
   geom_point()+
   geom_abline(slope = slopex, intercept = intercept)
@@ -258,7 +258,7 @@ Let's check out the second data set.
 
 
 A) First, take the data set named `anscombe` and filter the data so that only the rows from set 2 are returned. Assign the filtered data to a variable called `set2_data`. Do all of this in the code chunk below.  
-```{r}
+```{r q1.a}
 ## WRITE YOUR CODE HERE!
 #
 #
@@ -280,7 +280,7 @@ A) First, take the data set named `anscombe` and filter the data so that only th
 
 B) Go ahead and fit the model so that you can extract the estimates for the slope and intercept. Store the output of the `lm` function in a variable called `fit`. 
 
-```{r}
+```{r q1.b}
 ### YOUR CODE HERE
 #
 #
@@ -296,7 +296,7 @@ B) Go ahead and fit the model so that you can extract the estimates for the slop
 ```
 
 C) Use the function `coef` to extract the intercept and the slope from the model fit. You should assign the value for the intercept to an object named `intercept` and the coefficient for "x" to an object named `slopex`.  
-```{r}
+```{r q1.c}
 ### YOUR CODE HERE
 #
 #
@@ -312,7 +312,7 @@ C) Use the function `coef` to extract the intercept and the slope from the model
 
 
 D) Now, make a plot of the data with the regression line running through the data
-```{r}
+```{r q1.d}
 ### YOUR CODE HERE
 #
 #
@@ -338,7 +338,7 @@ How does the plot look? Does the regression line look like it fits? How much con
 Go ahead and plot set 3 and 4. (You can fit a linear model if you want, or you can just use the fit from the last data set. We've already seen that the intercepts and slopes are close to the same - at least for our purposes.)
 
 A) Set 3. 
-```{r}
+```{r q2.a}
 ### YOUR CODE HERE
 #
 #
@@ -354,7 +354,7 @@ A) Set 3.
 ```
 
 B) Set 4. 
-```{r}
+```{r q2.b}
 ### YOUR CODE HERE
 #
 #
@@ -377,7 +377,7 @@ B) Set 4.
 
 By now, you should have noticed that these data sets are quite different, even though many of our statistical summaries/models suggested that they were the same. 
 
-```{r}
+```{r anscombe.plot.all}
 ans_plot <- ggplot(data = anscombe, aes(x = x, y = y)) + # plots can be stored in variables as well
   geom_point() +
   facet_wrap(~set) # a ggplot2 function that allows multi-panel plots
@@ -385,7 +385,7 @@ ans_plot
 ```
 
 These data look pretty distinct. If we add a regression line (slope and intercept), we see that the lines are the same.  
-```{r}
+```{r anscombe.plot.all.regress}
 ans_plot +
    geom_smooth(formula = y ~ x, method = "lm", se = FALSE, data = anscombe) # ggplot2 even has some modelling functions; these are good for doing quick exploratory work but I wouldn't rely on them too much
 ```
@@ -410,25 +410,25 @@ For a better explanation, check out Ben Bolker's answer on CrossValidated to the
 
 Let's go back over some ggplot concepts in more details. We'll use the `starwars` data set. 
 
-```{r message=F, warning=F}
+```{r starwars.data, message=F, warning=F}
 data("starwars")
 ```
 
 When you load or read in a data set, remember to do a few checks to make sure everything loaded properly
-```{r}
+```{r starwars.head}
 head(starwars)
 ```
 
 The function `glimpse` in the package `dplyr` is really helpful. (Base R `str` is also good, but I find that `glimpse` is a bit easier to read.)
 
-```{r}
+```{r starwars.glimpse}
 glimpse(starwars)
 ```
 
 If you've read any of the other documents on the webpage, you'll remember those last three columns are a bit [weird](data_wrangling_dplyr.html). We don't really want to have to deal with columns of lists and we don't need that data any way, so we'll drop those three columns. 
 
 
-```{r message=F, warning=F}
+```{r starwars.clean, message=F, warning=F}
 # here we're using dplyr to clean up the data set
 starwars <- 
     starwars |>  
@@ -438,13 +438,13 @@ glimpse(starwars)
 ```
 
 The basic syntax of `ggplot2` typically requires an argument for your data, `data =` and an aesthetic argument `aes()`. Within the `aes()` argument, you will specify the data that you want to visualize. 
-```{r}
+```{r starwars.plot.base}
 ggplot(data = starwars, aes(x = height, y = mass))
 ```
 
 You'll notice that there are axis labels and the ranges match with our data but the data doesn't appear in the plot. If you subset the data, you'll notice that the ranges change (the data still doesn't show).  
 
-```{r}
+```{r swhumans.plot_base}
 sw_human_data <- 
   starwars |>  
   filter(species == "Human")
@@ -454,7 +454,7 @@ ggplot(data = sw_human_data, aes(x = height, y = mass))
 
 The data does not appear because `ggplot2` does not assume the type of plot you want, so you must specify this information. You can do this by using the operator `+` and functions which usually start with `geom_`. For example, for scatter plots use `geom_point()`, for boxplots use `geom_boxplot()`, for a histogram `geom_histogram()`.  
 
-```{r}
+```{r swhuman.plot.multiple}
 ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
   geom_point()
 
@@ -473,7 +473,7 @@ These plots are pretty basic and do not have titles or useful axis labels, but g
 
 First, let's modify the axis and title labels:
 
-```{r}
+```{r swhuman.plot.labels}
 ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
   geom_point() +
   labs(title = "Human height and mass in the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
@@ -482,7 +482,7 @@ ggplot(data = sw_human_data, aes(x = height, y = mass)) +
 
 
 We can also modify how the points appear by adjusting the parameters in `geom_point()`
-```{r}
+```{r swhumans.plot.color}
 ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
   geom_point(size = 5, shape = 17, color = "red") +
   labs(title = "Human height and mass in the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
@@ -490,7 +490,7 @@ ggplot(data = sw_human_data, aes(x = height, y = mass)) +
 
 
 What if we want to look at how height and mass break down by group? 
-```{r}
+```{r swhuman.plot.color_group}
 ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
   geom_point(size = 5) +
   labs(title = "Human height and mass in the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
@@ -501,14 +501,14 @@ There are two important things to note about this plot.
 
 First, compare how we specified the point colors in this plot vs the one preceding it. In the first, color is specified in the `geom_point` layer. In the second, it's specified in the initial layer, as part of the `aes` function. It obviously has a pretty significant effect on the plot. The function `aes` maps data onto the aesthetic properties of a layer/geom. If it is specified in the very first layer, the mapping is used throughout all of the layers (until and unless it is overridden). If color is specified outside of `aes`, color is only defined for that particular layer. Also, it is more of a property of the geom rather than the data-geom mapping. Color is not the only property that works like this. You can specify `fill`, `shape`, `size`, among others as properties of the geom or the geom-data mapping. 
 
-```{r}
+```{r swhuman.plot.shape_group}
 ggplot(data = sw_human_data, aes(x = height, y = mass, shape = eye_color)) + 
   geom_point(size = 5) +
   labs(title = "Human height and mass in the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
 ```
 
 
-```{r}
+```{r swhuman.plot.size_group}
 ggplot(data = sw_human_data, aes(x = height, y = mass, size = eye_color)) + 
   geom_point() +
   labs(title = "Human height and mass in the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
@@ -526,7 +526,7 @@ What do you think would happen if we had left `size = 5` in the `geom_point()` l
 
 The aesthetic mapping can be defined in the initial layer or in a later geom layer. This could be helpful if you have multiple geom layers (e.g., points overlaid over box plots) and you want color to map different in the geom layers.  
 
-```{r}
+```{r swhuman.plot.point_layer_color}
 ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
   geom_point(aes(color = eye_color), size = 5) +
   labs(title = "Human height and mass in the Star Wars universe", x = "Height (cm)", y = "Mass (kg)")
@@ -545,7 +545,7 @@ R uses hexadecimal to represent colors. You can look up the hex values, but R al
 Note: No need to worry too much about 'hexadecimal'. If you are interested, it is a base-16 numerical system. Each color is represented by a hashtag followed by 6 characters; 2 characters representing the amount of red, 2 for green, and 2 for blue.
 :::
   
-```{r}
+```{r swhuman.plot.scale_color_manual}
 ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
   geom_point(size = 5) +
   scale_color_manual(values = c("blue", "lightblue", "tan", "tan4", "forestgreen", "yellow")) +
@@ -553,11 +553,11 @@ ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) +
 ```
 
 You can also change the colors without specifying colors manually. This is useful if you don't need to specify exactly which colors go with with group, but you need a different color palette than the default. By using a palette you can improve the look of your graphs relatively easily. Some journals have color preferred color palettes. You can also make your graphs color-blind friendly. The package `RColorBrewer` has created palettes that are compatible with `ggplot2` and contain metadata which let you know if the palette is color-blind friendly or not. 
-```{r}
+```{r rcolorbrewer}
 head(brewer.pal.info, 10)
 ```
 
-```{r}
+```{r swhuman.plot.scale_color_brewer}
 ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
   geom_point(size = 5) +
   scale_colour_brewer(palette = "RdYlBu") +
@@ -566,7 +566,7 @@ ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) +
 
 
 What happens if you have an outlier?
-```{r}
+```{r starwars.plot.outlier}
 ggplot(data = starwars, aes(x = height, y = mass)) + 
   geom_point(size = 2) +
   scale_colour_brewer(palette = "RdYlBu") +
@@ -574,7 +574,7 @@ ggplot(data = starwars, aes(x = height, y = mass)) +
 ```
 
 You can change the axes on your plot. However, be careful, some methods could have unintended consequences. Let's look at an example:   
-```{r}
+```{r starwars.plot.xylim}
 ggplot(data = starwars, aes(x = height, y = mass)) + 
   geom_point(size = 2) +
   scale_colour_brewer(palette = "RdYlBu") +
@@ -585,7 +585,7 @@ ggplot(data = starwars, aes(x = height, y = mass)) +
 
 If we remove the really heavy individual, we can see the height-mass relationship a bit better. We can apply a data smoothing function that will give you a linear regression line with confidence intervals.  
 
-```{r}
+```{r starwars.plot.xylim_regress}
 ggplot(data = starwars, aes(x = height, y = mass)) + 
   geom_point(size = 2) +
   scale_colour_brewer(palette = "RdYlBu") +
@@ -597,7 +597,7 @@ ggplot(data = starwars, aes(x = height, y = mass)) +
 
 However, the model only applies the linear model calculation to the data points that actually appear. If we use `coord_cartesian()` around `xlim()` and `ylim()`, we'll see a big difference. 
 
-```{r}
+```{r starwars.plot.xylim_coord_cartesian_regress}
 ggplot(data = starwars, aes(x = height, y = mass)) + 
   geom_point(size = 2) +
   scale_colour_brewer(palette = "RdYlBu") +
@@ -609,7 +609,7 @@ ggplot(data = starwars, aes(x = height, y = mass)) +
 
 Notice how the slope and intercept are different in the two plots and the grey area (the confidence interval) is much larger in the second plot. The function `coord_cartesian()` calculates based on the data in the data frame, not the data that is plotted. `coord_cartesian()` basically zooms into the data, while `xlim()` and `ylim()` by themselves subset the data area. You might not use the `geom_smooth()` function much, but you will likely use `geom_boxplot()`. 
 
-```{r}
+```{r swhuman.plot.gender_height}
 median_human_height_gender <- tapply(sw_human_data$height, sw_human_data$gender, median, na.rm = TRUE)
 
 ggplot(data = sw_human_data, aes(x = gender, y = height)) +
@@ -630,7 +630,7 @@ ggplot(data = sw_human_data, aes(x = gender, y = height)) +
 
 The function annotate allows you to add elements to your plot that may or may not be part of the original data set. This could be text, as in the prior example, or it could be lines ("segment"), rectangles ("rect"), curves ("curve"), etc. This functionality is quite useful if you want to emphasize certain data points or regions of your plot. 
 
-```{r}
+```{r starwars.plot.annotation}
 yoda_h <- starwars$height[which(starwars$name == "Yoda")]
 yoda_m <- starwars$mass[which(starwars$name == "Yoda")]
 
@@ -675,7 +675,7 @@ ggplot(data = starwars, aes(x = height, y = mass)) +
 
 :::
 
-```{r}
+```{r swhuman.plot.boxplot_xylim}
 ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_boxplot() +
   labs(title = "Human height and gender in the Star Wars universe", subtitle = "x and y limits changed", 
@@ -692,7 +692,7 @@ ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   ylim(c(150, 190))
 ```
 
-```{r}
+```{r swhuman.plot.boxplot_coordcart}
 ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_boxplot() +
   labs(title = "Human height and gender in the Star Wars universe", subtitle = "x and y limits changed using coord_cartesian", x = "Gender", y = "Height (cm)")  +
@@ -712,14 +712,14 @@ When we manually set the y axis limits without using `coord_cartesian`, the medi
 
 ### Box plots and violin plots
 
-```{r}
+```{r swhuman.plot.boxplot}
 ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_boxplot() +
   labs(title = "Human height by gender in the Star Wars universe",x = "Gender", y = "Height (cm)")
 ```
 
 One of the benefits of ggplot2 is that you can easily (once you get used to the ggplot2 syntax) combine different types of visualizations. You can overlay a violin plot with box plots while plotting the individual data points all in one plot
-```{r}
+```{r swhuman.plot.violin_jitter}
 ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_violin() +
   geom_boxplot(width = 0.25) +
@@ -729,7 +729,7 @@ ggplot(data = sw_human_data, aes(x = gender, y = height)) +
 
 
 You can continue to add more groups or variables for more complex plots. 
-```{r}
+```{r swhuman.plot.group_color_home}
 ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_violin() +
   geom_boxplot(width = 0.25) +
@@ -738,7 +738,7 @@ ggplot(data = sw_human_data, aes(x = gender, y = height)) +
 ```
 
 
-```{r}
+```{r swhuman.plot.color_group_mass}
 ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_violin() +
   geom_boxplot(width = 0.25) +
@@ -750,14 +750,14 @@ ggplot(data = sw_human_data, aes(x = gender, y = height)) +
 ### Histograms
 
 
-```{r}
+```{r swhuman.plot.hist.bin10}
 ggplot(data = sw_human_data, aes(x = height)) + 
   geom_histogram(binwidth = 10) +
   labs(title = "Human height histogram in the Star Wars universe",x =  "Height (cm)")
 ```
 
 Different binwidths have an effect on the shape of the histogram. 
-```{r}
+```{r swhuman.plot.hist.bin_comp}
 ggplot(data = sw_human_data, aes(x = height)) + 
   geom_histogram(binwidth = 10) +
   geom_histogram(binwidth = 3, fill = "red") +
@@ -766,7 +766,7 @@ ggplot(data = sw_human_data, aes(x = height)) +
 ```
 
 
-```{r}
+```{r swnonhuman.plot.human_comp}
 sw_nonhuman_data <-
 starwars %>%
   mutate(human = ifelse(species == "Human", "Human", "Non-Human"))
@@ -783,7 +783,7 @@ In this final plot we'll connect points and we'll deal with object type problems
 
 We'll simulate data so that we have multiple measurements for an individual. 
 
-```{r}
+```{r simdat}
 data <-
 data.frame(ID = rep(c("a", "b", "c", "d"), times = 2),
            week = rep(c(1, 2), each = 4),
@@ -793,7 +793,7 @@ glimpse(data)
 ```
 
 First, let's plot the data to see if there is a difference between weeks.  
-```{r}
+```{r simdat.plot.boxplot}
 ggplot(data = data, aes(x = week, y = measure)) +
   geom_boxplot() +
   geom_point()
@@ -803,7 +803,7 @@ That seems wrong. What happened?
 
 R interprets "week" as a continuous variable. We want to treat it as a factor.  
 
-```{r}
+```{r simdat.plot.boxplot.as_factor}
 ggplot(data = data, aes(x = as.factor(week), y = measure)) +
   geom_boxplot() +
   geom_point()
@@ -812,7 +812,7 @@ ggplot(data = data, aes(x = as.factor(week), y = measure)) +
 That's better!
 
 Now, let's connect the points by subject ID.  
-```{r}
+```{r simdat.plot.boxplot.connected_point}
 ggplot(data = data, aes(x = as.factor(week), y = measure)) +
   geom_boxplot() +
   geom_point() +
@@ -832,14 +832,14 @@ ggplot(data = data, aes(x = as.factor(week), y = measure)) +
 
 I have replicated an infamous plot published in a [Business Insider article](https://www.businessinsider.in/this-chart-shows-what-happened-to-gun-deaths-in-florida-after-stand-your-ground-was-enacted/articleshow/30635752.cms) using data from the [Florida Department of Law Enforcement](https://www.fdle.state.fl.us/CJAB/UCR/Annual-Reports/UCR-Offense-Data). The article discusses a law passed in Florida that relates to the use of deadly force in self-defense situations. "Stand-your-ground" laws are somewhat controversial so if you're interested in the topic, there's a lot out there. For this lesson, however, we're really only interested in the details of how the data is visualized.  
 
-```{r}
+```{r florida.data}
 dat <- read.csv("../data/FL_Murder_by_Weapon_1995-2020.csv")
 head(dat)
 glimpse(dat)
 ```
 
 
-```{r}
+```{r florida.plot}
 ggplot(data = dat, aes(x = Year, y = Firearm))+
   geom_area(fill = 'darkred', alpha = 0.8)+
   geom_line() +
@@ -909,15 +909,16 @@ E) Which layer/function should you remove/change to make the plot less misleadin
 We're going to go back to the `starwars` data set. We're going to look at heights again; this time we're going to compare heights across the different home worlds in the star wars universe. 
 
 Unfortunately, a lot of the home worlds in the data set only have one or two characters. We'll first filter the data so that we drop all of the home worlds that have two or fewer characters.  
-```{r}
+```{r worlds.data}
 worlds <- starwars |>
   group_by(homeworld) |> 
   filter(n() >= 3) |> 
   drop_na(homeworld) # drops the observations where the home world is NA
+head(worlds)
 ```
 
 
-```{r}
+```{r worlds.plot}
 ggplot(data = worlds, aes(x = homeworld, height))+
   geom_boxplot() +   
   labs(title = "Height by home world in the Star Wars universe",
@@ -937,7 +938,7 @@ B) Do you feel like box plots are a good representation of these data? Why or wh
 
 C) There is at least one aspect of the data that this plot does not represent well. Add one or more layers to the plot to make the visualization less misleading. (You can directly copy the code from above. You can remove layers if you want, but you don't have to.)
 
-```{r}
+```{r q5.c}
 ### YOUR CODE HERE
 #
 #
@@ -952,21 +953,21 @@ C) There is at least one aspect of the data that this plot does not represent we
 
 For this example, we're going to look at penguin data. These data can be found in the R package `palmerpenguin`. 
 
-```{r}
+```{r penguins.data.head}
 data("penguins")
 head(penguins)
 ```
 
-```{r}
+```{r penguins.data.glimpse}
 glimpse(penguins)
 ```
 
-```{r}
+```{r penguins.data.naomit}
 penguins <- penguins |> na.omit()
 glimpse(penguins)
 ```
 
-```{r}
+```{r penguins.plot}
 ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm))+
   geom_point() +
    labs(x="Length (mm)", y="Depth (mm)", title="Penguin Bill Depth by Bill Length")+
@@ -976,7 +977,7 @@ ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm))+
 A) Do you think there is a relationship between Penguin bill length and bill depth? If so, do you think it's a positive or negative relationship based on the plot?
 
 B) Take a look at the rest of the columns in the data set. 
-```{r}
+```{r penguins.colnames}
 colnames(penguins)
 ```
 
@@ -985,7 +986,7 @@ colnames(penguins)
 
 C) How would you add the variable(s) to the plot to help illustrate that relationship?
 
-```{r}
+```{r q6.c}
 ### YOUR CODE HERE
 #
 #
@@ -1002,8 +1003,8 @@ C) How would you add the variable(s) to the plot to help illustrate that relatio
 
 `ggplot2` gives you a lot of power and flexibility to make really nice visualizations. It can't do everything though. There are packages, however, that build on `ggplot2`. You can even create interactive 3D plots and animations. It does take a bit of time to get used to the syntax and you will spend a lot of time on Google (even for things you've done multiple times). But once you get familiar with it, you'll have a lot of fun creating beautiful plots! 
 
-```{r include=FALSE}
-date <- "2022-01-02"
+```{r date, include=FALSE}
+date <- "2022-01-03"
 ```
 
 ```{r, child="_session-info.Rmd"}
