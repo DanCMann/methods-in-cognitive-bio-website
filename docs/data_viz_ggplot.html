@@ -358,18 +358,31 @@ $(document).ready(function () {
 
 <div id="data-visualization" class="section level1">
 <h1>Data visualization</h1>
+<div id="introduction-the-importance-of-visualizing-data"
+class="section level2">
+<h2>Introduction: The importance of visualizing data</h2>
 <p>In this class, we’ll learn how to use the package
 <code>ggplot2</code> to visualize your data.</p>
 <pre class="r"><code>library(ggplot2)
 library(dplyr)
-library(tidyr)</code></pre>
+library(tidyr)
+library(RColorBrewer) # used for color-blind friendly palettes
+library(palmerpenguins) # used for data in the final comprehension check
+# if you want to reproduce the full document, you will also need the fontawesome package. </code></pre>
 <p>Descriptive and inferential statistics are incredibly useful for
 understanding your data. However, as we have discussed, they are models
 and models always have error. We have to live with a certain amount of
 error, but we should make sure that our model is at least useful. For
 example, is a statement like “the vast majority of humans have more than
-the mean number of eyes” all that useful? One way that we can assess the
-usefulness of our numeric models is to visualize the data.</p>
+the mean number of eyes” all that useful?</p>
+<p>One way that we can assess the usefulness of our numeric models is to
+visualize the data.</p>
+<div id="anscombe-data-set" class="section level3">
+<h3>Anscombe data set</h3>
+<p>(Note: For much of the code in this first section, don’t stress if
+you don’t understand everything the code is doing. Much of this is for
+demonstration purposes and the parts that we expect you to understand
+will be explained in more detail.)</p>
 <p>Let’s look at the “anscombe” data set that comes with the base R
 package <code>datasets</code>.</p>
 <pre class="r"><code>data(&quot;anscombe&quot;)
@@ -403,7 +416,7 @@ can pivot everything to a long format. To do that, we’ll use
 class="math inline">\(y\)</span> data. The argument
 <code>names_to</code> and <code>names_pattern</code> work in tandem to
 restructure the data.</p>
-<pre class="r"><code>anscombe &lt;- anscombe %&gt;% 
+<pre class="r"><code>anscombe &lt;- anscombe |&gt; 
   pivot_longer(cols = everything(), 
                           names_to = c(&quot;.value&quot;, &quot;set&quot;), 
                           names_pattern = &quot;(.)(.)&quot;)
@@ -422,8 +435,10 @@ str(anscombe)</code></pre>
 ## 4 4         8  6.58
 ## 5 1         8  6.95
 ## 6 2         8  8.14</code></pre>
-<pre class="r"><code>anscombe %&gt;% 
-  group_by(set) %&gt;% 
+<p>Now, we’ll use <code>dplyr</code> functions to get summary statistics
+for <code>x</code> and <code>y</code> (for each set).</p>
+<pre class="r"><code>anscombe |&gt; 
+  group_by(set) |&gt; 
   summarise(mean_x = mean(x),
             sd_x = sd(x),
             mean_y = mean(y),
@@ -437,35 +452,516 @@ str(anscombe)</code></pre>
 ## 2 2          9  3.32   7.50  2.03
 ## 3 3          9  3.32   7.5   2.03
 ## 4 4          9  3.32   7.50  2.03</code></pre>
+<pre class="r"><code>### NON-DPLYR APPROACH
+## you can use the function `tapply` to get summary stats by a grouping in a data set
+## e.g., 
+# tapply(X = anscombe$y, INDEX = anscombe$set, FUN = mean)
+## you would then need to repeat this function, changing the X and FUN arguments </code></pre>
 <p>What do you notice about the four sets?</p>
 <p>For all four sets, the mean of x, mean of y, standard deviation of x,
 and standard deviation of y are the same. So, the models that we have
 used most in this class, tell us that these sets are pretty much the
-same! So, we’re all done, right?<br />
-Let’s just double-check by visualizing the data.</p>
-<pre class="r"><code>ans_plot &lt;- ggplot(data = anscombe, aes(x = x, y = y)) +
-  geom_point() +
-  facet_wrap(~set)
-ans_plot</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>Uh… woah. These data now look pretty distinct. If we add a regression
-line (slope and intercept), we see that the lines are the same.</p>
-<pre class="r"><code>ans_plot +
-   geom_smooth(formula = y ~ x, method = &quot;lm&quot;, se = FALSE, data = anscombe)</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>The quantitative stats that we have tell us that these are the same,
-yet a visual inspection reveals stark differences. ALWAYS PLOT YOUR
-DATA!!! (When/if we get into linear models, we’ll see that there are
-some model diagnostics that you can run that reveal differences.)</p>
+same!</p>
+<p>Let’s go further and fit a linear regression model to each of the
+four data sets.</p>
+<pre class="r"><code>fit_by_set &lt;- 
+  by(data = anscombe, INDICES = anscombe$set, FUN = function(subset) {
+      lm(y ~ x, data = subset)
+      }
+    )
+fit_by_set</code></pre>
+<pre><code>## anscombe$set: 1
+## 
+## Call:
+## lm(formula = y ~ x, data = subset)
+## 
+## Coefficients:
+## (Intercept)            x  
+##      3.0001       0.5001  
+## 
+## ------------------------------------------------------------ 
+## anscombe$set: 2
+## 
+## Call:
+## lm(formula = y ~ x, data = subset)
+## 
+## Coefficients:
+## (Intercept)            x  
+##       3.001        0.500  
+## 
+## ------------------------------------------------------------ 
+## anscombe$set: 3
+## 
+## Call:
+## lm(formula = y ~ x, data = subset)
+## 
+## Coefficients:
+## (Intercept)            x  
+##      3.0025       0.4997  
+## 
+## ------------------------------------------------------------ 
+## anscombe$set: 4
+## 
+## Call:
+## lm(formula = y ~ x, data = subset)
+## 
+## Coefficients:
+## (Intercept)            x  
+##      3.0017       0.4999</code></pre>
+<p>The coefficient estimates are all (basically) the same. All have an
+intercept around 3 and a slope around 0.5.</p>
+<div class="tmi">
+<p><svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:3em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M476.8 126.3c-4.1 1.1-8.4 1.7-12.8 1.7c-26.5 0-48-21-48-47c0-5 1.8-11.3 4.6-18.1c.3-.7 .6-1.4 .9-2.1c9-20.2 26.5-44.9 36-57.5c3.2-4.4 9.6-4.4 12.8 0C483.4 20.6 512 61 512 81c0 21.7-14.9 39.8-35.2 45.3zM256 0c51.4 0 99.3 15.2 139.4 41.2c-1.5 3.1-3 6.2-4.3 9.3c-3.4 8-7.1 19-7.1 30.5c0 44.3 36.6 79 80 79c9.6 0 18.8-1.7 27.4-4.8c13.3 30.9 20.6 65 20.6 100.8c0 141.4-114.6 256-256 256S0 397.4 0 256S114.6 0 256 0zM383.8 317.8C345.3 329.4 301.9 336 256 336s-89.3-6.6-127.8-18.2c-12.3-3.7-24.3 7-19.2 18.7c24.5 56.9 81.1 96.7 147 96.7s122.5-39.8 147-96.7c5.1-11.8-6.9-22.4-19.2-18.7zm-166.2-89l0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C126.7 188.4 120 206.1 120 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0 0 0zm160 0l0 0 0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C286.7 188.4 280 206.1 280 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0z"/></svg>
+<strong>TMI (“Too much information!”)</strong></p>
+<p><strong>Linear model check</strong></p>
+<p>(If you’ve seen other sections of the webpage, you’ll have seen the
+“TMI” sections. These sections give a little more detail but are not
+necessary for understanding the broader concepts.)</p>
+<p>We can check other measures associated with linear models. In fact,
+when you fit a model I would suggest checking these values in addition
+to other diagnostic checks that I won’t show here.</p>
+<pre class="r"><code>fit_summary_by_set &lt;- lapply(fit_by_set, summary)</code></pre>
+<p>Adjusted R-Square:</p>
+<pre class="r"><code>cat(&quot;Adjusted R-Square:\n&quot;)</code></pre>
+<pre><code>## Adjusted R-Square:</code></pre>
+<pre class="r"><code>lapply(fit_summary_by_set, FUN = function(i){ i$adj.r.squared })</code></pre>
+<pre><code>## $`1`
+## [1] 0.6294916
+## 
+## $`2`
+## [1] 0.6291578
+## 
+## $`3`
+## [1] 0.6292489
+## 
+## $`4`
+## [1] 0.6296747</code></pre>
+<p>Residual standard error</p>
+<pre class="r"><code>cat(&quot;Residual Standard Error:\n&quot;)</code></pre>
+<pre><code>## Residual Standard Error:</code></pre>
+<pre class="r"><code>lapply(fit_summary_by_set, FUN = function(i){ i$sigma })</code></pre>
+<pre><code>## $`1`
+## [1] 1.236603
+## 
+## $`2`
+## [1] 1.237214
+## 
+## $`3`
+## [1] 1.236311
+## 
+## $`4`
+## [1] 1.235695</code></pre>
+<p>The F-Statistic</p>
+<pre class="r"><code>cat(&quot;F-Statistic (with degrees of freedom:\n&quot;)</code></pre>
+<pre><code>## F-Statistic (with degrees of freedom:</code></pre>
+<pre class="r"><code>(fstat_by_set &lt;- lapply(fit_summary_by_set, FUN = function(i){ i$fstatistic }))</code></pre>
+<pre><code>## $`1`
+##    value    numdf    dendf 
+## 17.98994  1.00000  9.00000 
+## 
+## $`2`
+##    value    numdf    dendf 
+## 17.96565  1.00000  9.00000 
+## 
+## $`3`
+##    value    numdf    dendf 
+## 17.97228  1.00000  9.00000 
+## 
+## $`4`
+##    value    numdf    dendf 
+## 18.00329  1.00000  9.00000</code></pre>
+<p>The f-statistic, along with two degree of freedom values, is used to
+calculate the significance of the overall model. We can use the function
+<code>pf</code>. (the <code>p</code> is the same <code>p</code> in the
+<code>pnorm</code>, <code>punif</code>, <code>pgamma</code>, etc
+functions; <code>f</code> stands for the F distribution).</p>
+<pre class="r"><code>cat(&quot;Overall model p-value: &quot;)</code></pre>
+<pre><code>## Overall model p-value:</code></pre>
+<pre class="r"><code>lapply(fstat_by_set, FUN = function(i) {pf(i[&#39;value&#39;], i[&#39;numdf&#39;], i[&#39;dendf&#39;], lower.tail = FALSE)})</code></pre>
+<pre><code>## $`1`
+##       value 
+## 0.002169629 
+## 
+## $`2`
+##       value 
+## 0.002178816 
+## 
+## $`3`
+##       value 
+## 0.002176305 
+## 
+## $`4`
+##       value 
+## 0.002164602</code></pre>
+<pre class="r"><code>cat(&quot;Coefficient values: &quot;)</code></pre>
+<pre><code>## Coefficient values:</code></pre>
+<pre class="r"><code>lapply(fit_summary_by_set, FUN = function(i) {i$coefficients})</code></pre>
+<pre><code>## $`1`
+##              Estimate Std. Error  t value    Pr(&gt;|t|)
+## (Intercept) 3.0000909  1.1247468 2.667348 0.025734051
+## x           0.5000909  0.1179055 4.241455 0.002169629
+## 
+## $`2`
+##             Estimate Std. Error  t value    Pr(&gt;|t|)
+## (Intercept) 3.000909  1.1253024 2.666758 0.025758941
+## x           0.500000  0.1179637 4.238590 0.002178816
+## 
+## $`3`
+##              Estimate Std. Error  t value    Pr(&gt;|t|)
+## (Intercept) 3.0024545  1.1244812 2.670080 0.025619109
+## x           0.4997273  0.1178777 4.239372 0.002176305
+## 
+## $`4`
+##              Estimate Std. Error  t value    Pr(&gt;|t|)
+## (Intercept) 3.0017273  1.1239211 2.670763 0.025590425
+## x           0.4999091  0.1178189 4.243028 0.002164602</code></pre>
 </div>
-<div id="ggplot2" class="section level1">
-<h1><code>ggplot2</code></h1>
-<p>Let’s learn ggplot by playing around with the <code>starwars</code>
-data set.</p>
-<pre class="r"><code>data(&quot;starwars&quot;)
-## we&#39;ll clean it up like we did before
+<p>So, we’re all done, right? We’ve checked the mean and standard
+deviation, we’ve fit a linear regression model and then checked the
+coefficients (as well as the adjusted R-squared value, the standard
+error of the residuals, the f-statistic, and the significance level for
+the coefficients).</p>
+<p>All of these samples have to come from the population, right? And
+they have to show the same relationship between variables… Right?</p>
+</div>
+<div id="plotting-anscombe-data-set-1" class="section level3">
+<h3>Plotting Anscombe data set 1</h3>
+<p>Let’s plot the model with the data. Model outputs and tables are
+necessary and informative but a good visual makes your findings much
+more accessible and understandable.</p>
+<p>Let’s plot just the regression line for the first set. Most of the
+prior code is more complicated than you will need for this class ( and
+it’s complicated because the data set we are using is pretty much 4 data
+sets that I’ve kept together because it’s more concise to write). But
+for this example I’ll extract out the data for set 1 so that it is
+easier to reproduce in your analyses.</p>
+<pre class="r"><code>set1_data &lt;- anscombe[which(anscombe$set == &quot;1&quot;), ]
+# or you could use the Dplyr way: 
+#set1_data &lt;- filter(anscombe, set == &quot;1&quot;)
+head(set1_data)</code></pre>
+<pre><code>## # A tibble: 6 × 3
+##   set       x     y
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 1        10  8.04
+## 2 1         8  6.95
+## 3 1        13  7.58
+## 4 1         9  8.81
+## 5 1        11  8.33
+## 6 1        14  9.96</code></pre>
+<p>We’ll refit the model, again so you will have a more reproducible
+example. The underlying processes are the same as earlier so the results
+won’t change (at least not drastically)</p>
+<pre class="r"><code>(fit &lt;- lm(y ~ x, data = set1_data)) # parentheses around an assignment expression allow you to assign and print at the same time</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x, data = set1_data)
+## 
+## Coefficients:
+## (Intercept)            x  
+##      3.0001       0.5001</code></pre>
+<p><code>ggplot2</code> operates by using layers. This gives you the
+flexibility to add multiple layers so that you can overlay information
+on top of other information. To start, every plot has base layer that
+has no overlaid data but that does use your data set to initialize the
+axes (the ranges, labels, ticks, etc. can all be modified later).</p>
+<p>To create this base layer you should specify the data set (using the
+<code>data</code> parameter) and the data within the data set that you
+will be mapping to the plot area (using the <code>mapping</code>
+parameter). <code>mapping</code> usually takes the function
+<code>aes</code> as an argument. “aes” is short for “aesthetic”; this
+function takes the variables you want to visualize.</p>
+<pre class="r"><code>ggplot(data = set1_data, mapping = aes(x = x, y = y))</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>To add the actual data points, you have to add another layer over the
+base layer. Functions that start with <code>geom_</code> are usually
+used to plot the data.</p>
+<pre class="r"><code>ggplot(data = set1_data, aes(x = x, y = y))+
+  geom_point()</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>The data set that we passed to the <code>data</code> parameter
+doesn’t have the information on the model, so we have to add this
+information. For a linear model, we are most interested in the
+coefficients for the slope and the intercept. We can extract those
+estimates from our model fit by using the function
+<code>coef</code>.</p>
+<pre class="r"><code>coef(fit)</code></pre>
+<pre><code>## (Intercept)           x 
+##   3.0000909   0.5000909</code></pre>
+<p>The function <code>coef</code> returns a vector of numeric values.
+For this model, where we have a single predictor variable, we expect to
+have two coefficients: the intercept and the slope for “x”. So, we
+should have a vector of length 2.</p>
+<pre class="r"><code>length(coef(fit))</code></pre>
+<pre><code>## [1] 2</code></pre>
+<p>Remember that you can get the <code>n</code>th value in a vector by
+using the square brackets and using the square brackets:</p>
+<pre class="r"><code>vect &lt;- c(54, 32, 94, 12) # vector of length 4
+vect[2] # get the 2nd element in the vector</code></pre>
+<pre><code>## [1] 32</code></pre>
+<pre class="r"><code>vect[4] # get the 4th element in the vector</code></pre>
+<pre><code>## [1] 12</code></pre>
+<p>We can do the same with the <code>coef</code> function:</p>
+<pre class="r"><code>coef_vector &lt;- coef(fit)
+coef_vector[1] # the intercept</code></pre>
+<pre><code>## (Intercept) 
+##    3.000091</code></pre>
+<pre class="r"><code>coef_vector[2] # the slope for x</code></pre>
+<pre><code>##         x 
+## 0.5000909</code></pre>
+<p>Because <code>coef()</code> returns a <strong>named</strong> vector,
+we can access its contents by using the actual names of the
+coefficients. Generally speaking, this is a much safer option. Let’s go
+ahead and store the intercept and slope into separate variables.</p>
+<pre class="r"><code>(intercept &lt;- coef_vector[&quot;(Intercept)&quot;]) # parentheses around an assignment expression will perform assignment and then print the contents of the assigned object</code></pre>
+<pre><code>## (Intercept) 
+##    3.000091</code></pre>
+<pre class="r"><code>(slopex &lt;- coef_vector[&quot;x&quot;])</code></pre>
+<pre><code>##         x 
+## 0.5000909</code></pre>
+<div class="important">
+<p><svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:3em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M256 512c141.4 0 256-114.6 256-256S397.4 0 256 0S0 114.6 0 256S114.6 512 256 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zm32 224c0 17.7-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32z"/></svg>
+<strong>Important</strong></p>
+<p>When you are trying to extract a value in a vector, a list, a matrix,
+a data frame, etc it can often be risky to use a numeric index. When
+analyzing data, you often aren’t necessarily interested in the 3rd
+element in a list, or the 6th column in a data frame. You are more
+likely to be interested in subject CT004’s score, or the column
+“weight”, for instance. If a numeric index is not inherent to the
+measure of interest, it’s possible the number could change. You could
+add a column in your data set and now weight is no longer the 6th column
+but the 7th. If your code has something like <code>df[,6]</code> you may
+no longer be analyzing weight, but whatever column was inserted. This is
+a type of error that is completely opposite to “fail hard and fail
+fast”; these types of errors are really tough to notice and the computer
+has no reason to think it’s an error. In the model that we fit above,
+what if we added a predictor so that our model was now
+<code>y ~ x1 + x</code>? Now <code>coef_vector[2]</code> refers to the
+estimate for <code>x1</code> and not for <code>x</code>.
+<code>coef_vector["x"]</code> would refer to the estimate for the
+coefficient “x” no matter what other variables are added to the
+model.</p>
+</div>
+<div class="tmi">
+<p><svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:3em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M476.8 126.3c-4.1 1.1-8.4 1.7-12.8 1.7c-26.5 0-48-21-48-47c0-5 1.8-11.3 4.6-18.1c.3-.7 .6-1.4 .9-2.1c9-20.2 26.5-44.9 36-57.5c3.2-4.4 9.6-4.4 12.8 0C483.4 20.6 512 61 512 81c0 21.7-14.9 39.8-35.2 45.3zM256 0c51.4 0 99.3 15.2 139.4 41.2c-1.5 3.1-3 6.2-4.3 9.3c-3.4 8-7.1 19-7.1 30.5c0 44.3 36.6 79 80 79c9.6 0 18.8-1.7 27.4-4.8c13.3 30.9 20.6 65 20.6 100.8c0 141.4-114.6 256-256 256S0 397.4 0 256S114.6 0 256 0zM383.8 317.8C345.3 329.4 301.9 336 256 336s-89.3-6.6-127.8-18.2c-12.3-3.7-24.3 7-19.2 18.7c24.5 56.9 81.1 96.7 147 96.7s122.5-39.8 147-96.7c5.1-11.8-6.9-22.4-19.2-18.7zm-166.2-89l0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C126.7 188.4 120 206.1 120 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0 0 0zm160 0l0 0 0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C286.7 188.4 280 206.1 280 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0z"/></svg>
+<strong>TMI</strong></p>
+<p>You can skip the intermediate step of creating the
+<code>coef_vector</code> object by indexing directly on the function
+call.</p>
+<pre class="r"><code>(intercept &lt;- coef(fit)[&quot;(Intercept)&quot;])</code></pre>
+<pre><code>## (Intercept) 
+##    3.000091</code></pre>
+<pre class="r"><code>(slopex &lt;- coef(fit)[&quot;x&quot;])</code></pre>
+<pre><code>##         x 
+## 0.5000909</code></pre>
+</div>
+<pre class="r"><code>ggplot(data = set1_data, aes(x = x, y = y))+
+  geom_point()+
+  geom_abline(slope = slopex, intercept = intercept)</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>This looks like a pretty decent fit.</p>
+<div class="tmi">
+<p><svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:3em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M476.8 126.3c-4.1 1.1-8.4 1.7-12.8 1.7c-26.5 0-48-21-48-47c0-5 1.8-11.3 4.6-18.1c.3-.7 .6-1.4 .9-2.1c9-20.2 26.5-44.9 36-57.5c3.2-4.4 9.6-4.4 12.8 0C483.4 20.6 512 61 512 81c0 21.7-14.9 39.8-35.2 45.3zM256 0c51.4 0 99.3 15.2 139.4 41.2c-1.5 3.1-3 6.2-4.3 9.3c-3.4 8-7.1 19-7.1 30.5c0 44.3 36.6 79 80 79c9.6 0 18.8-1.7 27.4-4.8c13.3 30.9 20.6 65 20.6 100.8c0 141.4-114.6 256-256 256S0 397.4 0 256S114.6 0 256 0zM383.8 317.8C345.3 329.4 301.9 336 256 336s-89.3-6.6-127.8-18.2c-12.3-3.7-24.3 7-19.2 18.7c24.5 56.9 81.1 96.7 147 96.7s122.5-39.8 147-96.7c5.1-11.8-6.9-22.4-19.2-18.7zm-166.2-89l0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C126.7 188.4 120 206.1 120 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0 0 0zm160 0l0 0 0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C286.7 188.4 280 206.1 280 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0z"/></svg>
+<strong>TMI</strong></p>
+<p>Note!: We are walking through each line of this plot so that you can
+see what each layer/line of code does. By using the <code>+</code>
+operator, the lines of code are chained together. If we want to end up
+with the plot above, we wouldn’t need to run the code for the previous
+plots separately.</p>
+</div>
+<p>Let’s check out the second data set.</p>
+</div>
+<div id="diy-anscombe-data-set-2" class="section level3">
+<h3>DIY: Anscombe data set 2</h3>
+<div id="check-1" class="section level4">
+<h4>Check 1</h4>
+<div class="question">
+<p><svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:3em;width:2.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M192 0c-41.8 0-77.4 26.7-90.5 64H64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H282.5C269.4 26.7 233.8 0 192 0zm0 128c-17.7 0-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32zM105.8 229.3c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L216 328.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V314.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H158.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 416c0 17.7-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32z"/></svg>
+<strong>Check your understanding</strong></p>
+<ol style="list-style-type: upper-alpha">
+<li>First, take the data set named <code>anscombe</code> and filter the
+data so that only the rows from set 2 are returned. Assign the filtered
+data to a variable called <code>set2_data</code>. Do all of this in the
+code chunk below.</li>
+</ol>
+<pre class="r"><code>## WRITE YOUR CODE HERE!
+#
+#
+#
+#
+#
+#</code></pre>
+<ol start="2" style="list-style-type: upper-alpha">
+<li>Go ahead and fit the model so that you can extract the estimates for
+the slope and intercept. Store the output of the <code>lm</code>
+function in a variable called <code>fit</code>.</li>
+</ol>
+<pre class="r"><code>### YOUR CODE HERE
+#
+#
+#
+#
+#
+#</code></pre>
+<ol start="3" style="list-style-type: upper-alpha">
+<li>Use the function <code>coef</code> to extract the intercept and the
+slope from the model fit. You should assign the value for the intercept
+to an object named <code>intercept</code> and the coefficient for “x” to
+an object named <code>slopex</code>.</li>
+</ol>
+<pre class="r"><code>### YOUR CODE HERE
+#
+#
+#
+#
+#
+#</code></pre>
+<ol start="4" style="list-style-type: upper-alpha">
+<li>Now, make a plot of the data with the regression line running
+through the data</li>
+</ol>
+<pre class="r"><code>### YOUR CODE HERE
+#
+#
+#
+#
+#
+#</code></pre>
+<p>How does the plot look? Does the regression line look like it fits?
+How much confidence do you have in the model fit?</p>
+<div id="check-2" class="section level4">
+<h4>Check 2</h4>
+<p>Go ahead and plot set 3 and 4. (You can fit a linear model if you
+want, or you can just use the fit from the last data set. We’ve already
+seen that the intercepts and slopes are close to the same - at least for
+our purposes.)</p>
+<ol style="list-style-type: upper-alpha">
+<li>Set 3.</li>
+</ol>
+<pre class="r"><code>### YOUR CODE HERE
+#
+#
+#
+#
+#
+#</code></pre>
+<ol start="2" style="list-style-type: upper-alpha">
+<li>Set 4.</li>
+</ol>
+<pre class="r"><code>### YOUR CODE HERE
+#
+#
+#
+#
+#
+#</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="all-of-the-anscombe-data-sets" class="section level3">
+<h3>All of the Anscombe data sets</h3>
+<p>By now, you should have noticed that these data sets are quite
+different, even though many of our statistical summaries/models
+suggested that they were the same.</p>
+<pre class="r"><code>ans_plot &lt;- ggplot(data = anscombe, aes(x = x, y = y)) + # plots can be stored in variables as well
+  geom_point() +
+  facet_wrap(~set) # a ggplot2 function that allows multi-panel plots
+ans_plot</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p>These data look pretty distinct. If we add a regression line (slope
+and intercept), we see that the lines are the same.</p>
+<pre class="r"><code>ans_plot +
+   geom_smooth(formula = y ~ x, method = &quot;lm&quot;, se = FALSE, data = anscombe) # ggplot2 even has some modelling functions; these are good for doing quick exploratory work but I wouldn&#39;t rely on them too much</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p>You should always plot your data! Linear regression, the mean, the
+median, standard deviation, etc are all models and, as such, necessarily
+simplify your data. Plotting can help you better understand if that
+simplification is actually useful.</p>
+<div class="important">
+<p><svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:3em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M256 512c141.4 0 256-114.6 256-256S397.4 0 256 0S0 114.6 0 256S114.6 512 256 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zm32 224c0 17.7-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32z"/></svg>
+<strong>Important</strong></p>
+<p>You should always plot your data. However, <em>when</em> you plot
+your data depends on the type of research you are doing. By that, I mean
+whether you are generating hypotheses or whether you are testing a
+hypothesis.</p>
+<p>Visualizing your data before deciding on the type of model to fit is
+necessary if you are doing exploratory work. BUT! If you have a
+hypothesis that you are testing, you should hold off until after running
+your hypothesis tests (fitting your models, doing inferential stats,
+etc). At the very least, you should not adapt your hypothesis after
+plotting the data.</p>
+<p>Why? Every sample is going to have some weirdness associated with it.
+If you notice an interesting relationship in a sample and you want to
+test if that relationship can be generalized to the whole population,
+you can’t test on that original sample. There is no way to know if that
+relationship was just a quirk of the original data set or if it is, in
+fact, true of the whole population. In (frequentist) hypothesis testing,
+you are testing how likely it is that your sample data could have
+occurred by chance alone. If you plot your data and then modify your
+hypothesis based on what you see, your hypothesis is no longer
+independent of that particular sample. So, you can’t assess how likely
+your data is from chance. This increases the chances of false positives
+(Type I errors).</p>
+<p>For a better explanation, check out Ben Bolker’s answer on
+CrossValidated to the following question: <a
+href="https://stats.stackexchange.com/a/353901">Performing a statistical
+test after visualizing data - data dredging?</a>. (<a
+href="https://ms.mcmaster.ca/~bolker/">Ben Bolker</a> is the author of
+<a
+href="https://math.mcmaster.ca/~bolker/emdbook/index.html"><em>Ecological
+modeling and Data in R</em></a> and is a very reliable source on
+statistical modeling.)</p>
+</div>
+</div>
+</div>
+<div id="ggplot2" class="section level2">
+<h2><code>ggplot2</code></h2>
+<p>Let’s go back over some ggplot concepts in more details. We’ll use
+the <code>starwars</code> data set.</p>
+<pre class="r"><code>data(&quot;starwars&quot;)</code></pre>
+<p>When you load or read in a data set, remember to do a few checks to
+make sure everything loaded properly</p>
+<pre class="r"><code>head(starwars)</code></pre>
+<pre><code>## # A tibble: 6 × 14
+##   name         height  mass hair_…¹ skin_…² eye_c…³ birth…⁴ sex   gender homew…⁵
+##   &lt;chr&gt;         &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  
+## 1 Luke Skywal…    172    77 blond   fair    blue       19   male  mascu… Tatooi…
+## 2 C-3PO           167    75 &lt;NA&gt;    gold    yellow    112   none  mascu… Tatooi…
+## 3 R2-D2            96    32 &lt;NA&gt;    white,… red        33   none  mascu… Naboo  
+## 4 Darth Vader     202   136 none    white   yellow     41.9 male  mascu… Tatooi…
+## 5 Leia Organa     150    49 brown   light   brown      19   fema… femin… Aldera…
+## 6 Owen Lars       178   120 brown,… light   blue       52   male  mascu… Tatooi…
+## # … with 4 more variables: species &lt;chr&gt;, films &lt;list&gt;, vehicles &lt;list&gt;,
+## #   starships &lt;list&gt;, and abbreviated variable names ¹​hair_color, ²​skin_color,
+## #   ³​eye_color, ⁴​birth_year, ⁵​homeworld</code></pre>
+<p>The function <code>glimpse</code> in the package <code>dplyr</code>
+is really helpful. (Base R <code>str</code> is also good, but I find
+that <code>glimpse</code> is a bit easier to read.)</p>
+<pre class="r"><code>glimpse(starwars)</code></pre>
+<pre><code>## Rows: 87
+## Columns: 14
+## $ name       &lt;chr&gt; &quot;Luke Skywalker&quot;, &quot;C-3PO&quot;, &quot;R2-D2&quot;, &quot;Darth Vader&quot;, &quot;Leia Or…
+## $ height     &lt;int&gt; 172, 167, 96, 202, 150, 178, 165, 97, 183, 182, 188, 180, 2…
+## $ mass       &lt;dbl&gt; 77.0, 75.0, 32.0, 136.0, 49.0, 120.0, 75.0, 32.0, 84.0, 77.…
+## $ hair_color &lt;chr&gt; &quot;blond&quot;, NA, NA, &quot;none&quot;, &quot;brown&quot;, &quot;brown, grey&quot;, &quot;brown&quot;, N…
+## $ skin_color &lt;chr&gt; &quot;fair&quot;, &quot;gold&quot;, &quot;white, blue&quot;, &quot;white&quot;, &quot;light&quot;, &quot;light&quot;, &quot;…
+## $ eye_color  &lt;chr&gt; &quot;blue&quot;, &quot;yellow&quot;, &quot;red&quot;, &quot;yellow&quot;, &quot;brown&quot;, &quot;blue&quot;, &quot;blue&quot;,…
+## $ birth_year &lt;dbl&gt; 19.0, 112.0, 33.0, 41.9, 19.0, 52.0, 47.0, NA, 24.0, 57.0, …
+## $ sex        &lt;chr&gt; &quot;male&quot;, &quot;none&quot;, &quot;none&quot;, &quot;male&quot;, &quot;female&quot;, &quot;male&quot;, &quot;female&quot;,…
+## $ gender     &lt;chr&gt; &quot;masculine&quot;, &quot;masculine&quot;, &quot;masculine&quot;, &quot;masculine&quot;, &quot;femini…
+## $ homeworld  &lt;chr&gt; &quot;Tatooine&quot;, &quot;Tatooine&quot;, &quot;Naboo&quot;, &quot;Tatooine&quot;, &quot;Alderaan&quot;, &quot;T…
+## $ species    &lt;chr&gt; &quot;Human&quot;, &quot;Droid&quot;, &quot;Droid&quot;, &quot;Human&quot;, &quot;Human&quot;, &quot;Human&quot;, &quot;Huma…
+## $ films      &lt;list&gt; &lt;&quot;The Empire Strikes Back&quot;, &quot;Revenge of the Sith&quot;, &quot;Return…
+## $ vehicles   &lt;list&gt; &lt;&quot;Snowspeeder&quot;, &quot;Imperial Speeder Bike&quot;&gt;, &lt;&gt;, &lt;&gt;, &lt;&gt;, &quot;Imp…
+## $ starships  &lt;list&gt; &lt;&quot;X-wing&quot;, &quot;Imperial shuttle&quot;&gt;, &lt;&gt;, &lt;&gt;, &quot;TIE Advanced x1&quot;,…</code></pre>
+<p>If you’ve read any of the other documents on the webpage, you’ll
+remember those last three columns are a bit <a
+href="data_wrangling_dplyr.html">weird</a>. We don’t really want to have
+to deal with columns of lists and we don’t need that data any way, so
+we’ll drop those three columns.</p>
+<pre class="r"><code># here we&#39;re using dplyr to clean up the data set
 starwars &lt;- 
-    starwars %&gt;% 
+    starwars |&gt;  
     select(-(films:starships))
 head(starwars)</code></pre>
 <pre><code>## # A tibble: 6 × 11
@@ -479,37 +975,38 @@ head(starwars)</code></pre>
 ## 6 Owen Lars       178   120 brown,… light   blue       52   male  mascu… Tatooi…
 ## # … with 1 more variable: species &lt;chr&gt;, and abbreviated variable names
 ## #   ¹​hair_color, ²​skin_color, ³​eye_color, ⁴​birth_year, ⁵​homeworld</code></pre>
-<pre class="r"><code>str(starwars)</code></pre>
-<pre><code>## tibble [87 × 11] (S3: tbl_df/tbl/data.frame)
-##  $ name      : chr [1:87] &quot;Luke Skywalker&quot; &quot;C-3PO&quot; &quot;R2-D2&quot; &quot;Darth Vader&quot; ...
-##  $ height    : int [1:87] 172 167 96 202 150 178 165 97 183 182 ...
-##  $ mass      : num [1:87] 77 75 32 136 49 120 75 32 84 77 ...
-##  $ hair_color: chr [1:87] &quot;blond&quot; NA NA &quot;none&quot; ...
-##  $ skin_color: chr [1:87] &quot;fair&quot; &quot;gold&quot; &quot;white, blue&quot; &quot;white&quot; ...
-##  $ eye_color : chr [1:87] &quot;blue&quot; &quot;yellow&quot; &quot;red&quot; &quot;yellow&quot; ...
-##  $ birth_year: num [1:87] 19 112 33 41.9 19 52 47 NA 24 57 ...
-##  $ sex       : chr [1:87] &quot;male&quot; &quot;none&quot; &quot;none&quot; &quot;male&quot; ...
-##  $ gender    : chr [1:87] &quot;masculine&quot; &quot;masculine&quot; &quot;masculine&quot; &quot;masculine&quot; ...
-##  $ homeworld : chr [1:87] &quot;Tatooine&quot; &quot;Tatooine&quot; &quot;Naboo&quot; &quot;Tatooine&quot; ...
-##  $ species   : chr [1:87] &quot;Human&quot; &quot;Droid&quot; &quot;Droid&quot; &quot;Human&quot; ...</code></pre>
+<pre class="r"><code>glimpse(starwars)</code></pre>
+<pre><code>## Rows: 87
+## Columns: 11
+## $ name       &lt;chr&gt; &quot;Luke Skywalker&quot;, &quot;C-3PO&quot;, &quot;R2-D2&quot;, &quot;Darth Vader&quot;, &quot;Leia Or…
+## $ height     &lt;int&gt; 172, 167, 96, 202, 150, 178, 165, 97, 183, 182, 188, 180, 2…
+## $ mass       &lt;dbl&gt; 77.0, 75.0, 32.0, 136.0, 49.0, 120.0, 75.0, 32.0, 84.0, 77.…
+## $ hair_color &lt;chr&gt; &quot;blond&quot;, NA, NA, &quot;none&quot;, &quot;brown&quot;, &quot;brown, grey&quot;, &quot;brown&quot;, N…
+## $ skin_color &lt;chr&gt; &quot;fair&quot;, &quot;gold&quot;, &quot;white, blue&quot;, &quot;white&quot;, &quot;light&quot;, &quot;light&quot;, &quot;…
+## $ eye_color  &lt;chr&gt; &quot;blue&quot;, &quot;yellow&quot;, &quot;red&quot;, &quot;yellow&quot;, &quot;brown&quot;, &quot;blue&quot;, &quot;blue&quot;,…
+## $ birth_year &lt;dbl&gt; 19.0, 112.0, 33.0, 41.9, 19.0, 52.0, 47.0, NA, 24.0, 57.0, …
+## $ sex        &lt;chr&gt; &quot;male&quot;, &quot;none&quot;, &quot;none&quot;, &quot;male&quot;, &quot;female&quot;, &quot;male&quot;, &quot;female&quot;,…
+## $ gender     &lt;chr&gt; &quot;masculine&quot;, &quot;masculine&quot;, &quot;masculine&quot;, &quot;masculine&quot;, &quot;femini…
+## $ homeworld  &lt;chr&gt; &quot;Tatooine&quot;, &quot;Tatooine&quot;, &quot;Naboo&quot;, &quot;Tatooine&quot;, &quot;Alderaan&quot;, &quot;T…
+## $ species    &lt;chr&gt; &quot;Human&quot;, &quot;Droid&quot;, &quot;Droid&quot;, &quot;Human&quot;, &quot;Human&quot;, &quot;Human&quot;, &quot;Huma…</code></pre>
 <p>The basic syntax of <code>ggplot2</code> typically requires an
 argument for your data, <code>data =</code> and an aesthetic argument
 <code>aes()</code>. Within the <code>aes()</code> argument, you will
-specify the data that will be used on the x-axis and y-axis.</p>
+specify the data that you want to visualize.</p>
 <pre class="r"><code>ggplot(data = starwars, aes(x = height, y = mass))</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <p>You’ll notice that there are axis labels and the ranges match with
 our data but the data doesn’t appear in the plot. If you subset the
 data, you’ll notice that the ranges change (the data still doesn’t
 show).</p>
 <pre class="r"><code>sw_human_data &lt;- 
-  starwars %&gt;% 
+  starwars |&gt;  
   filter(species == &quot;Human&quot;)
 
 ggplot(data = sw_human_data, aes(x = height, y = mass))</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 <p>The data does not appear because <code>ggplot2</code> does not assume
-the type of plot you want, so you must specify this information. YOu can
+the type of plot you want, so you must specify this information. You can
 do this by using the operator <code>+</code> and functions which usually
 start with <code>geom_</code>. For example, for scatter plots use
 <code>geom_point()</code>, for boxplots use <code>geom_boxplot()</code>,
@@ -517,16 +1014,16 @@ for a histogram <code>geom_histogram()</code>.</p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
   geom_point()</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_boxplot()</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-37-2.png" width="672" /></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height)) + 
   geom_histogram()</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-37-3.png" width="672" /></p>
 <p>(Note: There are NAs in this data set. <code>ggplot2</code> will
 remove them by default but produces a warning message - “removed n rows
 containing non-finite values”; “removed n rows containing missing
@@ -537,50 +1034,100 @@ you know why it is being produced.)</p>
 <p>These plots are pretty basic and do not have titles or useful axis
 labels, but ggplot2 gives you tons of flexibility in adjusting your
 plots. Let’s start with some scatter plots.</p>
-<div id="scatter-plots" class="section level2">
-<h2>Scatter plots</h2>
+<div id="scatter-plots" class="section level3">
+<h3>Scatter plots</h3>
 <p>First, let’s modify the axis and title labels:</p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
   geom_point() +
-  labs(title = &quot;Human height and mass&quot;, subtitle = &quot;In the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
+  labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 <p>We can also modify how the points appear by adjusting the parameters
 in <code>geom_point()</code></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
   geom_point(size = 5, shape = 17, color = &quot;red&quot;) +
-  labs(title = &quot;Human height and mass&quot;, subtitle = &quot;In the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
+  labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
 <p>What if we want to look at how height and mass break down by
 group?</p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
   geom_point(size = 5) +
-  labs(title = &quot;Human height and mass&quot;, subtitle = &quot;In the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
+  labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p>This is somewhat confusing, though. The colors in the plot don’t
-match the eye color. While this probably won’t be a problem you
-encounter often, specifying colors manually can be quite useful.
-Functions which give you more control over the colors or shapes of
-points typically start with <code>scale_</code> (e.g.,
-<code>scale_fill_manual()</code>, <code>scale_color_discrete()</code>,
-<code>scale_shape_manual()</code>). R uses hexadecimal to represent
-colors. You can look up the hex values, but R also has hundreds of
-built-in color names. You can find those color names here: “<a
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<p>There are two important things to note about this plot.</p>
+<p>First, compare how we specified the point colors in this plot vs the
+one preceding it. In the first, color is specified in the
+<code>geom_point</code> layer. In the second, it’s specified in the
+initial layer, as part of the <code>aes</code> function. It obviously
+has a pretty significant effect on the plot. The function
+<code>aes</code> maps data onto the aesthetic properties of a
+layer/geom. If it is specified in the very first layer, the mapping is
+used throughout all of the layers (until and unless it is overridden).
+If color is specified outside of <code>aes</code>, color is only defined
+for that particular layer. Also, it is more of a property of the geom
+rather than the data-geom mapping. Color is not the only property that
+works like this. You can specify <code>fill</code>, <code>shape</code>,
+<code>size</code>, among others as properties of the geom or the
+geom-data mapping.</p>
+<pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass, shape = eye_color)) + 
+  geom_point(size = 5) +
+  labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
+<pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass, size = eye_color)) + 
+  geom_point() +
+  labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
+<pre><code>## Warning: Using size for a discrete variable is not advised.</code></pre>
+<pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
+<div class="question">
+<p><svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:3em;width:2.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M192 0c-41.8 0-77.4 26.7-90.5 64H64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H282.5C269.4 26.7 233.8 0 192 0zm0 128c-17.7 0-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32zM105.8 229.3c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L216 328.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V314.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H158.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 416c0 17.7-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32z"/></svg>
+<strong>Check your understanding</strong></p>
+<div id="check-3" class="section level4">
+<h4>Check 3</h4>
+<p>What do you think would happen if we had left <code>size = 5</code>
+in the <code>geom_point()</code> layer? Why do you think that?</p>
+</div>
+</div>
+<p>The aesthetic mapping can be defined in the initial layer or in a
+later geom layer. This could be helpful if you have multiple geom layers
+(e.g., points overlaid over box plots) and you want color to map
+different in the geom layers.</p>
+<pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass)) + 
+  geom_point(aes(color = eye_color), size = 5) +
+  labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
+<pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-43-1.png" width="672" /></p>
+<p>The second thing you should note about the plot, is that it’s pretty
+confusing The colors in the plot don’t match the eye color. While this
+probably won’t be a problem you encounter often, specifying colors
+manually can be quite useful. Functions which give you more control over
+the colors or shapes of points typically start with <code>scale_</code>
+(e.g., <code>scale_fill_manual()</code>,
+<code>scale_color_continuous()</code>,
+<code>scale_shape_discrete()</code>).</p>
+<p>R uses hexadecimal to represent colors. You can look up the hex
+values, but R also has hundreds of built-in color names. You can find
+those color names here: “<a
 href="http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf"
 class="uri">http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf</a>”</p>
+<div class="tmi">
+<p><svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:3em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M476.8 126.3c-4.1 1.1-8.4 1.7-12.8 1.7c-26.5 0-48-21-48-47c0-5 1.8-11.3 4.6-18.1c.3-.7 .6-1.4 .9-2.1c9-20.2 26.5-44.9 36-57.5c3.2-4.4 9.6-4.4 12.8 0C483.4 20.6 512 61 512 81c0 21.7-14.9 39.8-35.2 45.3zM256 0c51.4 0 99.3 15.2 139.4 41.2c-1.5 3.1-3 6.2-4.3 9.3c-3.4 8-7.1 19-7.1 30.5c0 44.3 36.6 79 80 79c9.6 0 18.8-1.7 27.4-4.8c13.3 30.9 20.6 65 20.6 100.8c0 141.4-114.6 256-256 256S0 397.4 0 256S114.6 0 256 0zM383.8 317.8C345.3 329.4 301.9 336 256 336s-89.3-6.6-127.8-18.2c-12.3-3.7-24.3 7-19.2 18.7c24.5 56.9 81.1 96.7 147 96.7s122.5-39.8 147-96.7c5.1-11.8-6.9-22.4-19.2-18.7zm-166.2-89l0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C126.7 188.4 120 206.1 120 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0 0 0zm160 0l0 0 0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C286.7 188.4 280 206.1 280 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0z"/></svg>
+<strong>TMI</strong></p>
 <p>Note: No need to worry too much about ‘hexadecimal’. If you are
 interested, it is a base-16 numerical system. Each color is represented
 by a hashtag followed 6 characters; 2 for red, 2 for green, and 2 for
 blue. …</p>
+</div>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
   geom_point(size = 5) +
   scale_color_manual(values = c(&quot;blue&quot;, &quot;lightblue&quot;, &quot;tan&quot;, &quot;tan4&quot;, &quot;forestgreen&quot;, &quot;yellow&quot;)) +
-  labs(title = &quot;Human height and mass&quot;, subtitle = &quot;In the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
+  labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<p>You can also change the colors withouth specifying colors manually.
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<p>You can also change the colors without specifying colors manually.
 This is useful if you don’t need to specify exactly which colors go with
 with group, but you need a different color palette than the default. By
 using a palette you can improve the look of your graphs relatively
@@ -589,8 +1136,7 @@ make your graphs color-blind friendly. The package
 <code>RColorBrewer</code> has created palettes that are compatible with
 <code>ggplot2</code> and contain metadata which let you know if the
 palette is color-blind friendly or not.</p>
-<pre class="r"><code>library(RColorBrewer)
-head(brewer.pal.info, 10)</code></pre>
+<pre class="r"><code>head(brewer.pal.info, 10)</code></pre>
 <pre><code>##          maxcolors category colorblind
 ## BrBG            11      div       TRUE
 ## PiYG            11      div       TRUE
@@ -605,41 +1151,41 @@ head(brewer.pal.info, 10)</code></pre>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height, y = mass, color = eye_color)) + 
   geom_point(size = 5) +
   scale_colour_brewer(palette = &quot;RdYlBu&quot;) +
-  labs(title = &quot;Human height and mass&quot;, subtitle = &quot;In the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
+  labs(title = &quot;Human height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 13 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
 <p>What happens if you have an outlier?</p>
 <pre class="r"><code>ggplot(data = starwars, aes(x = height, y = mass)) + 
   geom_point(size = 2) +
   scale_colour_brewer(palette = &quot;RdYlBu&quot;) +
-  labs(title = &quot;Height and mass&quot;, subtitle = &quot;In the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
+  labs(title = &quot;Height and mass in the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;)</code></pre>
 <pre><code>## Warning: Removed 28 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
 <p>You can change the axes on your plot. However, be careful, some
 methods could have unintended consequences. Let’s look at an
 example:</p>
 <pre class="r"><code>ggplot(data = starwars, aes(x = height, y = mass)) + 
   geom_point(size = 2) +
   scale_colour_brewer(palette = &quot;RdYlBu&quot;) +
-  labs(title = &quot;Height and mass&quot;, subtitle = &quot;In the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;) +
+  labs(title = &quot;Height and mass in the Star Wars universe&quot;, subtitle = &quot;x and y limits changed&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;) +
   ylim(c(0,200)) +
   xlim(c(0,250))</code></pre>
 <pre><code>## Warning: Removed 29 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
 <p>If we remove the really heavy individual, we can see the height-mass
 relationship a bit better. We can apply a data smoothing function that
 will give you a linear regression line with confidence intervals.</p>
 <pre class="r"><code>ggplot(data = starwars, aes(x = height, y = mass)) + 
   geom_point(size = 2) +
   scale_colour_brewer(palette = &quot;RdYlBu&quot;) +
-  labs(title = &quot;Height and mass&quot;, subtitle = &quot;In the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;) +
+  labs(title = &quot;Height and mass in the Star Wars universe&quot;, subtitle = &quot;x and y limits changed&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;) +
   ylim(c(0,200)) +
   xlim(c(50,250)) +
   geom_smooth(method = &#39;lm&#39;)</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <pre><code>## Warning: Removed 29 rows containing non-finite values (stat_smooth).</code></pre>
 <pre><code>## Warning: Removed 29 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
 <p>However, the model only applies the linear model calculation to the
 data points that actually appear. If we use
 <code>coord_cartesian()</code> around <code>xlim()</code> and
@@ -647,14 +1193,14 @@ data points that actually appear. If we use
 <pre class="r"><code>ggplot(data = starwars, aes(x = height, y = mass)) + 
   geom_point(size = 2) +
   scale_colour_brewer(palette = &quot;RdYlBu&quot;) +
-  labs(title = &quot;Height and mass&quot;, subtitle = &quot;In the Star Wars universe&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;) +
+  labs(title = &quot;Height and mass in the Star Wars universe&quot;, subtitle = &quot;x and y limits changed using coord_cartesian&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;) +
   coord_cartesian(xlim = c(50, 250), 
                   ylim = c(0, 200)) + 
   stat_smooth(method = &#39;lm&#39;)</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <pre><code>## Warning: Removed 28 rows containing non-finite values (stat_smooth).</code></pre>
 <pre><code>## Warning: Removed 28 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
 <p>Notice how the slope and intercept are different in the two plots and
 the grey area (the confidence interval) is much larger in the second
 plot. The function <code>coord_cartesian()</code> calculates based on
@@ -663,27 +1209,111 @@ the data in the data frame, not the data that is plotted.
 <code>xlim()</code> and <code>ylim()</code> by themselves subset the
 data area. You might not use the <code>geom_smooth()</code> function
 much, but you will likely use <code>geom_boxplot()</code>.</p>
+<pre class="r"><code>median_human_height_gender &lt;- tapply(sw_human_data$height, sw_human_data$gender, median, na.rm = TRUE)
+
+ggplot(data = sw_human_data, aes(x = gender, y = height)) +
+  geom_boxplot() +
+  labs(title = &quot;Human height and gender in the Star Wars universe&quot;, x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;) +
+  geom_hline(yintercept = median_human_height_gender[&#39;feminine&#39;], linetype = 2)+
+  geom_hline(yintercept = median_human_height_gender[&#39;masculine&#39;], linetype = 3)+
+  annotate(&quot;text&quot;, x = 2, y = median_human_height_gender[&#39;feminine&#39;], label = &quot;median female height&quot;, angle = 345, hjust = 1, vjust = 5)+
+  annotate(&quot;text&quot;, x = 1, y = median_human_height_gender[&#39;masculine&#39;], label = &quot;median male height&quot;, angle = 345, hjust = -0.5, vjust = 0)</code></pre>
+<pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
+<div class="tmi">
+<p><svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:3em;width:3em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M476.8 126.3c-4.1 1.1-8.4 1.7-12.8 1.7c-26.5 0-48-21-48-47c0-5 1.8-11.3 4.6-18.1c.3-.7 .6-1.4 .9-2.1c9-20.2 26.5-44.9 36-57.5c3.2-4.4 9.6-4.4 12.8 0C483.4 20.6 512 61 512 81c0 21.7-14.9 39.8-35.2 45.3zM256 0c51.4 0 99.3 15.2 139.4 41.2c-1.5 3.1-3 6.2-4.3 9.3c-3.4 8-7.1 19-7.1 30.5c0 44.3 36.6 79 80 79c9.6 0 18.8-1.7 27.4-4.8c13.3 30.9 20.6 65 20.6 100.8c0 141.4-114.6 256-256 256S0 397.4 0 256S114.6 0 256 0zM383.8 317.8C345.3 329.4 301.9 336 256 336s-89.3-6.6-127.8-18.2c-12.3-3.7-24.3 7-19.2 18.7c24.5 56.9 81.1 96.7 147 96.7s122.5-39.8 147-96.7c5.1-11.8-6.9-22.4-19.2-18.7zm-166.2-89l0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C126.7 188.4 120 206.1 120 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0 0 0zm160 0l0 0 0 0 0 0c2.1 2.8 5.7 3.9 8.9 2.8s5.5-4.1 5.5-7.6c0-17.9-6.7-35.6-16.6-48.8c-9.8-13-23.9-23.2-39.4-23.2s-29.6 10.2-39.4 23.2C286.7 188.4 280 206.1 280 224c0 3.4 2.2 6.5 5.5 7.6s6.9 0 8.9-2.8l0 0 0 0 0 0 .2-.2c.2-.2 .4-.5 .7-.9c.6-.8 1.6-2 2.8-3.4c2.5-2.8 6-6.6 10.2-10.3c8.8-7.8 18.8-14 27.7-14s18.9 6.2 27.7 14c4.2 3.7 7.7 7.5 10.2 10.3c1.2 1.4 2.2 2.6 2.8 3.4c.3 .4 .6 .7 .7 .9l.2 .2 0 0z"/></svg>
+<strong>TMI</strong></p>
+<p><code>annotate()</code></p>
+<p>The function annotate allows you to add elements to your plot that
+may or may not be part of the original data set. This could be text, as
+in the prior example, or it could be lines (“segment”), rectangles
+(“rect”), curves (“curve”), etc. This functionality is quite useful if
+you want to emphasize certain data points or regions of your plot.</p>
+<pre class="r"><code>yoda_h &lt;- starwars$height[which(starwars$name == &quot;Yoda&quot;)]
+yoda_m &lt;- starwars$mass[which(starwars$name == &quot;Yoda&quot;)]
+
+wookiee &lt;- starwars |&gt; filter(species == &quot;Wookiee&quot;) |&gt; 
+  select(height, mass)
+
+skywalkers &lt;- starwars |&gt; filter(grepl(&quot;Skywalker|Leia&quot;, name))
+
+ggplot(data = starwars, aes(x = height, y = mass)) + 
+  geom_point(size = 2) +
+  scale_colour_brewer(palette = &quot;RdYlBu&quot;) +
+  labs(title = &quot;Height and mass in the Star Wars universe&quot;, subtitle = &quot;x and y limits changed using coord_cartesian&quot;, x = &quot;Height (cm)&quot;, y = &quot;Mass (kg)&quot;) +
+  coord_cartesian(xlim = c(50, 250), 
+                  ylim = c(0, 200)) + 
+  annotate(&quot;curve&quot;, 
+           x = yoda_h, xend = yoda_h, 
+           y = yoda_m + 75, yend = yoda_m, 
+           arrow = arrow(),
+           color = &#39;green&#39;)+
+  annotate(&quot;text&quot;, x = yoda_h, y = yoda_m + 80, label = &quot;Yoda&quot;)+
+  annotate(&quot;rect&quot;, 
+           xmin = min(wookiee$height) - 5, xmax = max(wookiee$height)+ 5,
+           ymin = min(wookiee$mass) - 5, ymax = max(wookiee$mass) + 5,
+           alpha = .5,
+           fill = &#39;darkorange4&#39;
+           )+
+  annotate(&quot;text&quot;, 
+           x = max(wookiee$height), y = max(wookiee$mass)+10, 
+           label = &quot;Wookiees&quot;) +
+  annotate(&quot;rect&quot;, 
+           xmin = 40, xmax = 80,
+           ymin = 190, ymax = 210,
+           color = &#39;black&#39;, fill = &#39;grey&#39;,
+           alpha = 0.6) +
+  annotate(&quot;point&quot;, x = skywalkers$height, y = skywalkers$mass,
+           size = 4, color = &#39;blue&#39;, alpha = 0.5)+
+  annotate(&quot;text&quot;, x = 50, y = 200, label = &quot;Skywalkers&quot;, hjust = 0)+
+  annotate(&quot;point&quot;, x = 45, y = 200, size = 2, color = &#39;black&#39;)+
+  annotate(&quot;point&quot;, x = 45, y = 200, size = 4, color = &#39;blue&#39;, alpha = 0.5) +
+  theme_classic() # using pre-defined themes is a quick and simple way to improve the look of your plots</code></pre>
+<pre><code>## Warning: Removed 28 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-52-1.png" width="672" /></p>
+</div>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_boxplot() +
+  labs(title = &quot;Human height and gender in the Star Wars universe&quot;, subtitle = &quot;x and y limits changed&quot;, 
+       x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;) +
+  geom_hline(yintercept = median_human_height_gender[&#39;feminine&#39;], 
+             linetype = 2)+
+  geom_hline(yintercept = median_human_height_gender[&#39;masculine&#39;], 
+             linetype = 3)+
+  annotate(&quot;text&quot;, x = 2, y = median_human_height_gender[&#39;feminine&#39;], 
+           label = &quot;median female height&quot;, 
+           angle = 345, hjust = 1, vjust = 5)+
+  annotate(&quot;text&quot;, x = 1, y = median_human_height_gender[&#39;masculine&#39;], 
+           label = &quot;median male height&quot;, angle = 345, hjust = -0.5, vjust = 0)+
   ylim(c(150, 190))</code></pre>
 <pre><code>## Warning: Removed 8 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-53-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_boxplot() +
+  labs(title = &quot;Human height and gender in the Star Wars universe&quot;, subtitle = &quot;x and y limits changed using coord_cartesian&quot;, x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)  +
+  geom_hline(yintercept = median_human_height_gender[&#39;feminine&#39;], 
+             linetype = 2)+
+  geom_hline(yintercept = median_human_height_gender[&#39;masculine&#39;], 
+             linetype = 3) +
+  annotate(&quot;text&quot;, x = 2, y = median_human_height_gender[&#39;feminine&#39;], 
+           label = &quot;median female height&quot;, angle = 345, hjust = 1, vjust = 5)+
+  annotate(&quot;text&quot;, x = 1, y = median_human_height_gender[&#39;masculine&#39;], 
+           label = &quot;median male height&quot;, angle = 345, hjust = -0.5, vjust = 0)+
   coord_cartesian(ylim = c(150, 190))</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-54-1.png" width="672" /></p>
 <p>When we manually set the y axis limits without using
 <code>coord_cartesian</code>, the median height of masculine characters
 differs by about 3 cm.</p>
 </div>
-<div id="box-plots-and-violin-plots" class="section level2">
-<h2>Box plots and violin plots</h2>
+<div id="box-plots-and-violin-plots" class="section level3">
+<h3>Box plots and violin plots</h3>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_boxplot() +
-  labs(title = &quot;Height by gender&quot;, subtitle = &quot;In the Star Wars universe&quot;,x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)</code></pre>
+  labs(title = &quot;Human height by gender in the Star Wars universe&quot;,x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-55-1.png" width="672" /></p>
 <p>One of the benefits of ggplot2 is that you can easily (once you get
 used to the ggplot2 syntax) combine different types of visualizations.
 You can overlay a violin plot with box plots while plotting the
@@ -692,47 +1322,47 @@ individual data points all in one plot</p>
   geom_violin() +
   geom_boxplot(width = 0.25) +
   geom_jitter(size = 3, width = 0.25) + # geom_jitter in geom_point() but with the points &quot;jittered&quot; 
-  labs(title = &quot;Height by gender&quot;, subtitle = &quot;In the Star Wars universe&quot;,x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)</code></pre>
+  labs(title = &quot;Human height by gender in the Star Wars universe&quot;,x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_ydensity).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
 <p>You can continue to add more groups or variables for more complex
 plots.</p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_violin() +
   geom_boxplot(width = 0.25) +
   geom_jitter(size = 3, width = 0.25, aes(color = homeworld)) + # geom_jitter in geom_point() but with the points &quot;jittered&quot; 
-  labs(title = &quot;Height by gender&quot;, subtitle = &quot;In the Star Wars universe&quot;,x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)</code></pre>
+  labs(title = &quot;Human height by gender in the Star Wars universe&quot;,x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_ydensity).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-57-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = gender, y = height)) +
   geom_violin() +
   geom_boxplot(width = 0.25) +
   geom_jitter(size = 3, width = 0.25, aes(color = mass)) + # geom_jitter in geom_point() but with the points &quot;jittered&quot; 
-  labs(title = &quot;Height by gender&quot;, subtitle = &quot;In the Star Wars universe&quot;,x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)</code></pre>
+  labs(title = &quot;Human height by gender in the Star Wars universe&quot;,x = &quot;Gender&quot;, y = &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_ydensity).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).</code></pre>
 <pre><code>## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-25-2.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
 </div>
-<div id="histograms" class="section level2">
-<h2>Histograms</h2>
+<div id="histograms" class="section level3">
+<h3>Histograms</h3>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height)) + 
   geom_histogram(binwidth = 10) +
-  labs(title = &quot;Height histogram&quot;, subtitle = &quot;In the Star Wars universe&quot;,x =  &quot;Height (cm)&quot;)</code></pre>
+  labs(title = &quot;Human height histogram in the Star Wars universe&quot;,x =  &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
 <p>Different binwidths have an effect on the shape of the histogram.</p>
 <pre class="r"><code>ggplot(data = sw_human_data, aes(x = height)) + 
   geom_histogram(binwidth = 10) +
   geom_histogram(binwidth = 3, fill = &quot;red&quot;) +
-  labs(title = &quot;Height histogram&quot;, subtitle = &quot;In the Star Wars universe&quot;,x =  &quot;Height (cm)&quot;)</code></pre>
+  labs(title = &quot;Human height histogram in the Star Wars universe&quot;,x =  &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing non-finite values (stat_bin).
 ## Removed 4 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-60-1.png" width="672" /></p>
 <pre class="r"><code>sw_nonhuman_data &lt;-
 starwars %&gt;%
   mutate(human = ifelse(species == &quot;Human&quot;, &quot;Human&quot;, &quot;Non-Human&quot;))
@@ -740,9 +1370,9 @@ starwars %&gt;%
 
 ggplot(data = sw_nonhuman_data, aes(x = height, fill = human)) +
   geom_histogram(binwidth = 10) +
-  labs(title = &quot;Height histogram&quot;, subtitle = &quot;In the Star Wars universe&quot;,x =  &quot;Height (cm)&quot;)</code></pre>
+  labs(title = &quot;Height histogram in the Star Wars universe&quot;, subtitle = &quot;Human vs Non-Human&quot;, x =  &quot;Height (cm)&quot;)</code></pre>
 <pre><code>## Warning: Removed 6 rows containing non-finite values (stat_bin).</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-61-1.png" width="672" /></p>
 <p>In this final plot we’ll connect points and we’ll deal with object
 type problems.</p>
 <p>We’ll simulate data so that we have multiple measurements for an
@@ -752,32 +1382,270 @@ data.frame(ID = rep(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;
            week = rep(c(1, 2), each = 4),
            measure = c(rnorm(4, 5, 2), 
                        rnorm(4, 10, 2)))
-str(data)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    8 obs. of  3 variables:
-##  $ ID     : chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
-##  $ week   : num  1 1 1 1 2 2 2 2
-##  $ measure: num  6.471 4.637 0.503 4.659 6.449 ...</code></pre>
+glimpse(data)</code></pre>
+<pre><code>## Rows: 8
+## Columns: 3
+## $ ID      &lt;chr&gt; &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;
+## $ week    &lt;dbl&gt; 1, 1, 1, 1, 2, 2, 2, 2
+## $ measure &lt;dbl&gt; 3.674450, 8.890390, 8.712511, 4.498427, 7.234384, 11.702044, 6…</code></pre>
 <p>First, let’s plot the data to see if there is a difference between
 weeks.</p>
 <pre class="r"><code>ggplot(data = data, aes(x = week, y = measure)) +
   geom_boxplot() +
   geom_point()</code></pre>
 <pre><code>## Warning: Continuous x aesthetic -- did you forget aes(group=...)?</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-63-1.png" width="672" /></p>
 <p>That seems wrong. What happened?</p>
 <p>R interprets “week” as a continuous variable. We want to treat it as
 a factor.</p>
 <pre class="r"><code>ggplot(data = data, aes(x = as.factor(week), y = measure)) +
   geom_boxplot() +
   geom_point()</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
 <p>That’s better!</p>
 <p>Now, let’s connect the points by subject ID.</p>
 <pre class="r"><code>ggplot(data = data, aes(x = as.factor(week), y = measure)) +
   geom_boxplot() +
   geom_point() +
   geom_path(aes(group = ID))</code></pre>
-<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-65-1.png" width="672" /></p>
+</div>
+</div>
+<div id="check-your-understanding" class="section level2">
+<h2>Check your understanding</h2>
+<div class="question">
+<p><svg aria-hidden="true" role="img" viewBox="0 0 384 512" style="height:3em;width:2.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M192 0c-41.8 0-77.4 26.7-90.5 64H64C28.7 64 0 92.7 0 128V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H282.5C269.4 26.7 233.8 0 192 0zm0 128c-17.7 0-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32zM105.8 229.3c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L216 328.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V314.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H158.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 416c0 17.7-14.3 32-32 32s-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32z"/></svg>
+<strong>Check your understanding</strong></p>
+<div id="check-4" class="section level3">
+<h3>Check 4</h3>
+<p>I have replicated an infamous plot published in a <a
+href="https://www.businessinsider.in/this-chart-shows-what-happened-to-gun-deaths-in-florida-after-stand-your-ground-was-enacted/articleshow/30635752.cms">Business
+Insider article</a> using data from the <a
+href="https://www.fdle.state.fl.us/CJAB/UCR/Annual-Reports/UCR-Offense-Data">Florida
+Department of Law Enforcement</a>. The article discusses a law passed in
+Florida that relates to the use of deadly force in self-defense
+situations. “Stand-your-ground” laws are somewhat controversial so if
+you’re interested in the topic, there’s a lot out there. For this
+lesson, however, we’re really only interested in the details of how the
+data is visualized.</p>
+<pre class="r"><code>dat &lt;- read.csv(&quot;../data/FL_Murder_by_Weapon_1995-2020.csv&quot;)
+head(dat)</code></pre>
+<pre><code>##   Year Total.Offenses Firearm Knife..Cutting.Instrument Hands..Fist..Feet Other
+## 1 1995           1030     687                       135                50   158
+## 2 1996           1077     668                       146                85   178
+## 3 1997           1014     634                       129                87   164
+## 4 1998            966     589                       115                86   176
+## 5 1999            856     460                       132                98   166
+## 6 2000            890     499                       131                83   177</code></pre>
+<pre class="r"><code>glimpse(dat)</code></pre>
+<pre><code>## Rows: 26
+## Columns: 6
+## $ Year                      &lt;int&gt; 1995, 1996, 1997, 1998, 1999, 2000, 2001, 20…
+## $ Total.Offenses            &lt;int&gt; 1030, 1077, 1014, 966, 856, 890, 867, 906, 9…
+## $ Firearm                   &lt;int&gt; 687, 668, 634, 589, 460, 499, 502, 552, 586,…
+## $ Knife..Cutting.Instrument &lt;int&gt; 135, 146, 129, 115, 132, 131, 108, 114, 121,…
+## $ Hands..Fist..Feet         &lt;int&gt; 50, 85, 87, 86, 98, 83, 91, 82, 77, 94, 75, …
+## $ Other                     &lt;int&gt; 158, 178, 164, 176, 166, 177, 166, 158, 140,…</code></pre>
+<pre class="r"><code>ggplot(data = dat, aes(x = Year, y = Firearm))+
+  geom_area(fill = &#39;darkred&#39;, alpha = 0.8)+
+  geom_line() +
+  scale_y_reverse(limits = c(1200, 0), 
+                  breaks = seq(1200, 0, -200), 
+                  labels = seq(1200, 0, -200))+
+  scale_x_continuous(breaks = c(2000, 2010, 2020), labels = c(&quot;1990s&quot;, &quot;2000s&quot;, &quot;2010s&quot;))+
+  ylab(label = element_blank())+
+  xlab(label = element_blank())+
+  labs(caption = &quot;Recreation of a plot published in a Business Insider article from FEB 18, 2014.\nData is from Florida Department of Law Enforcement.\nOriginal plot showed data from 1990-2012, current plot shows data from 1995-2020.&quot;)+
+  ggtitle(&quot;Gun deaths in Florida&quot;, 
+          subtitle = &quot;Number of murders committed using firearms&quot;)+
+  annotate(geom = &quot;text&quot;, 
+           x = dat$Year[1], y = dat$Firearm[1], 
+           vjust = 2,
+           label = as.character(dat$Firearm[1]))+
+  annotate(geom = &quot;text&quot;, 
+           x = tail(dat$Year, n = 1), y = tail(dat$Firearm, n = 1), 
+           vjust = 2,
+           label = as.character(tail(dat$Firearm, n = 1)))+
+  annotate(geom = &quot;segment&quot;,
+           x = 2005, xend = 2005,
+           y = dat$Firearm[which(dat$Year == 2005)], 
+           yend = dat$Firearm[which(dat$Year == 2005)] - 100,
+           color = &#39;white&#39;
+           )+
+  annotate(geom = &quot;text&quot;,
+           x = 2005,
+           y = dat$Firearm[which(dat$Year == 2005)] - 250,
+           label = &quot;2005\nFlorida enacted \nits &#39;Stand Your \nGround&#39; law&quot;,
+           color = &#39;white&#39;,
+           hjust = 0,
+           )+
+  geom_point(size = 4, color = &#39;white&#39;, fill = &#39;black&#39;, shape = 21)+
+  theme(
+    panel.background = element_rect(fill = &quot;white&quot;, color = &quot;white&quot;),
+    plot.title = element_text(size = 24, face = &quot;bold&quot;),
+    axis.text.x = element_text(hjust = 3, vjust = 5),
+    axis.ticks.length.x = unit(-0.4, &quot;cm&quot;),
+    panel.grid.major.y = element_line(color = &quot;grey&quot;),
+    panel.grid.major.x = element_blank(),
+    plot.caption = element_text(hjust = 0)
+    )</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-67-1.png" width="672" /></p>
+<ol style="list-style-type: upper-alpha">
+<li><p>Before looking in detail at the code or the plot, what are your
+initial impressions of the plot? What does it do well? What could be
+done better? What does the plot tell you?</p></li>
+<li><p>This plot makes (at least) one pretty big mistake. What is it?
+Why is it a mistake?</p></li>
+<li><p>An important step in writing code is learning to read code. Take
+a look at the code above. While it may be quite daunting, you don’t need
+to understand everything to be able to gain crucial information from the
+code. What does the line <code>geom_line()</code> do? Remember that you
+can check the documentation of a function by using <code>?</code> before
+the function name. (Google is also your friend in this case as there are
+tons of <a
+href="https://www.data-to-viz.com/caveats.html">tutorials</a>, <a
+href="https://www.maths.usyd.edu.au/u/UG/SM/STAT3022/r/current/Misc/data-visualization-2.1.pdf">cheat
+sheets</a>, and <a
+href="https://ggplot2.tidyverse.org/articles/ggplot2-specs.html">vignettes</a>
+that can explain things in more detail.)</p></li>
+<li><p>You should always read the documentation, but not all
+documentation is created equal. Writing documentation is not easy and
+many programmers often treat it as an afterthought. But, you can
+approach coding like a scientist!</p></li>
+</ol>
+<ul>
+<li><p>Form a hypothesis: What do you think the function does?</p></li>
+<li><p>Design an experiment: How can you change the code to see if the
+function acts the way you think it does?<br />
+</p></li>
+<li><p>Run an experiment: Run the code/program</p></li>
+<li><p>Analyze the results: Is the output what you expected? If
+not…</p></li>
+<li><p>Update your hypothesis and/or experimental design and try
+again!</p>
+<p>What does the function <code>scale_x_continuous</code> do,
+specifically, what does it do in this plot? What about the parameters
+<code>breaks</code> and <code>labels</code>? Formulate a “hypothesis”
+and design an “experiment” to test the function
+<code>scale_x_continuous</code>.</p></li>
+</ul>
+<ol start="5" style="list-style-type: upper-alpha">
+<li>Which layer/function should you remove/change to make the plot less
+misleading?</li>
+</ol>
+</div>
+<div id="check-5" class="section level3">
+<h3>Check 5</h3>
+<p>We’re going to go back to the <code>starwars</code> data set. We’re
+going to look at heights again; this time we’re going to compare heights
+across the different home worlds in the star wars universe.</p>
+<p>Unfortunately, a lot of the home worlds in the data set only have one
+or two characters. We’ll first filter the data so that we drop all of
+the home worlds that have two or fewer characters.</p>
+<pre class="r"><code>worlds &lt;- starwars |&gt;
+  group_by(homeworld) |&gt; 
+  filter(n() &gt;= 3) |&gt; 
+  drop_na(homeworld) # drops the observations where the home world is NA</code></pre>
+<pre class="r"><code>ggplot(data = worlds, aes(x = homeworld, height))+
+  geom_boxplot() +   
+  labs(title = &quot;Height by home world in the Star Wars universe&quot;,
+       y =  &quot;Height (cm)&quot;,
+       x = &quot;Home world&quot;)+
+  theme_bw() </code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-69-1.png" width="672" /></p>
+<ol style="list-style-type: upper-alpha">
+<li>What information do box plots represent?</li>
+</ol>
+<ul>
+<li>The heavy line in the center of the box?</li>
+<li>the box ends?</li>
+<li>the vertical lines?</li>
+<li>the dots? (see Naboo and Tatooine)</li>
+</ul>
+<ol start="2" style="list-style-type: upper-alpha">
+<li><p>Do you feel like box plots are a good representation of these
+data? Why or why not?</p></li>
+<li><p>There is at least one aspect of the data that this plot does not
+represent well. Add one or more layers to the plot to make the
+visualization less misleading. (You can directly copy the code from
+above. You can remove layers if you want, but you don’t have
+to.)</p></li>
+</ol>
+<pre class="r"><code>### YOUR CODE HERE
+#
+#
+#
+#
+#</code></pre>
+</div>
+<div id="check-6" class="section level3">
+<h3>Check 6</h3>
+<p>For this example, we’re going to look at penguin data. These data can
+be found in the R package <code>palmerpenguin</code>.</p>
+<pre class="r"><code>data(&quot;penguins&quot;)
+head(penguins)</code></pre>
+<pre><code>## # A tibble: 6 × 8
+##   species island    bill_length_mm bill_depth_mm flipper_l…¹ body_…² sex    year
+##   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;       &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+## 1 Adelie  Torgersen           39.1          18.7         181    3750 male   2007
+## 2 Adelie  Torgersen           39.5          17.4         186    3800 fema…  2007
+## 3 Adelie  Torgersen           40.3          18           195    3250 fema…  2007
+## 4 Adelie  Torgersen           NA            NA            NA      NA &lt;NA&gt;   2007
+## 5 Adelie  Torgersen           36.7          19.3         193    3450 fema…  2007
+## 6 Adelie  Torgersen           39.3          20.6         190    3650 male   2007
+## # … with abbreviated variable names ¹​flipper_length_mm, ²​body_mass_g</code></pre>
+<pre class="r"><code>glimpse(penguins)</code></pre>
+<pre><code>## Rows: 344
+## Columns: 8
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel…
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse…
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1, …
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1, …
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 186…
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, …
+## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male…
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007…</code></pre>
+<pre class="r"><code>penguins &lt;- penguins |&gt; na.omit()
+glimpse(penguins)</code></pre>
+<pre><code>## Rows: 333
+## Columns: 8
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel…
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse…
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, 36.7, 39.3, 38.9, 39.2, 41.1, 38.6…
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, 19.3, 20.6, 17.8, 19.6, 17.6, 21.2…
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, 193, 190, 181, 195, 182, 191, 198, 18…
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, 3450, 3650, 3625, 4675, 3200, 3800…
+## $ sex               &lt;fct&gt; male, female, female, female, male, female, male, fe…
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007…</code></pre>
+<pre class="r"><code>ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm))+
+  geom_point() +
+   labs(x=&quot;Length (mm)&quot;, y=&quot;Depth (mm)&quot;, title=&quot;Penguin Bill Depth by Bill Length&quot;)+
+  theme_bw()</code></pre>
+<p><img src="data_viz_ggplot_files/figure-html/unnamed-chunk-74-1.png" width="672" /></p>
+<ol style="list-style-type: upper-alpha">
+<li><p>Do you think there is a relationship between Penguin bill length
+and bill depth? If so, do you think it’s a positive or negative
+relationship based on the plot?</p></li>
+<li><p>Take a look at the rest of the columns in the data set.</p></li>
+</ol>
+<pre class="r"><code>colnames(penguins)</code></pre>
+<pre><code>## [1] &quot;species&quot;           &quot;island&quot;            &quot;bill_length_mm&quot;   
+## [4] &quot;bill_depth_mm&quot;     &quot;flipper_length_mm&quot; &quot;body_mass_g&quot;      
+## [7] &quot;sex&quot;               &quot;year&quot;</code></pre>
+<p>Do you think there are any other variables that might help you better
+understand the relationship between bill length and bill depth?</p>
+<ol start="3" style="list-style-type: upper-alpha">
+<li>How would you add the variable(s) to the plot to help illustrate
+that relationship?</li>
+</ol>
+<pre class="r"><code>### YOUR CODE HERE
+#
+#
+#
+#
+#</code></pre>
+</div>
+</div>
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
@@ -791,9 +1659,9 @@ with it, you’ll have a lot of fun creating beautiful plots!</p>
 <p>================================================================================</p>
 <div id="session-information" class="section level3">
 <h3>Session information:</h3>
-<p>Last update on 2020-11-12</p>
+<p>Last update on 2022-01-02</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.2.1 (2022-06-23)
+<pre><code>## R version 4.2.2 Patched (2022-11-10 r83330)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 20.04.5 LTS
 ## 
@@ -813,22 +1681,23 @@ with it, you’ll have a lot of fun creating beautiful plots!</p>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] RColorBrewer_1.1-3 tidyr_1.2.0        dplyr_1.0.10       ggplot2_3.3.6     
+## [1] palmerpenguins_0.1.1 RColorBrewer_1.1-3   tidyr_1.2.0         
+## [4] dplyr_1.0.10         ggplot2_3.3.6       
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] highr_0.9        bslib_0.4.0      compiler_4.2.1   pillar_1.8.1    
-##  [5] jquerylib_0.1.4  tools_4.2.1      digest_0.6.29    lattice_0.20-45 
-##  [9] nlme_3.1-160     jsonlite_1.8.0   evaluate_0.16    lifecycle_1.0.1 
-## [13] tibble_3.1.8     gtable_0.3.0     mgcv_1.8-40      pkgconfig_2.0.3 
-## [17] rlang_1.0.5      Matrix_1.4-1     DBI_1.1.2        cli_3.3.0       
-## [21] rstudioapi_0.14  yaml_2.3.5       xfun_0.32        fastmap_1.1.0   
-## [25] withr_2.5.0      stringr_1.4.1    knitr_1.40       generics_0.1.3  
-## [29] sass_0.4.2       vctrs_0.4.1      tidyselect_1.1.2 grid_4.2.1      
-## [33] glue_1.6.2       R6_2.5.1         fansi_1.0.3      rmarkdown_2.16  
-## [37] farver_2.1.0     purrr_0.3.4      magrittr_2.0.3   splines_4.2.1   
-## [41] ellipsis_0.3.2   scales_1.2.0     htmltools_0.5.3  assertthat_0.2.1
-## [45] colorspace_2.0-3 labeling_0.4.2   utf8_1.2.2       stringi_1.7.8   
-## [49] munsell_0.5.0    cachem_1.0.6</code></pre>
+##  [1] tidyselect_1.1.2  xfun_0.32         bslib_0.4.0       purrr_0.3.4      
+##  [5] splines_4.2.2     lattice_0.20-45   colorspace_2.0-3  vctrs_0.4.1      
+##  [9] generics_0.1.3    htmltools_0.5.3   yaml_2.3.5        mgcv_1.8-41      
+## [13] utf8_1.2.2        rlang_1.0.5       jquerylib_0.1.4   pillar_1.8.1     
+## [17] glue_1.6.2        withr_2.5.0       DBI_1.1.2         lifecycle_1.0.1  
+## [21] stringr_1.4.1     munsell_0.5.0     gtable_0.3.0      fontawesome_0.4.0
+## [25] evaluate_0.16     labeling_0.4.2    knitr_1.40        fastmap_1.1.0    
+## [29] fansi_1.0.3       highr_0.9         scales_1.2.0      cachem_1.0.6     
+## [33] jsonlite_1.8.0    farver_2.1.0      digest_0.6.29     stringi_1.7.8    
+## [37] grid_4.2.2        cli_3.3.0         tools_4.2.2       magrittr_2.0.3   
+## [41] sass_0.4.2        tibble_3.1.8      pkgconfig_2.0.3   Matrix_1.4-1     
+## [45] ellipsis_0.3.2    assertthat_0.2.1  rmarkdown_2.16    rstudioapi_0.14  
+## [49] R6_2.5.1          nlme_3.1-160      compiler_4.2.2</code></pre>
 <p>================================================================================</p>
 </div>
 </div>
